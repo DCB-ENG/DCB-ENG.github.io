@@ -59,6 +59,45 @@
       height: auto;
       border-radius: 8px;
     }
+    .project-card {
+      background: #1b1b1b;
+      border: 1px solid #383838;
+      border-left: 4px solid #ff9800;
+      border-radius: 10px;
+      padding: 1.5rem;
+    }
+    .project-card h3 {
+      margin: 0 0 0.5rem;
+      font-size: 1.4rem;
+    }
+    .project-card p {
+      margin: 0.5rem 0;
+      color: #ccc;
+    }
+    .project-tag {
+      color: #ffb74d;
+      font-size: 0.85rem;
+      font-weight: bold;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .project-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 1rem;
+    }
+    .project-actions .button {
+      margin-top: 0;
+    }
+    .project-actions .source-link {
+      color: #ffb74d;
+      padding: 0.75rem 0;
+    }
+    .project-note {
+      font-size: 0.9rem;
+    }
     footer {
       text-align: center;
       padding: 2rem;
@@ -102,6 +141,21 @@
       DCB ENG is a one-man custom fabrication shop based in Beauty Point, Tasmania.
       Specialising in bespoke welding and performance car fabrication. If you need custom work done right, I can make it happen.
     </p>
+  </section>
+
+  <section class="software" aria-labelledby="software-title">
+    <h2 id="software-title">Engineering Software</h2>
+    <div class="project-card">
+      <span class="project-tag">Free browser tool &middot; Experimental preview</span>
+      <h3>STEP / DXF to DSTV Converter</h3>
+      <p>Convert supported 3D STEP steel sections and flat-plate STEP or DXF geometry into DSTV (NC1) files for CNC steel processing. Inspect the model, check section orientation and review the generated output in your browser.</p>
+      <p>Supports selected RHS/SHS, PFC, angle and I-section geometry, plus flat plates within documented limits. Files are processed locally in your browser, without uploading them to a server.</p>
+      <div class="project-actions">
+        <a class="button" href="https://dcb-eng.github.io/step-dstv-converter/" target="_blank" rel="noopener noreferrer">Open Converter</a>
+        <a class="source-link" href="https://github.com/DCB-ENG/step-dstv-converter" target="_blank" rel="noopener noreferrer">Project details on GitHub</a>
+      </div>
+      <p class="project-note">Experimental software. Check output and machine compatibility before production use.</p>
+    </div>
   </section>
 
 <section class="gallery">
