@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free Steel Cutting &amp; Stock Nesting Optimiser | DCB ENG</title>
+<meta name="description" content="Free browser-based steel stock nesting optimiser for cut lengths, mixed stock sizes, kerf, clamp allowance and quantity limits. Visualise and export your plan without uploading files.">
+<link rel="canonical" href="https://dcb-eng.github.io/steel-nesting/">
+<meta property="og:title" content="Steel Cutting &amp; Stock Nesting Optimiser | DCB ENG"><meta property="og:type" content="website">
+<meta property="og:description" content="Free browser-based steel stock cutting plan optimiser. Your files stay on your device.">
+<style>
+:root{color-scheme:dark;--bg:#101115;--card:#1c1f24;--card2:#24292f;--border:#393e46;--text:#f1f3f5;--dim:#b5bdc6;--orange:#ffa726}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,Arial,sans-serif}header{background:#181b20;border-bottom:1px solid var(--border)}.top{max-width:1260px;margin:auto;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:18px;font-weight:800;letter-spacing:.03em;color:#fff;text-decoration:none}.brand em{font-style:normal;color:var(--orange)}a{color:#ffd08b}nav{display:flex;gap:18px}main{max-width:1260px;margin:auto;padding:40px 20px 70px}.kicker{color:#ffbf63;letter-spacing:.14em;text-transform:uppercase;font-size:12px;font-weight:700}h1{font-size:clamp(32px,5vw,58px);letter-spacing:-.035em;line-height:1.1;margin:10px 0}h1 span{color:var(--orange)}p.lead{color:var(--dim);max-width:800px;margin-bottom:28px}.layout{display:grid;grid-template-columns:minmax(285px,390px) minmax(0,1fr);align-items:start;gap:20px}.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px}h2{font-size:20px;margin:0 0 14px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field{margin-bottom:15px}.field label{display:block;font-size:13px;font-weight:700;margin-bottom:6px}input:not([type=file]),textarea{width:100%;padding:11px 12px;background:#101317;color:var(--text);border:1px solid #515963;border-radius:8px;font:inherit;outline-offset:2px}textarea{font-family:ui-monospace,Consolas,monospace;resize:vertical;min-height:108px}input:focus,textarea:focus{outline:2px solid var(--orange)}small{display:block;color:var(--dim);font-size:12px;margin-top:5px}input[type=file]{max-width:100%;font-size:12px}.button{background:var(--orange);border:0;border-radius:8px;color:#1c150a;font:inherit;font-weight:800;cursor:pointer;padding:11px 16px}.button.secondary{background:#2e343c;color:var(--text);border:1px solid #555f6a}.button:disabled{opacity:.38;cursor:not-allowed}.buttons{display:flex;gap:10px;flex-wrap:wrap}.privacy{margin-top:20px;background:#1b2921;border:1px solid #3a5b42;color:#d8ebdd;padding:12px;border-radius:8px;font-size:13px}.status{margin-top:15px;padding:10px;border:1px solid var(--border);border-radius:8px;color:var(--dim);font-size:13px}.status.error{background:#3b2020;border-color:#9b4b44;color:#ffe3db}.status.ok{border-color:#4c765d;color:#d9f5e0}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:20px 0}.stat{padding:12px;border:1px solid var(--border);border-radius:9px;background:var(--card2)}.stat strong{display:block;font-size:21px}.stat small{margin-top:0}.bar{margin:14px 0;padding:14px;border:1px solid var(--border);border-radius:10px;background:var(--card2)}.barheader{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.barheader span{color:var(--dim);font-size:13px}.track{display:flex;overflow:hidden;width:100%;height:45px;border:1px solid #58616d;border-radius:5px;background:#14181e;margin:10px 0}.seg{min-width:0;border-right:1px solid #252a30;display:flex;align-items:center;justify-content:center;color:#13191f;white-space:nowrap;overflow:hidden;font-weight:700;font-size:11px}.p0{background:#ffc375}.p1{background:#a3d2e7}.p2{background:#dab0ec}.p3{background:#a9d8b5}.kerf{min-width:2px;background:#d65c52}.offcut{background:#385348;color:#c9ead2}.scrap{background:#424850;color:#e0e0e0}.clamp{background:repeating-linear-gradient(45deg,#4b515c,#4b515c 7px,#2e343a 7px,#2e343a 14px);color:#fff}.legend{font-size:12px;color:var(--dim)}details{margin-top:12px}summary{cursor:pointer;color:#ffcb85;font-size:13px}table{border-collapse:collapse;width:100%;margin-top:8px;font-size:12px}td,th{text-align:left;padding:5px 3px;border-bottom:1px solid var(--border)}td.num,th.num{text-align:right}.warning{padding:10px 12px;border:1px solid #a26f33;color:#ffddb0;background:#332919;border-radius:8px;font-size:13px;margin:10px 0}.notes{color:var(--dim);border:1px solid var(--border);background:#171a1f;border-radius:10px;margin-top:20px;padding:18px;font-size:13px}.notes strong{color:var(--text)}footer{text-align:center;color:var(--dim);border-top:1px solid var(--border);padding:22px;font-size:12px}@media(max-width:860px){.layout{grid-template-columns:1fr}main{padding:28px 14px 60px}.panel{padding:15px}.stats{grid-template-columns:repeat(2,1fr)}.top{padding:14px}}@media print{body{background:white;color:black}header,.input-panel,.buttons,.privacy,.status,.notes{display:none!important}.layout{display:block}.panel,.bar,.stat{background:white;color:black;border:1px solid #aaa;break-inside:avoid}.track,.seg{print-color-adjust:exact;-webkit-print-color-adjust:exact}.legend,.barheader span,.stat small{color:#555}}
+</style></head><body>
+<header><div class="top"><a class="brand" href="https://dcb-eng.github.io/">DCB <em>ENG</em></a><nav><a href="https://dcb-eng.github.io/">Home</a><a href="https://dcb-eng.github.io/step-dstv-converter/">STEP → DSTV</a></nav></div></header>
+<main><div class="kicker">Engineering software · free browser tool</div><h1>Steel cutting <span>optimiser.</span></h1>
+<p class="lead">Nest cut lengths into mixed steel stock sizes, calculate kerf and clamp allowances, and visualise the cutting layout. Everything runs locally in your browser.</p>
+<div class="layout">
+<section class="panel input-panel"><h2>1. Set up the job</h2>
+<div class="grid2"><div class="field"><label for="profile">Section / profile</label><input id="profile" value="RHS100x50x5"></div><div class="field"><label for="grade">Steel grade (optional)</label><input id="grade" placeholder="C350"></div></div>
+<div class="field"><label for="stocks">Available stock lengths</label><textarea id="stocks" rows="3">12000, 8000</textarea><small>Unlimited: <code>12000, 8000</code>. Limited stock: <code>4x12m, 10x8m, 1x3500</code>. You can include reusable offcuts.</small></div>
+<div class="grid2"><div class="field"><label for="kerf">Kerf (mm)</label><input id="kerf" type="number" value="10" min="0" step="0.1"></div><div class="field"><label for="clamp">Reserved clamp (mm)</label><input id="clamp" type="number" value="400" min="0" step="1"></div><div class="field"><label for="keep">Keep offcuts over (mm)</label><input id="keep" type="number" value="500" min="0" step="1"></div></div>
+<div class="field"><label for="parts">Cut lengths</label><textarea id="parts" rows="7">A01,3500,2
+A02,2200,3
+A03,1500,2</textarea><small>Format: <code>Part, length mm, quantity</code> per line, or <code>3500 x 2</code>. One section size per run.</small></div>
+<div class="field"><label for="upload">Import cut list CSV (optional)</label><input id="upload" type="file" accept=".csv,.txt,text/csv,text/plain"><small>Simple CSV columns: Part, Length, Qty. Max 1 MB. Nothing is uploaded.</small></div>
+<button class="button" id="run" type="button">Optimise cutting plan</button>
+<div class="privacy">🔒 Parts and CSV files remain on your device. No server processing or workshop database connection.</div><div class="status" id="status" role="status">Enter your parts and select Optimise.</div>
+</section>
+<section class="panel" id="results"><h2>2. Nesting results</h2>
+<p class="lead" style="font-size:13px;margin:0">Longest-first placement; tightest fit into existing bars, then shortest suitable new stock. One kerf between adjacent parts. No unverified shared-mitre savings.</p>
+<div class="stats" id="stats"></div><div id="warnings"></div>
+<div class="buttons"><button class="button secondary" id="download" disabled>Download CSV</button><button class="button secondary" id="print" disabled>Print plan</button></div><div id="bars"><p class="lead">Visual cutting bars will appear here.</p></div>
+</section></div>
+<div class="notes"><strong>Scope.</strong> Adapted from the production-safe stock-length nesting approach in an archived Workshop Machine Part Search build. This first public preview does not create NC1/TAF machine programs, read your workshop database or verify geometric mitre sharing. Mitred members must be entered at their full required length. All output is a planning aid only: verify end allowances, part orientation, machine constraints and cut sequence before cutting. This is a heuristic, not guaranteed globally optimal.</div>
+</main><footer>DCB ENG · Experimental browser-based nesting tool · <a href="https://github.com/DCB-ENG/DCB-ENG.github.io">Website source</a></footer>
+<script>function parseStocks(text){
+ const map=new Map(),pieces=String(text).split(/[,;\n]+/).map(s=>s.trim()).filter(Boolean);
+ if(!pieces.length)throw Error("Enter available stock lengths.");
+ for(const p of pieces){
+  const m=p.match(/^(?:(\d+)\s*[x×]\s*)?(\d+(?:\.\d+)?)\s*(m|mm)?$/i);
+  if(!m)throw Error("Invalid stock option: "+p+" (use 12000 or 4x12m)");
+  const length=+(Number(m[2])*(m[3]?.toLowerCase()==="m"?1000:1)).toFixed(3),qty=m[1]?Number(m[1]):null;
+  if(!(length>0&&length<1000000)||qty!==null&&(qty<1||qty>100000))throw Error("Invalid stock length or quantity: "+p);
+  const k=String(length);
+  if(map.has(k)){const old=map.get(k);old.qty=old.qty===null||qty===null?null:old.qty+qty;}
+  else map.set(k,{length,qty});
+ }
+ return [...map.values()].sort((a,b)=>a.length-b.length);
+}
+function parseParts(text){
+ const lines=String(text).replace(/\r/g,"").split("\n").map(s=>s.trim()).filter(Boolean);
+ if(!lines.length)throw Error("Enter your parts.");
+ const parts=[];let profiles=new Set();
+ for(const [i,line] of lines.entries()){
+  if(line.startsWith("#"))continue;
+  if(i===0&&/^(part|part mark|name)\s*[,;\t]/i.test(line))continue;
+  let name,raw,qty,profile="";
+  const simple=line.match(/^(\d+(?:\.\d+)?)\s*[x×]\s*(\d+)$/i);
+  if(simple){name="Part "+(i+1);raw=simple[1];qty=simple[2];}
+  else{
+   const c=line.split(/[,;\t]/).map(s=>s.trim());
+   if(c.length===1){name="Part "+(i+1);raw=c[0];qty=1;}
+   else if(c.length===2 && /^\d/.test(c[0])){name="Part "+(i+1);raw=c[0];qty=c[1];}
+   else{name=c[0]||"Part "+(i+1);raw=c[1];qty=c[2]||1;profile=c[3]||"";}
+  }
+  const mm=String(raw||"").match(/^(\d+(?:\.\d+)?)\s*(mm|m)?$/i);
+  const length=mm?Number(mm[1])*(mm[2]?.toLowerCase()==="m"?1000:1):NaN;
+  const count=Number(qty);
+  if(!Number.isFinite(length)||length<=0||length>1000000||!Number.isInteger(count)||count<1||count>1000)throw Error("Invalid part on line "+(i+1)+": "+line);
+  if(profile)profiles.add(profile.toLowerCase());
+  for(let k=0;k<count;k++){parts.push({name,length,profile});if(parts.length>2000)throw Error("Maximum 2,000 expanded parts.");}
+ }
+ if(profiles.size>1)throw Error("One profile per run: filter mixed-profile CSV files before nesting.");
+ if(!parts.length)throw Error("No valid parts found.");
+ return parts;
+}
+function nest(parts,stocks,kerf,clamp,minKeep){
+ if(!parts.length||!stocks.length)throw Error("Parts and stock are required.");
+ for(const x of [kerf,clamp,minKeep])if(!Number.isFinite(x)||x<0||x>100000)throw Error("Kerf, clamp and offcut threshold must be nonnegative.");
+ const inventory=stocks.map(s=>({...s,remaining:s.qty})),bars=[],unplaced=[];
+ const ordered=[...parts].sort((a,b)=>b.length-a.length||a.name.localeCompare(b.name));
+ for(const part of ordered){
+  let chosen=null,left=Infinity;
+  for(const bar of bars){
+   const rem=bar.usable-bar.used-part.length-(bar.parts.length?kerf:0);
+   if(rem>=-1e-8&&rem<left){chosen=bar;left=rem;}
+  }
+  if(!chosen){
+   const suitable=inventory.filter(s=>part.length<=s.length-clamp+1e-8);
+   if(!suitable.length){unplaced.push(part);continue;}
+   const available=suitable.filter(s=>s.remaining===null||s.remaining>0);
+   const stock=(available.length?available:suitable)[0];
+   const extra=!available.length;
+   if(!extra&&stock.remaining!==null)stock.remaining--;
+   chosen={number:bars.length+1,length:stock.length,usable:stock.length-clamp,used:0,extra,parts:[]};
+   bars.push(chosen);
+  }
+  const cutKerf=chosen.parts.length?kerf:0;
+  const start=chosen.used+cutKerf;
+  const end=start+part.length;
+  chosen.parts.push({...part,start,end,kerfBefore:cutKerf});
+  chosen.used=end;
+ }
+ for(const bar of bars){
+  bar.offcut=Math.max(0,bar.usable-bar.used);
+  bar.kerf=kerf*Math.max(0,bar.parts.length-1);
+  bar.partsLength=bar.parts.reduce((s,p)=>s+p.length,0);
+  bar.keep=bar.offcut>0&&bar.offcut>=minKeep;
+ }
+ const sum=fn=>bars.reduce((s,b)=>s+fn(b),0);
+ return {bars,unplaced,stats:{bars:bars.length,placed:bars.reduce((s,b)=>s+b.parts.length,0),total:parts.length,extra:bars.filter(b=>b.extra).length,stock:sum(b=>b.length),parts:sum(b=>b.partsLength),kerf:sum(b=>b.kerf),clamp:clamp*bars.length,offcut:sum(b=>b.offcut),keep:sum(b=>b.keep?b.offcut:0)}};
+}
+
+'use strict';
+const el=id=>document.getElementById(id),fmt=x=>Number(x).toLocaleString('en-AU',{maximumFractionDigits:2}),mm=x=>fmt(x)+' mm';
+const safe=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let last=null;
+function status(message,type=''){el('status').textContent=message;el('status').className='status '+type;}
+for(const id of ['profile','grade','stocks','parts','kerf','clamp','keep'])el(id).addEventListener('input',()=>status('Inputs changed. Select Optimise to refresh the plan.'));
+el('upload').addEventListener('change',async function(){const f=this.files?.[0];if(!f)return;if(f.size>1048576){status('Maximum CSV size is 1 MB.','error');return;}try{el('parts').value=await f.text();status('Loaded '+f.name+' locally. Select Optimise.');}catch(e){status('Could not read file.','error');}});
+function render(plan){
+ const s=plan.stats;
+ const stats=[['Bars',s.bars],['Parts placed',s.placed+'/'+s.total],['Stock used',fmt(s.stock/1000)+' m'],['Offcuts',fmt(s.offcut/1000)+' m'],['Kerf loss',mm(s.kerf)],['Clamp reserved',mm(s.clamp)],['Keepable offcut',mm(s.keep)],['Extra bars',s.extra]];
+ el('stats').innerHTML=stats.map(row=>'<div class="stat"><strong>'+row[1]+'</strong><small>'+row[0]+'</small></div>').join('');
+ el('warnings').innerHTML=(s.extra?'<div class="warning">'+s.extra+' extra bar(s) required beyond available quantities.</div>':'')+(plan.unplaced.length?'<div class="warning">'+plan.unplaced.length+' part(s) unplaced: too long for listed stock after clamp allowance.</div>':'');
+ el('bars').innerHTML=plan.bars.map(b=>{
+  const pieces=[];
+  b.parts.forEach((p,i)=>{
+   if(p.kerfBefore)pieces.push('<div class="seg kerf" style="flex:'+p.kerfBefore+'" title="Kerf '+mm(p.kerfBefore)+'"></div>');
+   pieces.push('<div class="seg p'+(i%4)+'" style="flex:'+p.length+'" title="'+safe(p.name)+' · '+mm(p.length)+'">'+(p.length/b.length>.11?safe(p.name):'')+'</div>');
+  });
+  if(b.offcut)pieces.push('<div class="seg '+(b.keep?'offcut':'scrap')+'" style="flex:'+b.offcut+'" title="Offcut '+mm(b.offcut)+'"></div>');
+  if(last.clamp)pieces.push('<div class="seg clamp" style="flex:'+last.clamp+'" title="Clamp '+mm(last.clamp)+'"></div>');
+  const rows=b.parts.map((p,i)=>'<tr><td>'+(i+1)+'</td><td>'+safe(p.name)+'</td><td class="num">'+fmt(p.length)+'</td><td class="num">'+fmt(p.start)+'</td><td class="num">'+fmt(p.end)+'</td></tr>').join('');
+  return '<article class="bar"><div class="barheader"><strong>Bar '+b.number+' · '+mm(b.length)+(b.extra?' · EXTRA STOCK':'')+'</strong><span>'+b.parts.length+' members · offcut '+mm(b.offcut)+'</span></div><div class="track" aria-label="Cut layout for bar '+b.number+'">'+pieces.join('')+'</div><div class="legend">Members '+mm(b.partsLength)+' · kerf '+mm(b.kerf)+' · clamp '+mm(last.clamp)+' · '+(b.keep?'KEEP':'SCRAP')+' offcut '+mm(b.offcut)+'</div><details><summary>Cut sequence and positions</summary><table><tr><th>#</th><th>Part</th><th class="num">Length</th><th class="num">Start</th><th class="num">End</th></tr>'+rows+'</table></details></article>';
+ }).join('')||'<p>No parts could be placed.</p>';
+}
+function optimise(){
+ try{
+  const stocks=parseStocks(el('stocks').value),parts=parseParts(el('parts').value);
+  const kerf=Number(el('kerf').value),clamp=Number(el('clamp').value),keep=Number(el('keep').value),profile=el('profile').value.trim();
+  if(parts.some(p=>p.profile&&profile&&p.profile.toLowerCase()!==profile.toLowerCase()))throw Error('Imported profile differs from the selected profile. Optimise one profile at a time.');
+  const plan=nest(parts,stocks,kerf,clamp,keep);
+  last={...plan,kerf,clamp,keep,profile,grade:el('grade').value.trim()};
+  render(plan);
+  el('download').disabled=false;el('print').disabled=false;
+  status('Calculated locally: '+plan.stats.placed+' of '+plan.stats.total+' parts placed.',plan.unplaced.length?'error':'ok');
+ }catch(e){status(e.message||String(e),'error');}
+}
+function download(){
+ if(!last)return;
+ const rows=[['Profile','Grade','Bar','Stock_mm','Extra_stock','Seq','Part','Length_mm','Start_mm','End_mm','Kerf_before_mm','Offcut_mm','Status']];
+ for(const b of last.bars)for(const [i,p] of b.parts.entries())rows.push([last.profile,last.grade,b.number,b.length,b.extra?'YES':'NO',i+1,p.name,p.length,p.start,p.end,p.kerfBefore,b.offcut,'PLACED']);
+ for(const p of last.unplaced)rows.push([last.profile,last.grade,'','','','',p.name,p.length,'','','','','UNPLACED']);
+ const cell=v=>{const s=String(v==null?'':v);return /[,"\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
+ const content='\uFEFF'+rows.map(row=>row.map(cell).join(',')).join('\r\n');
+ const url=URL.createObjectURL(new Blob([content],{type:'text/csv;charset=utf-8'}));
+ const a=document.createElement('a');a.href=url;a.download='DCB_ENG_cutting_plan.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+el('run').addEventListener('click',optimise);
+el('download').addEventListener('click',download);
+el('print').addEventListener('click',()=>window.print());
+</script></body></html>
