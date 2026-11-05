@@ -166,12 +166,33 @@ function applyMaterialSelection(){
  el('print').disabled=true;
  status('Imported '+totalQty+' parts for '+profile+' ('+(grade||'ungraded')+'). Select Optimise.');
 }
+function loadParsedMaterialRecords(report,filename){
+  materialRecords=report.records;
+  materialSource=filename;
+  const profileMap=new Map();
+  for(const r of materialRecords){
+   const key=profileKey(r.profile);
+   if(!profileMap.has(key))profileMap.set(key,{display:r.profile,qty:0});
+   profileMap.get(key).qty+=r.qty;
+  }
+  const select=el('importProfile');clearOptionList(select);
+  const profiles=[...profileMap.values()].sort((a,b)=>a.display.localeCompare(b.display,undefined,{numeric:true}));
+  for(const p of profiles)addOption(select,p.display,p.display+' · '+p.qty+' pcs');
+  el('importPanel').hidden=false;
+  el('fileInfo').textContent=filename+' · '+materialRecords.length+' material lines · '+profiles.length+' profiles'+(report.invalid?' · '+report.invalid+' rows skipped':'');
+  refreshImportGrades('');
+}
 async function importMaterialFile(){
  const file=el('upload').files?.[0];if(!file)return;
  const name=file.name.toLowerCase();
- if(!/\.(xls|xlsx|xlsm|csv|tsv|txt)$/.test(name)){status('Supported formats are XLS, XLSX, XLSM, CSV and TSV.','error');return;}
+ if(!/\.(xls|xlsx|xlsm|csv|tsv|txt|pdf)$/.test(name)){status('Supported formats are XLS, XLSX, CSV, TSV and text-based PDF material lists.','error');return;}
  if(file.size>8*1024*1024){status('This file exceeds the 8 MB import limit. Split it by profile.','error');return;}
  status('Reading '+file.name+' locally…');
+ if(name.endsWith('.pdf')){
+  try{await importPdfMaterialFile(file);}
+  catch(err){status('PDF import failed: '+(err.message||String(err)),'error');}
+  return;
+ }
  try{
   let sheets=[];
   if(/\.(xls|xlsx|xlsm)$/.test(name)){
@@ -185,19 +206,7 @@ async function importMaterialFile(){
   }
   const report=extractMaterialRecords(sheets,el('profile').value,el('grade').value);
   if(!report.records.length)throw Error('No usable Part / Length / Qty rows found. Check that the report contains an identifiable header.');
-  materialRecords=report.records;materialSource=file.name;
-  const profileMap=new Map();
-  for(const r of materialRecords){
-   const key=profileKey(r.profile);
-   if(!profileMap.has(key))profileMap.set(key,{display:r.profile,qty:0});
-   profileMap.get(key).qty+=r.qty;
-  }
-  const select=el('importProfile');clearOptionList(select);
-  const profiles=[...profileMap.values()].sort((a,b)=>a.display.localeCompare(b.display,undefined,{numeric:true}));
-  for(const p of profiles)addOption(select,p.display,p.display+' · '+p.qty+' pcs');
-  el('importPanel').hidden=false;
-  el('fileInfo').textContent=file.name+' · '+materialRecords.length+' material lines · '+profiles.length+' profiles'+(report.invalid?' · '+report.invalid+' rows skipped':'');
-  refreshImportGrades('');
+  loadParsedMaterialRecords(report,file.name);
  }catch(err){
   status('Import failed: '+(err.message||String(err)),'error');
  }
