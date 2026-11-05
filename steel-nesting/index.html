@@ -204,9 +204,15 @@ refreshProfileSizes();
 function status(message,type=''){el('status').textContent=message;el('status').className='status '+type;}
 for(const id of ['profile','grade','stocks','parts','kerf','clamp','keep'])el(id).addEventListener('input',()=>status('Inputs changed. Select Optimise to refresh the plan.'));
 // Material file parsing and filtering are handled by material-import.js.
+function barStockSummary(bars){
+ const counts=new Map();
+ for(const bar of bars)counts.set(bar.length,(counts.get(bar.length)||0)+1);
+ return [...counts.entries()].sort((a,b)=>a[0]-b[0])
+  .map(([length,count])=>count+' × '+fmt(length/1000)+' m').join(' + ')||'0';
+}
 function render(plan){
  const s=plan.stats;
- const stats=[['Bars',s.bars],['Parts placed',s.placed+'/'+s.total],['Stock used',fmt(s.stock/1000)+' m'],['Offcuts',fmt(s.offcut/1000)+' m'],['Kerf loss',mm(s.kerf)],['Clamp reserved',mm(s.clamp)],['Offcuts marked KEEP',mm(s.keep)],['Extra bars',s.extra]];
+ const stats=[['Stock bars',barStockSummary(plan.bars)],['Parts placed',s.placed+'/'+s.total],['Total part length',mm(s.parts)],['Offcuts',fmt(s.offcut/1000)+' m'],['Kerf loss',mm(s.kerf)],['Clamp reserved',mm(s.clamp)],['Offcuts marked KEEP',mm(s.keep)],['Extra bars',s.extra]];
  el('stats').innerHTML=stats.map(row=>'<div class="stat"><strong>'+row[1]+'</strong><small>'+row[0]+'</small></div>').join('');
  el('warnings').innerHTML=(s.extra?'<div class="warning">'+s.extra+' extra bar(s) required beyond available quantities.</div>':'')+(plan.unplaced.length?'<div class="warning">'+plan.unplaced.length+' part(s) unplaced: too long for listed stock after clamp allowance.</div>':'');
  el('bars').innerHTML=plan.bars.map(b=>{
