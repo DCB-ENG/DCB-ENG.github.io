@@ -52,8 +52,8 @@ A02,2200,3
 A03,1500,2</textarea><small>Format: <code>Part, length mm, quantity</code> per line, or <code>3500 x 2</code>. One section size per run.</small></div>
 <div class="field">
   <label for="upload">Import material list or cut list</label>
-  <input id="upload" type="file" accept=".xls,.xlsx,.xlsm,.csv,.tsv,.txt,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-  <small>Supports Excel XLS/XLSX and CSV/TSV. Recognises <b>Profile, Part_Pos/Part_Mark, Grade, Qty, Length[mm]</b> and simple Part/Length/Qty lists. Files are processed locally. Maximum 8 MB.</small>
+  <input id="upload" type="file" accept=".xls,.xlsx,.xlsm,.csv,.tsv,.txt,.pdf,application/pdf,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+  <small>Excel XLS/XLSX, CSV/TSV and <b>text-based steel material-list PDFs</b>. Reads Mark / Profile / Grade / Qty / L(mm), including repeated headers. Files stay on your device. Maximum 8 MB; scanned PDFs aren't supported.</small>
 </div>
 <div id="importPanel" class="import-panel" hidden>
  <h3>Review imported material</h3>
@@ -63,7 +63,7 @@ A03,1500,2</textarea><small>Format: <code>Part, length mm, quantity</code> per l
   <div class="field"><label for="importGrade">Material grade</label><select id="importGrade"></select></div>
  </div>
  <div id="importSummary" class="import-note" role="status"></div>
- <small>One profile and grade per plan. Section and grade are copied into your plan automatically; subtotal and total lines are ignored.</small>
+ <small>One profile and grade per plan. Section and grade are copied into your plan automatically. PDF page headers and subtotals are ignored; review the imported quantities before cutting.</small>
 </div>
 <button class="button" id="run" type="button">Optimise cutting plan</button>
 <div class="privacy">🔒 Parts and CSV files remain on your device. No server processing or workshop database connection.</div><div class="status" id="status" role="status">Enter your parts and select Optimise.</div>
@@ -244,4 +244,5 @@ el('download').addEventListener('click',download);
 el('print').addEventListener('click',()=>window.print());
 </script>
 <script src="material-import.js"></script>
+<script src="pdf-import.js"></script>
 </body></html>
