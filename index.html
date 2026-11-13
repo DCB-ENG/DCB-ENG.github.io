@@ -121,9 +121,23 @@
       font-weight: bold;
       border-radius: 5px;
     }
-  </style>
+  
+/* DCB ENG shared workshop navigation */
+.dcb-nav{background:#181b20;border-bottom:1px solid #393e46;color:#f1f3f5;font:14px/1.45 system-ui,"Segoe UI",Arial,sans-serif}
+.dcb-nav *{box-sizing:border-box}
+.dcb-nav__inner{max-width:1140px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.dcb-nav__brand{flex:none;color:#fff!important;text-decoration:none!important;font-size:18px;font-weight:800;letter-spacing:.015em}
+.dcb-nav__brand span{color:#ffa726}
+.dcb-nav__links{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin:0;padding:0}
+.dcb-nav__link{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;min-height:36px;border:1px solid transparent;border-radius:7px;text-decoration:none!important;color:#c9cdd3!important;font-size:13px;font-weight:600;white-space:nowrap;transition:background-color .15s,border-color .15s,color .15s}
+.dcb-nav__link:hover{background:#30343b;border-color:#565c64;color:#fff!important}
+.dcb-nav__link:focus-visible,.dcb-nav__brand:focus-visible{outline:2px solid #ffa726;outline-offset:3px}
+.dcb-nav__link[aria-current="page"]{background:#3c2d20;border-color:#8d5d2c;color:#ffbe6e!important}
+@media(max-width:680px){.dcb-nav__inner{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 14px}.dcb-nav__links{justify-content:flex-start;gap:4px}.dcb-nav__link{padding:7px 9px;font-size:12px;min-height:32px}}
+</style>
 </head>
 <body>
+<div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="https://dcb-eng.github.io/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" aria-current="page" href="https://dcb-eng.github.io/">Home</a><a class="dcb-nav__link" href="https://dcb-eng.github.io/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="https://dcb-eng.github.io/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="https://dcb-eng.github.io/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
   <header>
     <img src="dcb_eng_chrome_logo.png" alt="DCB ENG Logo" />
     <p>Custom Fabrication & Automotive Engineering</p>
