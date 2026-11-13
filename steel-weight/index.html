@@ -9,10 +9,9 @@
 <meta property="og:title" content="Steel Weight Calculator | DCB ENG">
 <meta property="og:description" content="Australian steel weight calculator with selectable profiles, sizes, thickness, stock lengths and quantities.">
 <style>
-  :root{color-scheme:dark;--bg:#0b101b;--surface:#141e2e;--surface2:#1a283b;--border:#304258;--text:#f0f5fc;--muted:#aebfd0;--accent:#4abde7;--highlight:#132c3e;--good:#91e0c1;--danger:#f29b9b;--r:15px}
+  :root{color-scheme:dark;--bg:#101115;--surface:#1c1f24;--surface2:#24292f;--border:#41464d;--text:#f1f3f5;--muted:#b5bdc6;--accent:#ffa726;--highlight:#3b2b1d;--good:#ffbc67;--danger:#f29b9b;--r:15px}
   *{box-sizing:border-box}
-  body{margin:0;background:radial-gradient(ellipse at 80% 0%,#14263b 0%,var(--bg) 55%);color:var(--text);font:16px/1.48 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
-  .sitebar{background:#111a29;border-bottom:1px solid var(--border)}.sitebar-inner{width:min(1100px,calc(100% - 36px));margin:auto;padding:13px 0;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.sitebar nav{display:flex;gap:16px;flex-wrap:wrap}.sitebar a{color:#c6dfec;text-decoration:none;font-size:.87rem}.sitebar a:hover,.sitebar a:focus-visible{color:#fff;text-decoration:underline}.sitebar .brand{font-weight:850;font-size:1.04rem;color:#fff}.sitebar .brand em{color:var(--accent);font-style:normal}
+  body{margin:0;background:radial-gradient(ellipse at 80% 0%,#202126 0%,var(--bg) 55%);color:var(--text);font:16px/1.48 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
   .wrap{width:min(1100px,calc(100% - 36px));margin:0 auto;padding:42px 0 60px}
   .eyebrow{color:var(--accent);font-weight:800;letter-spacing:.15em;font-size:.71rem;text-transform:uppercase}
   h1{font-size:clamp(2rem,4.5vw,3.25rem);letter-spacing:-.04em;line-height:1.06;margin:10px 0 12px}
@@ -22,8 +21,8 @@
   h2{font-size:1.08rem;letter-spacing:-.01em;margin:0 0 20px}
   .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   .field{min-width:0}
-  label{display:block;font-size:.84rem;color:#cdd8e5;font-weight:650;margin-bottom:7px}
-  select,input{font:inherit;width:100%;background:#0e1929;color:var(--text);border:1px solid #3e5168;border-radius:9px;min-height:47px;padding:10px 12px;outline:none}
+  label{display:block;font-size:.84rem;color:#d8dadd;font-weight:650;margin-bottom:7px}
+  select,input{font:inherit;width:100%;background:#101317;color:var(--text);border:1px solid #525a64;border-radius:9px;min-height:47px;padding:10px 12px;outline:none}
   select:focus-visible,input:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
   select:disabled{opacity:.55}
   input[type=number]{font-variant-numeric:tabular-nums}
@@ -31,42 +30,55 @@
   .full{grid-column:1/-1}
   .lengthrow{display:grid;grid-template-columns:1fr 1fr;gap:18px}
   #custom-box[hidden],#variant-field[hidden],#list-section[hidden]{display:none}
-  .results{background:linear-gradient(155deg,#172c43,#132335);border:1px solid #365770;position:relative;overflow:hidden}
-  .results:before{content:"";position:absolute;width:220px;height:220px;background:#3bb7d219;right:-100px;top:-105px;border-radius:100%}
-  .kicker{font-size:.73rem;font-weight:800;letter-spacing:.13em;color:#a9ccdf;text-transform:uppercase}
+  .results{background:linear-gradient(155deg,#2b2d31,#191b1f);border:1px solid #666469;position:relative;overflow:hidden}
+  .results:before{content:"";position:absolute;width:220px;height:220px;background:#ffa72616;right:-100px;top:-105px;border-radius:100%}
+  .kicker{font-size:.73rem;font-weight:800;letter-spacing:.13em;color:#ffbf72;text-transform:uppercase}
   .total{font-size:clamp(2.3rem,5vw,3.7rem);font-weight:800;line-height:1.13;margin:14px 0 16px;letter-spacing:-.04em;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
-  .total small{font-size:.4em;color:#a2bdcc;letter-spacing:0}
+  .total small{font-size:.4em;color:#c5c7ca;letter-spacing:0}
   .stat{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:12px 0;border-top:1px solid #ffffff23}
-  .stat span{font-size:.9rem;color:#bad0df}
+  .stat span{font-size:.9rem;color:#c9cbd0}
   .stat strong{font-size:1.11rem;font-variant-numeric:tabular-nums;text-align:right}
-  #chosen{color:#c9d8e6;font-size:.9rem;min-height:44px;margin:8px 0 20px;overflow-wrap:anywhere}
-  .pill{display:inline-block;padding:5px 8px;border-radius:7px;background:#37617b;color:#ecf9ff;font-size:.72rem;font-weight:700}
+  #chosen{color:#d2d4d7;font-size:.9rem;min-height:44px;margin:8px 0 20px;overflow-wrap:anywhere}
+  .pill{display:inline-block;padding:5px 8px;border:1px solid #8d5d2c;border-radius:7px;background:#4a3521;color:#ffdeb0;font-size:.72rem;font-weight:700}
   .source{margin-top:14px;font-size:.78rem;color:var(--muted);line-height:1.6}
-  button{border:1px solid #4c7996;border-radius:10px;padding:11px 15px;min-height:42px;cursor:pointer;font-weight:750;font:inherit;color:#e8f6fd;background:#1a3b52}
+  button{border:1px solid #87663e;border-radius:10px;padding:11px 15px;min-height:42px;cursor:pointer;font-weight:750;font:inherit;color:#f4ebe0;background:#36291f}
   button:hover{filter:brightness(1.16)}
-  .primary{background:var(--accent);color:#082134;border-color:var(--accent);font-weight:800}
+  .primary{background:var(--accent);color:#17130e;border-color:var(--accent);font-weight:800}
   .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:19px}
-  .muted-btn{background:transparent;border-color:#465c6f;color:#d0dfeb}
+  .muted-btn{background:transparent;border-color:#66686e;color:#d6d7db}
   .linehead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
   .linehead h2{margin:0}
   #list-section{margin-top:18px}
   .tablewrap{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
   table{width:100%;border-collapse:collapse;min-width:620px;font-size:.88rem}
-  th,td{padding:12px 13px;border-bottom:1px solid #2b394b;text-align:left;white-space:nowrap}
-  th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:#b5c9d9;background:#19283b}
+  th,td{padding:12px 13px;border-bottom:1px solid #373b41;text-align:left;white-space:nowrap}
+  th{font-size:.75rem;text-transform:uppercase;letter-spacing:.06em;color:#c4c8ce;background:#282b30}
   td:nth-child(n+3),th:nth-child(n+3){text-align:right}
   tbody tr:last-child td{border-bottom:0}
   .remove{min-height:auto;padding:5px 9px;background:transparent;color:#ffd4d4;border-color:#7c5059}
   .footer-total{display:flex;align-items:baseline;gap:15px;justify-content:flex-end;margin-top:13px;font-weight:750}
   .footer-total strong{font-size:1.5rem;color:var(--good);font-variant-numeric:tabular-nums}
-  footer{color:#aebecf;font-size:.8rem;margin-top:22px;line-height:1.65}
-  footer a{color:#8ed4f1}
+  footer{color:#b7bac0;font-size:.8rem;margin-top:22px;line-height:1.65}
+  footer a{color:#ffbf72}
   @media(max-width:780px){.layout{grid-template-columns:1fr}.wrap{padding:26px 0 45px}.panel{padding:20px}}
   @media(max-width:460px){.formgrid{grid-template-columns:1fr}.lengthrow{grid-template-columns:1fr}.total{font-size:2.75rem}}
+
+/* DCB ENG shared workshop navigation */
+.dcb-nav{background:#181b20;border-bottom:1px solid #393e46;color:#f1f3f5;font:14px/1.45 system-ui,"Segoe UI",Arial,sans-serif}
+.dcb-nav *{box-sizing:border-box}
+.dcb-nav__inner{max-width:1140px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.dcb-nav__brand{flex:none;color:#fff!important;text-decoration:none!important;font-size:18px;font-weight:800;letter-spacing:.015em}
+.dcb-nav__brand span{color:#ffa726}
+.dcb-nav__links{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin:0;padding:0}
+.dcb-nav__link{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;min-height:36px;border:1px solid transparent;border-radius:7px;text-decoration:none!important;color:#c9cdd3!important;font-size:13px;font-weight:600;white-space:nowrap;transition:background-color .15s,border-color .15s,color .15s}
+.dcb-nav__link:hover{background:#30343b;border-color:#565c64;color:#fff!important}
+.dcb-nav__link:focus-visible,.dcb-nav__brand:focus-visible{outline:2px solid #ffa726;outline-offset:3px}
+.dcb-nav__link[aria-current="page"]{background:#3c2d20;border-color:#8d5d2c;color:#ffbe6e!important}
+@media(max-width:680px){.dcb-nav__inner{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 14px}.dcb-nav__links{justify-content:flex-start;gap:4px}.dcb-nav__link{padding:7px 9px;font-size:12px;min-height:32px}}
 </style>
 </head>
 <body>
-<div class="sitebar"><div class="sitebar-inner"><a class="brand" href="/">DCB <em>ENG</em></a><nav aria-label="Workshop tools"><a href="/">Home</a><a href="/steel-nesting/">Steel Nesting</a><a href="https://dcb-eng.github.io/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
+<div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="https://dcb-eng.github.io/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="https://dcb-eng.github.io/">Home</a><a class="dcb-nav__link" href="https://dcb-eng.github.io/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" aria-current="page" href="https://dcb-eng.github.io/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="https://dcb-eng.github.io/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
 <div class="wrap">
   <header>
     <div class="eyebrow">Workshop tools / Australian sections</div>
