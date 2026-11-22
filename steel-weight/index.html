@@ -45,6 +45,18 @@
   button:hover{filter:brightness(1.16)}
   .primary{background:var(--accent);color:#17130e;border-color:var(--accent);font-weight:800}
   .actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:19px}
+  .takeoff-row{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;margin-top:18px}
+  .qty-field{display:flex;flex-direction:column;gap:7px;flex:none}
+  .qty-field label{margin:0}
+  .qty-control{display:flex;align-items:stretch;height:44px;overflow:hidden;background:#101317;border:1px solid #525a64;border-radius:9px}
+  .qty-control button{width:40px;min-width:40px;min-height:42px;border:0;border-radius:0;padding:0;background:#2b2e34;color:var(--text);font-size:1.3rem;line-height:1}
+  .qty-control button:disabled{opacity:.4;cursor:not-allowed}
+  .qty-control input{width:62px;min-height:42px;padding:4px 2px;text-align:center;border:0;border-radius:0;background:#101317;appearance:textfield;-moz-appearance:textfield}
+  .qty-control input::-webkit-inner-spin-button,.qty-control input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+  .takeoff-row #add{min-height:44px;white-space:nowrap}
+  .result-head{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;gap:8px}
+  .copy-inline{min-height:31px;padding:4px 9px;border:1px solid #62656b;background:transparent;color:#d2d4d7;font-size:.78rem;border-radius:7px}
+  .copy-inline:hover{border-color:var(--accent);color:var(--accent)}
   .muted-btn{background:transparent;border-color:#66686e;color:#d6d7db}
   .linehead{display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;align-items:center;margin-bottom:12px}
   .linehead h2{margin:0}
@@ -61,7 +73,7 @@
   footer{color:#b7bac0;font-size:.8rem;margin-top:22px;line-height:1.65}
   footer a{color:#ffbf72}
   @media(max-width:780px){.layout{grid-template-columns:1fr}.wrap{padding:26px 0 45px}.panel{padding:20px}}
-  @media(max-width:460px){.formgrid{grid-template-columns:1fr}.lengthrow{grid-template-columns:1fr}.total{font-size:2.75rem}}
+  @media(max-width:460px){.formgrid{grid-template-columns:1fr}.lengthrow{grid-template-columns:1fr}.total{font-size:2.75rem}.takeoff-row #add{flex:1 1 130px}}
 
 /* DCB ENG shared workshop navigation */
 .dcb-nav{background:#181b20;border-bottom:1px solid #393e46;color:#f1f3f5;font:14px/1.45 system-ui,"Segoe UI",Arial,sans-serif}
@@ -94,12 +106,21 @@
         <div class="field" id="variant-field"><label for="variant" id="variant-label">3. Wall thickness</label><select id="variant"></select></div>
         <div class="field"><label for="length" id="length-label">4. Length</label><select id="length"></select></div>
         <div class="field" id="custom-box" hidden><label for="custom-length">Custom length (mm)</label><input id="custom-length" type="number" min="1" max="1000000" step="1" value="6500"><div class="small-note">Enter cut length in millimetres</div></div>
-        <div class="field"><label for="qty" id="qty-label">5. Quantity (pieces)</label><input id="qty" type="number" value="1" min="1" max="1000000" step="1"></div>
       </div>
-      <div class="actions"><button type="button" class="primary" id="add">+ Add to take-off</button><button type="button" class="muted-btn" id="copy">Copy calculation</button></div>
+      <div class="takeoff-row">
+        <div class="qty-field">
+          <label for="qty" id="qty-label">5. Quantity</label>
+          <div class="qty-control">
+            <button type="button" id="qty-minus" aria-label="Decrease quantity" title="Decrease quantity">−</button>
+            <input id="qty" type="number" inputmode="numeric" aria-label="Quantity (pieces)" value="1" min="1" max="1000000" step="1">
+            <button type="button" id="qty-plus" aria-label="Increase quantity" title="Increase quantity">+</button>
+          </div>
+        </div>
+        <button type="button" class="primary" id="add">Add to list</button>
+      </div>
     </section>
     <aside class="panel results" aria-live="polite" aria-atomic="true">
-      <div class="kicker">Total weight</div>
+      <div class="result-head"><div class="kicker">Total weight</div><button type="button" class="copy-inline" id="copy" aria-label="Copy calculation" title="Copy calculation">Copy</button></div>
       <div class="total"><span id="total">—</span> <small>kg</small></div>
       <div id="chosen"></div>
       <div class="stat"><span>Mass per metre</span><strong id="kgm">—</strong></div>
@@ -459,6 +480,9 @@ function recalc(){
  const selected=getSelected();
  const valid=Boolean(selected);
  $('add').disabled=!valid; $('copy').disabled=!valid;
+ const qNumber=Number(qty.value);
+ $('qty-minus').disabled=qty.value.trim()!==''&&Number.isSafeInteger(qNumber)&&qNumber<=1;
+ $('qty-plus').disabled=qty.value.trim()!==''&&Number.isSafeInteger(qNumber)&&qNumber>=1000000;
  if(!valid){$('total').textContent=$('kgm').textContent=$('piece').textContent=$('pieceqty').textContent=$('tonnes').textContent='—';$('chosen').textContent='Enter a valid length and whole-number quantity.';return}
  $('total').textContent=number(selected.total);
  $('kgm').textContent=number3(selected.kgm)+' kg/m';
@@ -493,6 +517,14 @@ variant.addEventListener('change',recalc);
 length.addEventListener('change',()=>{$('custom-box').hidden=length.value!=='custom';recalc()});
 custom.addEventListener('input',recalc);
 qty.addEventListener('input',recalc);
+function adjustQty(step){
+ const value=Number(qty.value);
+ const current=Number.isSafeInteger(value)&&value>=1&&value<=1000000?value:1;
+ qty.value=String(Math.max(1,Math.min(1000000,current+step)));
+ recalc();
+}
+$('qty-minus').addEventListener('click',()=>adjustQty(-1));
+$('qty-plus').addEventListener('click',()=>adjustQty(1));
 const lines=[];
 function renderLines(){
  $('list-section').hidden=lines.length===0;
@@ -509,7 +541,7 @@ $('clear').addEventListener('click',()=>{lines.length=0;renderLines()});
 $('copy').addEventListener('click',async()=>{
  const s=getSelected();if(!s)return;
  const msg=`${s.designator} | ${number3(s.lm)} m | Qty ${s.qty} | ${number3(s.kgm)} kg/m | ${number(s.pieces)} kg/piece | Total ${number(s.total)} kg`;
- try{await navigator.clipboard.writeText(msg);$('copy').textContent='Copied!';setTimeout(()=>$('copy').textContent='Copy calculation',1600)}catch(err){window.prompt('Copy this calculation:',msg)}
+ try{await navigator.clipboard.writeText(msg);$('copy').textContent='Copied!';setTimeout(()=>$('copy').textContent='Copy',1600)}catch(err){window.prompt('Copy this calculation:',msg)}
 });
 function csvCell(s){const v=String(s);return '"'+v.replaceAll('"','""')+'"'}
 $('csv').addEventListener('click',()=>{
