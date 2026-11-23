@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Free pipe bend calculator for smooth mandrel bends and fabricated segmented / lobster-back elbows. Live diagram, centreline lengths, mitre angles and cut list.">
+<title>Pipe Bend Calculator | DCB ENG</title>
+<link rel="canonical" href="https://dcb-eng.github.io/pipe-bend/">
+<meta property="og:title" content="Pipe Bend Calculator | DCB ENG">
+<meta property="og:description" content="Calculate smooth and segmented pipe bends, mitre angles and cutting lengths in your browser.">
+<style>
+:root{color-scheme:dark;--bg:#101115;--surface:#1c1f24;--surface2:#24292f;--border:#41464d;--text:#f1f3f5;--muted:#b5bdc6;--accent:#ffa726;--danger:#ffadb0;--r:15px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#202126 0%,var(--bg) 55%);color:var(--text);font:15px/1.52 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
+a{color:#ffbd68}.wrap{width:min(1200px,calc(100% - 32px));margin:0 auto;padding:36px 0 60px}
+.eyebrow{color:var(--accent);font-weight:800;letter-spacing:.14em;font-size:.73rem;text-transform:uppercase}
+h1{font-size:clamp(2rem,4vw,3.05rem);letter-spacing:-.045em;line-height:1.08;margin:8px 0 10px}.intro{max-width:780px;color:var(--muted);font-size:1rem;margin:0 0 23px}
+h2{font-size:1.03rem;margin:0 0 17px;letter-spacing:-.01em}.panel{border:1px solid var(--border);background:var(--surface);border-radius:var(--r);padding:22px;box-shadow:0 12px 36px #0002}
+.layout{display:grid;grid-template-columns:minmax(320px,390px) minmax(0,1fr);gap:18px;align-items:start}.stack{display:grid;gap:18px;min-width:0}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{min-width:0}.span2{grid-column:span 2}
+label{display:block;color:#e0e3e7;font-size:.84rem;font-weight:650;margin-bottom:6px}input,select{width:100%;min-height:45px;padding:10px 11px;border:1px solid #515a64;border-radius:9px;background:#101317;color:var(--text);font:inherit;font-variant-numeric:tabular-nums}input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:3px}input:disabled,select:disabled{opacity:.55}.hint{font-size:.74rem;color:var(--muted);margin:5px 0 0}.sectionline{border:0;border-top:1px solid #41464d;margin:19px 0}
+.mode-picker{display:grid;grid-template-columns:1fr 1fr;padding:4px;border:1px solid var(--border);border-radius:12px;background:#111418;margin-bottom:19px;gap:4px}.mode-picker button{border:1px solid transparent;color:#c7cdd5;background:transparent;padding:12px 9px;min-height:44px;border-radius:9px;font-weight:750;cursor:pointer}.mode-picker button[aria-pressed="true"]{background:#51361f;border-color:#a87035;color:#ffce8c}
+button{font:inherit;border:1px solid #696d73;background:#2b2e34;color:var(--text);border-radius:9px;padding:10px 13px;min-height:42px;cursor:pointer;font-weight:700}button:hover:not(:disabled){filter:brightness(1.14)}button:disabled{opacity:.5;cursor:not-allowed}.primary{background:var(--accent);color:#17130e;border-color:var(--accent);font-weight:800}.preset-row{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.preset-row button{font-size:.77rem;min-height:30px;padding:4px 9px}.preset-row button.active{background:#51361f;border-color:#a87035;color:#ffd2a0}
+.result-head{display:flex;gap:12px;justify-content:space-between;align-items:start;flex-wrap:wrap}.badge{font-size:.72rem;letter-spacing:.07em;text-transform:uppercase;font-weight:800;color:#ffc27b}.hero{font-size:clamp(2.1rem,4vw,3.2rem);line-height:1.08;font-weight:820;letter-spacing:-.05em;margin:8px 0 0;font-variant-numeric:tabular-nums}.hero small{font-size:.41em;letter-spacing:0;color:#c7cbd0}.hero-caption{font-size:.82rem;color:var(--muted);margin-top:6px}.result{background:linear-gradient(150deg,#303038,#191c20);position:relative;overflow:hidden}.result:before{content:"";position:absolute;right:-85px;top:-100px;width:220px;height:220px;background:#ffa72612;border-radius:100%;pointer-events:none}.result>*{position:relative}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:20px}.stat{border:1px solid #454951;border-radius:10px;background:#16191e;padding:12px;min-width:0}.stat-label{color:#b9c0c8;font-size:.75rem;line-height:1.35}.stat-value{font-weight:780;font-size:1.2rem;margin-top:4px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.stat-value small{font-size:.69em;color:#bec4ca;font-weight:500}
+.diagram-header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}.diagram-header h2{margin-bottom:8px}.diagram-header p{margin:0;color:var(--muted);font-size:.77rem}.drawing{border:1px solid #454b53;border-radius:12px;background:radial-gradient(circle at 45% 55%,#262b32,#14181d);overflow:hidden;min-height:260px}.drawing svg{display:block;width:100%;height:auto;min-height:260px}.swipe-hint{display:none}.legend{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted);font-size:.74rem;margin-top:9px}.legend span:before{content:"";display:inline-block;width:19px;height:3px;vertical-align:middle;margin-right:7px;border-radius:2px;background:#ffb54e}.legend span:last-child:before{background:#cfd4da}
+.callout{padding:11px 13px;margin-top:16px;border-left:3px solid var(--accent);border-radius:7px;background:#34291f;color:#e7d7c3;font-size:.8rem}.error{padding:11px 13px;border:1px solid #af6064;background:#4d292d;color:#ffdfe0;border-radius:9px;margin-top:12px;font-weight:650}.muted{color:var(--muted);font-size:.82rem}.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:17px}.actions>*{flex:0 1 auto}
+.table-scroll{overflow-x:auto;border:1px solid #464b52;border-radius:10px}table{border-collapse:collapse;width:100%;min-width:640px;text-align:left;font-variant-numeric:tabular-nums}th{font-size:.73rem;color:#bfc4cc;letter-spacing:.05em;text-transform:uppercase;background:#282d33}th,td{padding:10px 12px;border-bottom:1px solid #394047;white-space:nowrap}td{font-size:.85rem}td:not(:first-child),th:not(:first-child){text-align:right}tbody tr:last-child td{border-bottom:0}.table-help{color:var(--muted);font-size:.8rem;margin:11px 0 0}
+summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;margin:12px 0 0}code{font-size:.86em;background:#111418;padding:2px 5px;border-radius:4px;color:#ffca80}.fine{color:var(--muted);font-size:.77rem;line-height:1.65;margin:22px 0 0}
+.dcb-nav{background:#181b20;border-bottom:1px solid #393e46;color:#f1f3f5;font:14px/1.45 system-ui,"Segoe UI",Arial,sans-serif}.dcb-nav *{box-sizing:border-box}.dcb-nav__inner{max-width:1200px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}.dcb-nav__brand{flex:none;color:#fff!important;text-decoration:none!important;font-size:18px;font-weight:800;letter-spacing:.015em}.dcb-nav__brand span{color:#ffa726}.dcb-nav__links{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}.dcb-nav__link{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;min-height:36px;border:1px solid transparent;border-radius:7px;text-decoration:none!important;color:#c9cdd3!important;font-size:13px;font-weight:600;white-space:nowrap}.dcb-nav__link:hover{background:#30343b;border-color:#565c64;color:#fff!important}.dcb-nav__link[aria-current="page"]{background:#3c2d20;border-color:#8d5d2c;color:#ffbe6e!important}
+[hidden]{display:none!important}@media(max-width:900px){.layout{grid-template-columns:1fr}.wrap{padding-top:25px}.controls{max-width:none}}
+@media(max-width:680px){.dcb-nav__inner{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 14px}.dcb-nav__links{justify-content:flex-start;gap:4px}.dcb-nav__link{padding:7px 9px;font-size:12px;min-height:32px}}
+@media(max-width:600px){.drawing{overflow-x:auto;scrollbar-color:#9c6a34 #1a1e23}.drawing svg{min-width:690px;min-height:300px}.swipe-hint{display:block;margin:7px 0 0;color:var(--muted);font-size:.75rem}}
+@media(max-width:460px){.panel{padding:17px}.stats{gap:7px}.stat{padding:10px}.field-grid{gap:11px}.hero{font-size:2.3rem}.wrap{width:calc(100% - 24px)}}
+@media print{body{background:white;color:black}.dcb-nav,.actions,.mode-picker,.controls,.fine,details{display:none!important}.wrap{width:100%;padding:0}.layout{display:block}.panel{border:1px solid #bbb;box-shadow:none;background:white;color:#111;break-inside:avoid;margin:0 0 12px}.stack{display:block}.diagram-header p,.muted,.stat-label,.hero-caption,.table-help{color:#444!important}.stat{background:white;color:#111}.drawing{background:#fff}.result:before{display:none}.result{background:#fff}.hero small{color:#333}.callout{background:#fff;color:#111}.badge{color:#111}table th,table td{color:#111!important}}
+</style>
+</head>
+<body>
+<div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" aria-current="page" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
+<div class="wrap">
+  <header><div class="eyebrow">Workshop tools / pipe fabrication</div><h1>Pipe bend calculator</h1><p class="intro">Work out smooth-bend developed lengths or build a cutting list for segmented (lobster-back) elbows. Enter the pipe size, bend radius and angle; the drawing and results update instantly.</p></header>
+  <main class="layout">
+    <section class="panel controls" aria-label="Bend inputs">
+      <h2>1. Bend method</h2>
+      <div class="mode-picker" role="group" aria-label="Bend method"><button type="button" id="smooth-btn" aria-pressed="true">Smooth bend</button><button type="button" id="seg-btn" aria-pressed="false">Segmented bend</button></div>
+      <h2>2. Pipe dimensions</h2>
+      <div class="field-grid">
+        <div class="field"><label for="profile">Pipe profile</label><select id="profile"><option value="CHS">CHS / tube (OD)</option><option value="NB">Pipe (nominal bore)</option><option value="custom">Custom diameter</option></select></div>
+        <div class="field" id="size-field"><label for="size">Pipe size</label><select id="size"></select></div>
+        <div class="field" id="custom-od-field" hidden><label for="custom-od">Outside diameter (mm)</label><input type="number" id="custom-od" min="1" max="5000" step="0.1" value="48.3" inputmode="decimal"></div>
+        <div class="field" id="schedule-field" hidden><label for="schedule" title="ASME B36.10M nominal pipe schedule thicknesses for the selected nominal pipe size. Use Custom for measured or non-standard wall thickness.">Wall schedule ⓘ</label><select id="schedule"><option value="40">Schedule 40</option></select><p class="hint">Schedules are only for ASME nominal pipe sizes.</p></div>
+        <div class="field"><label for="wall" title="For scheduled pipe this field shows the nominal wall thickness. Choose Custom wall to edit it; for CHS / tube enter thickness directly.">Wall thickness (mm) ⓘ</label><input type="number" id="wall" min="0.1" max="200" step="any" value="3.2" inputmode="decimal"><p id="pipe-id" class="hint">Calculated inside diameter: —</p></div>
+      </div>
+      <hr class="sectionline">
+      <h2>3. Bend geometry</h2>
+      <div class="field-grid">
+        <div class="field"><label for="angle">Bend angle (°)</label><input type="number" id="angle" min="1" max="180" step="0.5" value="90" inputmode="decimal"><div class="preset-row" aria-label="Common bend angles"><button type="button" data-angle="30">30°</button><button type="button" data-angle="45">45°</button><button type="button" data-angle="60">60°</button><button type="button" data-angle="90">90°</button></div></div>
+        <div class="field"><label for="radius" title="Centreline radius. For segmented bends, this is the radius of the reference arc to which the straight segments are tangent.">Centreline radius (mm) ⓘ</label><input type="number" id="radius" min="1" max="100000" step="0.1" value="150" inputmode="decimal"><div class="preset-row" aria-label="Radius multiples of outside diameter"><button type="button" data-ratio="1">1D</button><button type="button" data-ratio="1.5">1.5D</button><button type="button" data-ratio="2">2D</button><button type="button" data-ratio="3">3D</button></div></div>
+        <div class="field"><label for="inlet" title="Straight length before the bend starts, measured to the actual tangent point (not the virtual corner).">Inlet straight (mm) ⓘ</label><input type="number" id="inlet" min="0" max="100000" step="1" value="100" inputmode="decimal"></div>
+        <div class="field"><label for="outlet" title="Straight length after the bend finishes, measured from the actual tangent point.">Outlet straight (mm) ⓘ</label><input type="number" id="outlet" min="0" max="100000" step="1" value="100" inputmode="decimal"></div>
+        <div class="field" id="joints-field" hidden><label for="joints" title="Number of welded joints. The total number of pieces is joints + 1.">Welded joints ⓘ</label><input type="number" id="joints" min="1" max="48" step="1" value="4" inputmode="numeric"><p class="hint" id="piece-hint">5 pieces per elbow</p></div>
+        <div class="field"><label for="qty">Quantity of bends</label><input type="number" id="qty" min="1" max="10000" step="1" value="1" inputmode="numeric"></div>
+      </div>
+      <div id="validation" class="error" role="alert" hidden></div>
+      <div class="callout" id="method-note">Smooth bends: developed length is calculated along the centreline. Actual bending allowances may differ with tooling and material.</div>
+      <div class="actions"><button type="button" id="reset">Reset example</button></div>
+    </section>
+    <div class="stack">
+      <section class="panel result" aria-live="polite"><div class="result-head"><div><div class="badge" id="result-label">Developed length / bend</div><div class="hero"><span id="result-main">—</span> <small>mm</small></div><div class="hero-caption" id="result-sub">Includes straight inlet and outlet lengths</div></div><button type="button" id="copy">Copy results</button></div><div class="stats" id="stats"></div><p class="muted" id="result-description" style="margin-bottom:0"></p></section>
+      <section class="panel"><div class="diagram-header"><h2>Live bend drawing</h2><p>Plan view · proportional schematic · straight dimensions to tangent references</p></div><div class="drawing" id="drawing" role="img" aria-label="Plan-view pipe bend diagram"></div><p class="swipe-hint">Swipe horizontally to inspect the dimension lines.</p><div class="legend"><span>Centreline / radius</span><span>Pipe OD</span></div></section>
+    </div>
+  </main>
+  <section id="cut-section" class="panel" style="margin-top:18px" hidden><div class="result-head"><div><h2 style="margin-bottom:5px">Segment cutting list</h2><p class="muted" style="margin-top:0">Lengths are measured along each straight pipe piece, from cut face to cut face.</p></div><button type="button" class="primary" id="csv">Export cut list CSV</button></div><div class="table-scroll"><table><thead><tr><th>Piece</th><th>Qty</th><th>Cut angle / end</th><th>Centreline (mm)</th><th>Short side (mm)</th><th>Long side (mm)</th></tr></thead><tbody id="cut-rows"></tbody></table></div><p class="table-help">Mitre angle is measured <strong>from a square cut</strong>, not from the pipe axis. Short / long measurements are across the outside diameter. Inlet / outlet pieces have one square end; middle pieces have two mitred ends. Allow separately for kerf, weld gap and fit-up.</p></section>
+  <section class="panel" style="margin-top:18px"><details><summary>How the calculations work</summary><p><strong>Smooth bend:</strong> bend allowance (the centreline bend arc) = <code>R × θ</code>, where θ is in radians. Developed length = inlet straight + bend allowance + outlet straight. The tangent setback is <code>R × tan(θ / 2)</code> (not defined for a 180° return bend).</p><p><strong>Segmented bend:</strong> select <em>N</em> welded joints, making <em>N + 1</em> pieces. Each joint changes direction by <code>θ / N</code>; each mating cut is mitred by <code>θ / (2N)</code> from square. With <code>k = R × tan(θ / (2N))</code>, inlet / outlet piece centreline lengths are straight + k, and each middle piece is 2k. The joined straight centrelines form a polygon tangent to the reference circular bend of radius R.</p><p><strong>Mitred piece length:</strong> for each mitred end, add <code>(OD / 2) × tan(mitre angle)</code> to the centreline for its longest edge, and subtract the same amount for its shortest edge. The total length is based on the straight-piece centrelines; this differs slightly from a smooth bend of the same radius.</p><p><strong>Pipe schedules:</strong> ASME B36.10M nominal pipe sizes provide Schedule 5, 10, 30, 40, 80 and 160 where defined. Schedule changes wall thickness and inside diameter, not outside diameter. Metric CHS / tube dimensions remain independently selectable. Reference: <a href="https://www.skfitting.com/en/standard-hub/asme-b36-10-pipe-dimensions/" target="_blank" rel="noopener noreferrer">ASME B36.10 pipe dimensions chart</a>. Verify your purchased pipe specification before machining.</p><p><strong>Limitations:</strong> These are geometrical estimates for circular pipe, not production-certified bend data. No compensation for bend thinning, ovality, elongation, springback, tooling, saw kerf, weld preparation, weld gaps or fit-up. Always check the first cut and compare against the machine / fabrication drawing.</p></details></section>
+  <p class="fine">DCB ENG workshop calculator · Metric millimetres · No files or inputs are uploaded; calculations run locally in your browser. For fabrication planning only—verify dimensions and fit-up before cutting.</p>
+</div>
+<script>
+'use strict';
+(() => {
+  const $ = id => document.getElementById(id);
+  const CHS = [21.3,26.9,33.7,42.4,48.3,60.3,76.1,88.9,101.6,114.3,139.7,165.1,168.3,193.7,219.1,273.1,323.9,355.6,406.4];
+  // ASME B36.10M nominal pipe dimensions; values in mm.
+  // NPS (in), DN (mm), OD (mm), available schedule -> nominal wall (mm).
+  // Metric CHS / structural tube is a separate profile, NOT assumed interchangeable with NPS.
+  const NB = [
+    {dn:15,nps:'1/2',od:21.34,sch:{5:1.65,10:2.11,30:2.41,40:2.77,80:3.73,160:4.78}},
+    {dn:20,nps:'3/4',od:26.67,sch:{5:1.65,10:2.11,30:2.41,40:2.87,80:3.91,160:5.56}},
+    {dn:25,nps:'1',od:33.40,sch:{5:1.65,10:2.77,30:2.90,40:3.38,80:4.55,160:6.35}},
+    {dn:32,nps:'1 1/4',od:42.16,sch:{5:1.65,10:2.77,30:2.97,40:3.56,80:4.85,160:6.35}},
+    {dn:40,nps:'1 1/2',od:48.26,sch:{5:1.65,10:2.77,30:3.18,40:3.68,80:5.08,160:7.14}},
+    {dn:50,nps:'2',od:60.32,sch:{5:1.65,10:2.77,30:3.18,40:3.91,80:5.54,160:8.74}},
+    {dn:65,nps:'2 1/2',od:73.02,sch:{5:2.11,10:3.05,30:4.78,40:5.16,80:7.01,160:9.52}},
+    {dn:80,nps:'3',od:88.90,sch:{5:2.11,10:3.05,30:4.78,40:5.49,80:7.62,160:11.13}},
+    {dn:90,nps:'3 1/2',od:101.60,sch:{5:2.11,10:3.05,30:4.78,40:5.74,80:8.08}},
+    {dn:100,nps:'4',od:114.30,sch:{5:2.11,10:3.05,30:4.78,40:6.02,80:8.56,160:13.49}},
+    {dn:125,nps:'5',od:141.30,sch:{5:2.77,10:3.40,40:6.55,80:9.52,160:15.88}},
+    {dn:150,nps:'6',od:168.28,sch:{5:2.77,10:3.40,40:7.11,80:10.97,160:18.26}},
+    {dn:200,nps:'8',od:219.08,sch:{5:2.77,10:3.76,30:7.04,40:8.18,80:12.70,160:23.01}},
+    {dn:250,nps:'10',od:273,sch:{5:3.40,10:4.19,30:7.80,40:9.27,80:15.09,160:28.58}},
+    {dn:300,nps:'12',od:323.8,sch:{5:3.96,10:4.57,30:8.38,40:10.31,80:17.48,160:33.32}}
+  ];
+  let savedManualWall = 3.2;
+  function selectedNB(){return NB.find(p=>String(p.od)===$('size').value);}
+  function populateSchedules(preferred='40'){
+    const isNB=$('profile').value==='NB',sch=$('schedule');
+    $('schedule-field').hidden=!isNB;
+    if(!isNB){$('wall').readOnly=false;$('wall').value=String(savedManualWall);return;}
+    const pipe=selectedNB();
+    sch.innerHTML='';
+    if(pipe){Object.keys(pipe.sch).sort((a,b)=>Number(a)-Number(b)).forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`SCH ${code} · ${pipe.sch[code].toFixed(2)} mm`;sch.appendChild(opt);});}
+    const custom=document.createElement('option');custom.value='custom';custom.textContent='Custom wall thickness';sch.appendChild(custom);
+    sch.value=pipe&&Object.hasOwn(pipe.sch,preferred)?preferred:preferred==='custom'?'custom':'40';
+    applySchedule();
+  }
+  function applySchedule(){
+    const pipe=selectedNB(), code=$('schedule').value;
+    const locked=$('profile').value==='NB' && code!=='custom' && pipe && Object.hasOwn(pipe.sch,code);
+    $('wall').readOnly=Boolean(locked);
+    if(locked)$('wall').value=String(pipe.sch[code]);
+    else if($('profile').value==='NB')$('wall').value=String(savedManualWall);
+  }
+  let mode = 'smooth';
+  let current = null;
+  const fmt = (n, digits=1) => Number.isFinite(n) ? n.toLocaleString('en-AU',{minimumFractionDigits:digits,maximumFractionDigits:digits}) : '—';
+  const num = id => Number($(id).value);
+  function populateSizes(preferred=48.3){
+    const profile=$('profile').value, size=$('size');
+    size.innerHTML='';
+    $('size-field').hidden = profile === 'custom';
+    $('custom-od-field').hidden = profile !== 'custom';
+    if(profile==='custom')return;
+    const pairs = profile==='NB' ? NB.map(p=>[String(p.od),`DN ${p.dn} (${p.nps}\u2033 NPS) · ${p.od.toFixed(2)} mm OD`]) : CHS.map(od=>[String(od),`${od} mm OD`]);
+    for(const [val,label] of pairs){ const o=document.createElement('option');o.value=val;o.textContent=label;size.appendChild(o); }
+    if(pairs.some(p=>Number(p[0])===preferred))size.value=String(preferred);
+  }
+  function outsideDiameter(){return $('profile').value==='custom'?num('custom-od'):num('size');}
+  function calc(){
+    const D=outsideDiameter(), wall=num('wall'), angle=num('angle'), R=num('radius'), inlet=num('inlet'), outlet=num('outlet'), qty=num('qty');
+    const joints=num('joints');
+    if(!Number.isFinite(D)||D<=0||D>5000)throw Error('Outside diameter must be between 0 and 5,000 mm.');
+    if(!Number.isFinite(wall)||wall<=0||wall>=D/2)throw Error('Wall thickness must be greater than zero and less than half the outside diameter.');
+    if(!Number.isFinite(R)||R<=D/2||R>100000)throw Error('Centreline radius must be greater than half the outside diameter (OD ÷ 2).');
+    if(!Number.isFinite(angle)||angle<=0||angle>180||(mode==='segmented'&&angle>=180))throw Error(mode==='segmented'?'Segmented bend angle must be above 0° and below 180°.':'Bend angle must be above 0° and no greater than 180°.');
+    if(![inlet,outlet].every(n=>Number.isFinite(n)&&n>=0&&n<=100000))throw Error('Straight lengths must be between 0 and 100,000 mm.');
+    if(!Number.isSafeInteger(qty)||qty<1||qty>10000)throw Error('Quantity must be a whole number between 1 and 10,000.');
+    if(!Number.isSafeInteger(joints)||joints<1||joints>48)throw Error('Welded joints must be a whole number from 1 to 48.');
+    const theta=angle*Math.PI/180, innerR=R-D/2, outerR=R+D/2;
+    const base={mode,D,wall,angle,R,inlet,outlet,qty,joints,theta,innerR,outerR,notes:[]};
+    if(R < D)base.notes.push('Tight centreline radius: check machine capability, ovality and fabrication clearance.');
+    if(mode==='smooth'){
+      const arc=R*theta, perBend=inlet+arc+outlet, setback=angle<179.999?R*Math.tan(theta/2):null;
+      return {...base,arc,perBend,setback,chord:2*R*Math.sin(theta/2),total:perBend*qty};
+    }
+    const delta=theta/joints, mitre=angle/(2*joints), k=R*Math.tan(delta/2), addOne=(D/2)*Math.tan(delta/2);
+    const pieces=[{name:'Inlet / first',count:1,cl:inlet+k,endMitres:1}];
+    if(joints>1)pieces.push({name:'Middle (each)',count:joints-1,cl:2*k,endMitres:2});
+    pieces.push({name:'Outlet / last',count:1,cl:outlet+k,endMitres:1});
+    pieces.forEach(p=>{p.short=p.cl-p.endMitres*addOne;p.long=p.cl+p.endMitres*addOne;p.qty=p.count*qty;p.angles=p.endMitres===1?'0° / '+fmt(mitre,2)+'°':fmt(mitre,2)+'° / '+fmt(mitre,2)+'°';});
+    const perBend=inlet+outlet+2*joints*k;
+    return {...base,delta,mitre,k,addOne,pieces,perBend,total:perBend*qty,partsPerBend:joints+1,totalParts:(joints+1)*qty,jointAngle:angle/joints,setback:R*Math.tan(theta/2)};
+  }
+  const cell=(label,value,unit='mm')=>`<div class="stat"><div class="stat-label">${label}</div><div class="stat-value">${value} <small>${unit}</small></div></div>`;
+  function makeStats(c){
+    const data=c.mode==='smooth' ? [
+      ['Bend allowance (arc)',fmt(c.arc)],['Total, all bends',fmt(c.total)],['Tangent setback',c.setback===null?'Not defined':fmt(c.setback),c.setback===null?'':'mm'],['Chord length',fmt(c.chord)],['Inside bend radius',fmt(c.innerR)],['Outside bend radius',fmt(c.outerR)]
+    ]:[
+      ['Joint direction change',fmt(c.jointAngle,2),'°'],['Mitre per cut',fmt(c.mitre,2),'°'],['Pieces per elbow',String(c.partsPerBend),'pcs'],['Pieces for quantity',fmt(c.totalParts,0),'pcs'],['Total centreline stock',fmt(c.total)],['Smooth arc comparison',fmt(c.R*c.theta)]
+    ];
+    return data.map(([a,b,u])=>cell(a,b,u===undefined?'mm':u)).join('');
+  }
+  function linePath(points,project){return points.map((p,i)=>(i?'L':'M')+project(p).map(v=>v.toFixed(2)).join(' ')).join(' ');}
+  function renderDiagram(c){
+    const R=c.R,θ=c.theta, inlet=c.inlet,outlet=c.outlet, D=c.D;
+    let pts=[[0,0],[inlet,0]], joints=[];
+    const end=[inlet+R*Math.sin(θ),R*(1-Math.cos(θ))];
+    if(c.mode==='smooth'){
+      for(let i=1;i<=100;i++){const a=θ*i/100;pts.push([inlet+R*Math.sin(a),R*(1-Math.cos(a))]);}
+    }else{
+      let x=inlet+c.k,y=0;pts.push([x,y]);joints.push([x,y,c.delta/2]);
+      for(let i=1;i<c.joints;i++){
+        const a=i*c.delta;x+=2*c.k*Math.cos(a);y+=2*c.k*Math.sin(a);pts.push([x,y]);joints.push([x,y,a+c.delta/2]);
+      }
+      pts.push(end);
+    }
+    const endPipe=[end[0]+outlet*Math.cos(θ),end[1]+outlet*Math.sin(θ)];pts.push(endPipe);
+    const all=[...pts];if(c.mode==='smooth')all.push([inlet,R]);
+    const xs=all.map(p=>p[0]),ys=all.map(p=>p[1]);
+    const minX=Math.min(...xs)-D/2,maxX=Math.max(...xs)+D/2,minY=Math.min(...ys)-D/2,maxY=Math.max(...ys)+D/2;
+    const W=900,H=470,pad=100,scale=Math.min((W-2*pad)/Math.max(1,maxX-minX),(H-2*pad)/Math.max(1,maxY-minY));
+    const ox=(W-(maxX-minX)*scale)/2-minX*scale,oy=(H-(maxY-minY)*scale)/2+maxY*scale;
+    const project=([x,y])=>[ox+x*scale,oy-y*scale];
+    const pipe=linePath(pts,project),thickness=D*scale;
+    const cutLines=joints.map(([x,y,phi],i)=>{
+      const d=D/2+1.4,dir=[-Math.sin(phi),Math.cos(phi)];
+      const a=project([x-dir[0]*d,y-dir[1]*d]),b=project([x+dir[0]*d,y+dir[1]*d]);
+      return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#171b1f" stroke-width="3.2"/><line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#ffd08d" stroke-width="1.2" stroke-dasharray="4 3"/>`;
+    }).join('');
+    const cap=(p,angle)=>{const at=project(p),r=thickness/2,n=[-Math.sin(angle),Math.cos(angle)];return `<line x1="${at[0]-n[0]*r}" y1="${at[1]+n[1]*r}" x2="${at[0]+n[0]*r}" y2="${at[1]-n[1]*r}" stroke="#e2e5e9" stroke-width="2.2"/>`;};
+    const txt=(at,value,anchor='middle')=>`<text x="${at[0].toFixed(1)}" y="${at[1].toFixed(1)}" font-size="17" font-family="system-ui,sans-serif" fill="#ffe0ac" text-anchor="${anchor}" paint-order="stroke" stroke="#16191f" stroke-width="5" stroke-linejoin="round">${value}</text>`;
+    const start=project([0,0]),finish=project(endPipe),t1=project([inlet,0]),t2=project(end);
+    const radiusEnd=[inlet+R*Math.sin(θ/2),R*(1-Math.cos(θ/2))];
+    const rp=project(radiusEnd),rc=project([inlet,R]);
+    // For very tight / large bend sizes the radius text remains near the dashed radius.
+    let dims=`<line x1="${rc[0]}" y1="${rc[1]}" x2="${rp[0]}" y2="${rp[1]}" stroke="#ffa726" stroke-width="1.4" stroke-dasharray="6 6"/><circle cx="${rc[0]}" cy="${rc[1]}" r="3.5" fill="#ffa726"/>`;
+    dims+=txt([(rp[0]+rc[0])/2,(rp[1]+rc[1])/2-10],`R ${fmt(R)}`);
+    if(c.mode==='smooth')dims+=`<circle cx="${t1[0]}" cy="${t1[1]}" r="4" fill="#ffbd71"/><circle cx="${t2[0]}" cy="${t2[1]}" r="4" fill="#ffbd71"/>`;
+    // Draw each straight from the physical end to its tangent reference.
+    // For segmented bends, tangent references belong to the equivalent radius arc;
+    // the adjacent mitre occurs k millimetres along the straight beyond the tangent.
+    const drawDimension=(a,b,label,length,fallbackAngle)=>{
+      const p=project(a),q=project(b),vx=q[0]-p[0],vy=q[1]-p[1],L=Math.hypot(vx,vy);
+      const ux=L>0?vx/L:Math.cos(fallbackAngle),uy=L>0?vy/L:-Math.sin(fallbackAngle),nx=-uy,ny=ux;
+      const offset=thickness/2+34;
+      const pt=(v,d)=>[v[0]+nx*d,v[1]+ny*d];
+      const ext=(v)=>{const t=pt(v,thickness/2+5),z=pt(v,offset+13);return `<line x1="${t[0].toFixed(2)}" y1="${t[1].toFixed(2)}" x2="${z[0].toFixed(2)}" y2="${z[1].toFixed(2)}" stroke="#a9b4c2" stroke-width="1.25"/>`;};
+      const textLabel=`${label} ${fmt(length)} mm`;
+      // Very short and zero straights need an outside leader, not overlapping arrows.
+      if(L<44){
+        const z=pt(p,offset),z2=pt(p,offset+23);
+        return `<circle cx="${p[0].toFixed(2)}" cy="${p[1].toFixed(2)}" r="3" fill="#ffb866"/>`+
+          `<path d="M${p[0].toFixed(2)} ${p[1].toFixed(2)} L${z[0].toFixed(2)} ${z[1].toFixed(2)} L${z2[0].toFixed(2)} ${z2[1].toFixed(2)}" fill="none" stroke="#a9b4c2" stroke-width="1.3"/>`+
+          txt([z2[0]+nx*10,z2[1]+ny*10],textLabel);
+      }
+      const ap=pt(p,offset),bp=pt(q,offset),mx=(ap[0]+bp[0])/2+nx*18,my=(ap[1]+bp[1])/2+ny*18;
+      let rot=Math.atan2(uy,ux)*180/Math.PI;
+      if(rot>90)rot-=180;if(rot< -90)rot+=180;
+      return ext(p)+ext(q)+
+        `<line x1="${ap[0].toFixed(2)}" y1="${ap[1].toFixed(2)}" x2="${bp[0].toFixed(2)}" y2="${bp[1].toFixed(2)}" stroke="#ffd08b" stroke-width="1.7" marker-start="url(#dim-arrow)" marker-end="url(#dim-arrow)"/>`+
+        `<text x="${mx.toFixed(2)}" y="${my.toFixed(2)}" transform="rotate(${rot.toFixed(2)} ${mx.toFixed(2)} ${my.toFixed(2)})" font-size="16" font-weight="650" font-family="system-ui,sans-serif" fill="#ffe0ac" dominant-baseline="central" text-anchor="middle" paint-order="stroke" stroke="#16191f" stroke-width="5" stroke-linejoin="round">${textLabel}</text>`;
+    };
+    dims+=drawDimension([0,0],[inlet,0],'INLET',inlet,0);
+    dims+=drawDimension(end,endPipe,'OUTLET',outlet,θ);
+    let labels=txt([W-32,40],`${fmt(c.angle,1)}° ${c.mode==='smooth'?'BEND':'SEGMENTED'}`,'end');
+    $('drawing').innerHTML=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" aria-label="${c.mode==='smooth'?'Smooth':'Segmented'} ${fmt(c.angle,1)} degree pipe bend, centreline radius ${fmt(R)} millimetres"><defs><marker id="dim-arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0L10 5L0 10Z" fill="#ffd08b"/></marker><pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" stroke="#ffffff" stroke-opacity=".035" fill="none"/></pattern></defs><rect width="${W}" height="${H}" fill="url(#grid)"/><path d="${pipe}" fill="none" stroke="#515962" stroke-width="${(thickness+3).toFixed(2)}" stroke-linejoin="miter" stroke-miterlimit="2" stroke-linecap="butt"/><path d="${pipe}" fill="none" stroke="#b7c0c8" stroke-width="${thickness.toFixed(2)}" stroke-linejoin="miter" stroke-miterlimit="2" stroke-linecap="butt"/><path d="${pipe}" fill="none" stroke="#7d8791" stroke-opacity=".46" stroke-width="${(thickness*.20).toFixed(2)}" stroke-linecap="butt"/><path d="${pipe}" fill="none" stroke="#ffa726" stroke-width="2" stroke-dasharray="7 7" stroke-linejoin="round"/>${cutLines}${cap([0,0],0)}${cap(endPipe,θ)}${dims}${labels}</svg>`;
+  }
+  function renderCutList(c){const s=$('cut-section');s.hidden=c.mode!=='segmented';if(c.mode!=='segmented')return;
+    $('cut-rows').innerHTML=c.pieces.map(p=>`<tr><td>${p.name}</td><td>${fmt(p.qty,0)}</td><td>${p.angles}</td><td>${fmt(p.cl,2)}</td><td>${fmt(p.short,2)}</td><td>${fmt(p.long,2)}</td></tr>`).join('');
+  }
+  function updateActive(c){ document.querySelectorAll('[data-angle]').forEach(b=>b.classList.toggle('active',Number(b.dataset.angle)===c.angle)); document.querySelectorAll('[data-ratio]').forEach(b=>b.classList.toggle('active',Math.abs(c.R/c.D-Number(b.dataset.ratio))<.0001)); }
+  function render(){
+    const od=outsideDiameter(),t=num('wall');$('pipe-id').textContent=Number.isFinite(od)&&Number.isFinite(t)&&t>0&&od>2*t?`Calculated inside diameter: ${fmt(od-2*t,2)} mm`:'Calculated inside diameter: —';
+    $('joints-field').hidden=mode!=='segmented';$('piece-hint').textContent=`${Math.max(1,num('joints')+1)} pieces per elbow`;
+    $('smooth-btn').setAttribute('aria-pressed',String(mode==='smooth'));$('seg-btn').setAttribute('aria-pressed',String(mode==='segmented'));
+    $('method-note').textContent=mode==='smooth'?'Smooth bends: developed length is calculated along the centreline. Actual bending allowances may differ with tooling and material.':'Segmented bends: the selected radius defines a reference curve; straight sections form a polygon tangent to that curve. Cut angles are from square.';
+    try{
+      const c=calc();current=c;$('validation').hidden=true;$('copy').disabled=false;$('csv').disabled=false;
+      $('result-label').textContent=mode==='smooth'?'Developed length / bend':'Centreline stock / elbow';$('result-main').textContent=fmt(c.perBend);
+      $('result-sub').textContent=mode==='smooth'?'Includes inlet and outlet straight lengths':'Combined centreline length of all pieces, including straights';
+      $('stats').innerHTML=makeStats(c);
+      $('result-description').textContent=c.notes.length?c.notes.join(' '):mode==='smooth'?'Centreline allowance assumes the neutral path follows the specified centreline radius.':'Weld gaps, kerf and other process allowances have not been applied.';
+      renderDiagram(c);renderCutList(c);updateActive(c);
+    }catch(err){current=null;$('validation').textContent=err.message;$('validation').hidden=false;$('result-main').textContent='—';$('stats').innerHTML='';$('result-description').textContent='Correct the highlighted input to recalculate.';$('cut-section').hidden=true;$('drawing').innerHTML='<div style="padding:50px 20px;text-align:center;color:#bfc5ce">Enter valid dimensions to show the bend diagram.</div>';$('copy').disabled=true;$('csv').disabled=true;}
+  }
+  function makeSummary(c){if(!c)return '';const lines=[`DCB ENG Pipe Bend Calculator`,`${c.mode==='smooth'?'Smooth bend':'Segmented elbow'} — ${fmt(c.angle,2)}°`, `OD ${fmt(c.D,2)} mm; wall ${fmt(c.wall,2)} mm${$('profile').value==='NB'&&$('schedule').value!=='custom'?' (Sch '+$('schedule').value+')':''}; CLR ${fmt(c.R,2)} mm`,`Inlet ${fmt(c.inlet,2)} mm; outlet ${fmt(c.outlet,2)} mm; quantity ${c.qty}`,`Centreline per bend: ${fmt(c.perBend,2)} mm`,`Total centreline length: ${fmt(c.total,2)} mm`];if(c.mode==='smooth')lines.push(`Bend allowance (centreline arc): ${fmt(c.arc,2)} mm`,`Tangent setback: ${c.setback===null?'Not defined':fmt(c.setback,2)+' mm'}`);else{lines.push(`Joints ${c.joints}; pieces per bend ${c.partsPerBend}; mitre cut ${fmt(c.mitre,3)}° from square`);c.pieces.forEach(p=>lines.push(`${p.name} x ${p.qty}: centreline ${fmt(p.cl,2)} mm, short ${fmt(p.short,2)} mm, long ${fmt(p.long,2)} mm`));}return lines.join('\n');}
+  function csvEscape(s){const t=String(s);return `"${t.replace(/"/g,'""')}"`;}
+  function exportCSV(){const c=current;if(!c||c.mode!=='segmented')return;const rows=[['Piece','Qty','Cut angles from square','Centreline mm','Short side mm','Long side mm','OD mm','Wall mm','CLR mm','Bend angle deg','Joint count']];for(const p of c.pieces)rows.push([p.name,p.qty,p.angles,p.cl.toFixed(2),p.short.toFixed(2),p.long.toFixed(2),c.D.toFixed(2),c.wall.toFixed(2),c.R.toFixed(2),c.angle.toFixed(2),c.joints]);const csv='\ufeff'+rows.map(r=>r.map(csvEscape).join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='dcb-pipe-bend-cut-list.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function reset(){mode='smooth';savedManualWall=3.2;$('profile').value='CHS';populateSizes(48.3);populateSchedules();$('wall').value='3.2';$('angle').value='90';$('radius').value='150';$('inlet').value='100';$('outlet').value='100';$('qty').value='1';$('joints').value='4';render();}
+  document.querySelectorAll('input,select').forEach(el=>{
+    if(['profile','size','schedule'].includes(el.id))return;
+    el.addEventListener('input',()=>{if(el.id==='wall'&&!el.readOnly)savedManualWall=num('wall');render();});
+  });
+  $('profile').addEventListener('change',()=>{populateSizes(48.3);populateSchedules('40');render();});
+  $('size').addEventListener('change',()=>{populateSchedules($('schedule').value);render();});
+  $('schedule').addEventListener('change',()=>{applySchedule();render();});
+  $('smooth-btn').addEventListener('click',()=>{mode='smooth';render();});$('seg-btn').addEventListener('click',()=>{mode='segmented';render();});
+  document.querySelectorAll('[data-angle]').forEach(b=>b.addEventListener('click',()=>{$('angle').value=b.dataset.angle;render();}));
+  document.querySelectorAll('[data-ratio]').forEach(b=>b.addEventListener('click',()=>{$('radius').value=(outsideDiameter()*Number(b.dataset.ratio)).toFixed(2);render();}));
+  $('reset').addEventListener('click',reset);$('csv').addEventListener('click',exportCSV);
+  $('copy').addEventListener('click',async()=>{const s=makeSummary(current);if(!s)return;try{await navigator.clipboard.writeText(s);$('copy').textContent='Copied';setTimeout(()=>$('copy').textContent='Copy results',1500);}catch(e){const ta=document.createElement('textarea');ta.value=s;document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();$('copy').textContent=ok?'Copied':'Copy unavailable';setTimeout(()=>$('copy').textContent='Copy results',1500);}});
+  populateSizes(48.3);populateSchedules();render();
+})();
+</script>
+</body>
+</html>
