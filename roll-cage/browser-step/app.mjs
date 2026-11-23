@@ -2,7 +2,8 @@ import {checkInputs, generatePreview} from "./cad-engine.mjs";
 
 // Pinned for reproducibility. Browser import is deliberately lazy: the main
 // calculator does not download an OpenCascade WASM kernel just to show geometry.
-const BREP_URL = "https://esm.sh/brepjs@20.28.3/quick?bundle&target=es2022";
+const BREP_URL = "https://esm.sh/brepjs@20.28.3?bundle&target=es2022";
+const OCCT_URL = "https://esm.sh/occt-wasm@5.18.2?bundle&target=es2022";
 const ZIP_URL = "https://esm.sh/fflate@0.8.2?bundle&target=es2022";
 const STORAGE_KEY = "dcb-roll-cage-browser-step-v1";
 const $ = id => document.getElementById(id);
@@ -33,10 +34,15 @@ function showSource(){
 }
 async function loadKernel(){
   safeMsg("Downloading and initializing the browser OpenCascade CAD kernel…");
-  const brep=await import(BREP_URL);
-  if(typeof brep.init==="function")await brep.init();
+  // Explicit manual kernel registration avoids brepjs/quick's optional
+  // Node-only dynamic imports (e.g. brepjs-opencascade) in a static browser.
+  const [brep,wasm]=await Promise.all([import(BREP_URL),import(OCCT_URL)]);
+  if(typeof wasm.OcctKernel?.init!=="function" || typeof brep.registerKernel!=="function" || !brep.OcctWasmAdapter)
+    throw new Error("The pinned browser CAD engine did not expose its WASM initialization API.");
+  const kernel=await wasm.OcctKernel.init();
+  brep.registerKernel("occt-wasm",brep.OcctWasmAdapter.fromKernel(kernel));
   if(typeof brep.shape!=="function" || typeof brep.exportSTEP!=="function" || typeof brep.threePointArc!=="function")
-    throw new Error("Browser CAD module was loaded without the required B-rep/STEP functions.");
+    throw new Error("Browser CAD engine does not provide STEP and circular arc operations.");
   return brep;
 }
 function makeDownloadLink(output){
