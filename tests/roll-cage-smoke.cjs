@@ -104,6 +104,11 @@ assert.match(els.get('frontBendsBody').innerHTML,/RIGHT/);
 assert.equal(g.tubeJoints.length,14,'10 original joints + 2 front leg rear + 2 header ends');
 assert(g.tubeJoints.some(j=>j.id==='front-leg-left-rear'));
 assert(g.tubeJoints.some(j=>j.id==='windscreen-header-right'));
+const frontEnds=g.tubeJoints.filter(j=>j.id.startsWith('front-leg-')||j.id.startsWith('windscreen-header-'));
+assert.equal(frontEnds.length,4);
+assert(frontEnds.every(j=>!j.error),`Every modelled front leg/header joint must produce a template: ${frontEnds.map(j=>j.id+': '+(j.error||'OK')).join(' | ')}`);
+assert(['left','right'].every(side=>!g.tubeJoints.find(j=>j.id==='door-'+side+'-front').error),'Side intrusion front joints must use actual front-leg tube');
+
 const originalRun=g.addons.door.left.forward;
 els.get('doorRun').value='720';els.get('doorRun').events.input();
 g=ctx.window.__inspectRollCage();
