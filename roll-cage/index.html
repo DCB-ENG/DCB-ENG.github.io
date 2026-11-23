@@ -89,6 +89,14 @@
 .inline-toggle{display:flex;align-items:center;gap:8px}
 .inline-toggle input{width:18px;min-height:auto;flex:none;accent-color:#fc912c}
 @media print{.joint-card{break-inside:avoid}.joint-card .row-actions,#printNotches{display:none}}
+
+/* Roll cage FL station cross-reference */
+.fl-station-intro{border-left:3px solid #ff9a32;padding:10px 12px;background:#25211e;border-radius:0 6px 6px 0}
+#frontPanel .fl-station-intro{margin:12px 0}
+#frontPanel td:first-child{font-weight:800;color:#ffa746;white-space:nowrap}
+#frontPanel .table-scroll{margin:10px 0}
+#frontPanel .subview{overflow:hidden}
+@media print{.fl-station-intro{background:white!important;border-color:#333;color:#111}}
 </style>
 </head>
 <body>
@@ -148,24 +156,24 @@
     <div class="addon-fields off" id="frontLegFields">
       <p class="addon-hint">Two separate continuous tubes, from the <strong>main hoop at roof level</strong> forwards to the A-pillar and down to the floor. Values are <strong>finished tube centreline positions</strong>, measured from the main hoop mounting plane and the main hoop's fore-aft plane (0 mm). Each leg has two calculated bends, with a separate start/centre/end mark schedule.</p>
       <div class="fields">
-        <div class="field"><label for="frontTieHeight">Main-hoop attachment height (mm)</label><input type="number" id="frontTieHeight" value="1150" min="1" step="1"><span class="hint">Front leg starts on the existing hoop centreline</span></div>
-        <div class="field"><label for="frontRoofTopHeight">Front top / A-pillar height (mm)</label><input type="number" id="frontRoofTopHeight" value="1220" min="1" step="1"><span class="hint">Virtual roof-to-A-pillar corner, from hoop floor datum</span></div>
-        <div class="field"><label for="frontWindBaseHeight">Base-of-windscreen height (mm)</label><input type="number" id="frontWindBaseHeight" value="520" min="1" step="1"><span class="hint">Virtual A-pillar-to-lower-leg corner</span></div>
-        <div class="field"><label for="frontRoofRun">Forward to top of A-pillar (mm)</label><input type="number" id="frontRoofRun" value="820" min="1" step="1"><span class="hint">Distance forward from main hoop plane</span></div>
-        <div class="field"><label for="frontFootRun">Forward to front mounting feet (mm)</label><input type="number" id="frontFootRun" value="1080" min="1" step="1"><span class="hint">From main hoop plane (must exceed roof run)</span></div>
-        <div class="field"><label for="frontHeaderWidth">Top-of-windscreen tube spacing (mm)</label><input type="number" id="frontHeaderWidth" value="1040" min="1" step="1"><span class="hint">Centre-to-centre width at upper A-pillars</span></div>
-        <div class="field"><label for="frontBaseWidth">Base-of-windscreen spacing (mm)</label><input type="number" id="frontBaseWidth" value="1190" min="1" step="1"><span class="hint">Centre-to-centre width at lower A-pillars</span></div>
-        <div class="field"><label for="frontFootWidth">Front mounting feet spacing (mm)</label><input type="number" id="frontFootWidth" value="1190" min="1" step="1"><span class="hint">Centre-to-centre width on floor</span></div>
+        <div class="field"><label for="frontTieHeight">FL5 · Main-hoop attachment height (mm)</label><input type="number" id="frontTieHeight" value="1150" min="1" step="1"><span class="hint">Front leg starts on the existing hoop centreline</span></div>
+        <div class="field"><label for="frontRoofTopHeight">FL3 · Upper A-pillar corner height (mm)</label><input type="number" id="frontRoofTopHeight" value="1220" min="1" step="1"><span class="hint">Virtual roof-to-A-pillar corner, from hoop floor datum</span></div>
+        <div class="field"><label for="frontWindBaseHeight">FL2 · Windscreen base corner height (mm)</label><input type="number" id="frontWindBaseHeight" value="520" min="1" step="1"><span class="hint">Virtual A-pillar-to-lower-leg corner</span></div>
+        <div class="field"><label for="frontRoofRun">FL3 · Forward from main hoop (mm)</label><input type="number" id="frontRoofRun" value="820" min="1" step="1"><span class="hint">Distance forward from main hoop plane</span></div>
+        <div class="field"><label for="frontFootRun">FL1 · Forward to mounting feet (mm)</label><input type="number" id="frontFootRun" value="1080" min="1" step="1"><span class="hint">From main hoop plane (must exceed roof run)</span></div>
+        <div class="field"><label for="frontHeaderWidth">FL3 · Upper A-pillar spacing (mm)</label><input type="number" id="frontHeaderWidth" value="1040" min="1" step="1"><span class="hint">Centre-to-centre width at upper A-pillars</span></div>
+        <div class="field"><label for="frontBaseWidth">FL2 · Windscreen base spacing (mm)</label><input type="number" id="frontBaseWidth" value="1190" min="1" step="1"><span class="hint">Centre-to-centre width at lower A-pillars</span></div>
+        <div class="field"><label for="frontFootWidth">FL1 · Floor mounting spacing (mm)</label><input type="number" id="frontFootWidth" value="1190" min="1" step="1"><span class="hint">Centre-to-centre width on floor</span></div>
         <div class="field"><label for="frontOD">Front legs CHS outside diameter (mm)</label><input type="number" id="frontOD" list="braceODPresets" value="44.45" min="1" step=".01"></div>
         <div class="field"><label for="frontWall">Front legs wall thickness (mm)</label><input type="number" id="frontWall" value="2.6" min=".1" step=".1"></div>
-        <div class="field"><label for="frontCLR">Front leg bending die CLR (mm)</label><input type="number" id="frontCLR" value="140" min="1" step="1"></div>
+        <div class="field"><label for="frontCLR">Front leg bend CLR (mm)</label><input type="number" id="frontCLR" value="140" min="1" step="1"></div>
         <div class="field"><label for="frontTrim">Front leg trim at EACH end (mm)</label><input type="number" id="frontTrim" value="0" min="0" step="1"></div>
       </div>
     </div>
     <label class="addon-heading"><input type="checkbox" id="useHeader" checked> Add windscreen header <span class="comp-pill">single straight cross-tube</span></label>
     <div class="addon-fields" id="headerFields"><p class="addon-hint">One continuous straight transverse CHS tube joining the two front legs at the height selected. The join points automatically follow the true 3D A-pillar centreline, including local bend geometry.</p>
       <div class="fields">
-        <div class="field"><label for="headerHeight">Windscreen header centre height (mm)</label><input type="number" id="headerHeight" value="1060" min="1" step="1"><span class="hint">Must fall on both A-pillar segments</span></div>
+        <div class="field"><label for="headerHeight">WH1 · Windscreen header height (mm)</label><input type="number" id="headerHeight" value="1060" min="1" step="1"><span class="hint">Must fall on both A-pillar segments</span></div>
         <div class="field"><label for="headerOD">Header CHS OD (mm)</label><input type="number" id="headerOD" list="braceODPresets" value="38.1" min="1" step=".01"></div>
         <div class="field"><label for="headerWall">Header wall thickness (mm)</label><input type="number" id="headerWall" value="2.6" min=".1" step=".1"></div>
       </div>
@@ -205,11 +213,15 @@
     <div class="comp-metric"><small>Windscreen header · straight span</small><b id="headerLength">—</b><em id="headerDetail">Between front legs</em></div>
   </div>
   <div class="subviews">
-    <div class="subview"><h3>Front legs · side elevation</h3><svg id="frontSideSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front leg side elevation and two bends"></svg></div>
-    <div class="subview"><h3>Front legs · plan</h3><svg id="frontPlanSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front legs plan view showing width and forward offsets"></svg></div>
-    <div class="subview"><h3>Front legs · A-pillar / header front view</h3><svg id="frontFaceSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front legs and windscreen header front view"></svg></div>
+    <div class="subview"><h3>Front legs · side elevation</h3><svg id="frontSideSvg" viewBox="0 0 680 445" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front leg side elevation and two bends"></svg></div>
+    <div class="subview"><h3>Front legs · plan</h3><svg id="frontPlanSvg" viewBox="0 0 680 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front legs plan view showing width and forward offsets"></svg></div>
+    <div class="subview"><h3>Front legs · A-pillar / header front view</h3><svg id="frontFaceSvg" viewBox="0 0 680 415" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front legs and windscreen header front view"></svg></div>
   </div>
-  <h3>Front-leg bend marks</h3>
+<p class="notes fl-station-intro"><strong>Reference IDs:</strong> FL1 = front foot · FL2 = lower A-pillar virtual corner · FL3 = upper A-pillar virtual corner · FL4 = rear tangent of upper bend (calculated) · FL5 = main-hoop attachment. For symmetry, <strong>L-FL5</strong> and <strong>R-FL5</strong> identify the left and right connections. <span style="color:#ffce90">Filled marks</span> are on the actual tube; <span style="color:#b5dcff">hollow marks</span> are virtual layout corners, not physical kinks.</p>
+  <h3>Front leg FL1–FL5 reference schedule</h3>
+  <p class="notes">Dimensions are in millimetres. Height is above the main-hoop mounting datum; forward distance is from its fore–aft plane. Width is the left-to-right spacing at the matching point on both front legs.</p>
+  <div class="table-scroll"><table><thead><tr><th>Reference</th><th>Location</th><th>Height</th><th>Forward</th><th>Spacing</th><th>Point type</th></tr></thead><tbody id="frontStationsBody"></tbody></table></div>
+    <h3>Front-leg bend marks</h3>
   <p class="marking-info">All marks are measured from the <strong>main-hoop connection end</strong> of each unbent front leg. Bend centre means the <strong>midpoint of the developed bend arc</strong>. A left/right clocking sign is shown when the two bends lie in different planes; verify rotation on a test tube.</p>
   <div class="table-scroll"><table><thead><tr><th>Leg</th><th>Bend</th><th>Turn</th><th>Start (mm)</th><th>Centre (mm)</th><th>End (mm)</th></tr></thead><tbody id="frontBendsBody"></tbody></table></div>
   <h3>Front-leg straight sections</h3>
