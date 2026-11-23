@@ -176,7 +176,7 @@
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall'];
+  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall'];
   let mode=2, latest=null;
   const round=(x,places=1)=>Number(x).toFixed(places);
   const dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
@@ -315,10 +315,10 @@
     return {upper,lower,nominalSquare,paper,errors};
   }
   function addonsGeometry(g){
-    const v=g.v,errors=[];let brace=null,stays=null;
-    const useBrace=$('useBrace').checked,useStays=$('useStays').checked;
+    const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null;
+    const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked;
     const fit=v.fitExtra;
-    if((useBrace||useStays)&&(!Number.isFinite(fit)||fit<0))errors.push('Fit-up allowance must be zero or greater.');
+    if((useBrace||useStays||useHarness||useDoor)&&(!Number.isFinite(fit)||fit<0))errors.push('Fit-up allowance must be zero or greater.');
     if(useBrace){
       if(!Number.isFinite(v.braceTop)||!Number.isFinite(v.braceBottom)||v.braceBottom<0||v.braceBottom>=v.braceTop||v.braceTop>=g.Hc-.01){errors.push(`Diagonal: enter lower and upper joint heights between 0 and ${round(g.Hc,1)} mm, with upper above lower.`);}
       else{
@@ -350,7 +350,42 @@
         }
       }
     }
-    return {brace,stays,errors};
+    // Harness bar: the horizontal plane at the selected mounting height intersects
+    // both (potentially splayed) rear-stay centrelines at the same rearward depth.
+    if(useHarness){
+      if(!useStays||!stays) errors.push('Harness bar requires valid rear stays.');
+      else if(!Number.isFinite(v.harnessHeight)||v.harnessHeight<=stays.footHeight||v.harnessHeight>=stays.topHeight)
+        errors.push('Harness bar height must be strictly between rear mount and upper stay heights.');
+      else if(!Number.isFinite(v.harnessOD)||!Number.isFinite(v.harnessWall)||v.harnessOD<=0||v.harnessWall<=0||v.harnessWall>=v.harnessOD/2)
+        errors.push('Harness CHS OD and wall must be positive, with wall less than half the OD.');
+      else{
+        const fraction=(stays.topHeight-v.harnessHeight)/(stays.topHeight-stays.footHeight),z=stays.run*fraction;
+        const lx=stays.left.x+(stays.leftFoot.x-stays.left.x)*fraction,rx=stays.right.x+(stays.rightFoot.x-stays.right.x)*fraction;
+        const length=rx-lx;
+        if(length<=v.harnessOD) errors.push('Harness bar centreline span is too short for the selected CHS.');
+        else harness={left:{x:lx,y:v.harnessHeight,z},right:{x:rx,y:v.harnessHeight,z},height:v.harnessHeight,z,fraction,length,blank:length+2*Math.max(0,fit),OD:v.harnessOD,wall:v.harnessWall};
+      }
+    }
+    // Side intrusion: rear point follows the hoop's actual centreline at the
+    // chosen height. Front points are measured references, NOT a modelled A-pillar.
+    if(useDoor){
+      if(![v.doorRearHeight,v.doorFrontHeight,v.doorRun,v.doorFrontWidth,v.doorOD,v.doorWall].every(Number.isFinite)||v.doorRearHeight<0||v.doorRearHeight>=g.Hc||v.doorFrontHeight<0||v.doorFrontHeight>g.Hc||v.doorRun<=0||v.doorFrontWidth<=0)
+        errors.push('Side intrusion requires valid rear/front heights, positive forward run and front joint spacing.');
+      else if(v.doorOD<=0||v.doorWall<=0||v.doorWall>=v.doorOD/2)
+        errors.push('Side intrusion CHS OD and wall must be positive, wall less than half OD.');
+      else{
+        const rl=hoopAtHeight(g,v.doorRearHeight,'left'),rr=hoopAtHeight(g,v.doorRearHeight,'right');
+        if(!rl||!rr)errors.push('Side intrusion rear joints cannot be located on the hoop.');
+        else{
+          const cx=g.Wc/2,frontLeft={x:cx-v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun},frontRight={x:cx+v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun};
+          const member=(name,rear,front)=>{const lateral=front.x-rear.x,vertical=front.y-rear.y,length=Math.hypot(v.doorRun,lateral,vertical);return {name,rear,front,lateral,vertical,length,blank:length+2*Math.max(0,fit),angle:Math.atan2(vertical,Math.hypot(v.doorRun,lateral))*180/Math.PI};};
+          const left=member('Left',{x:rl.x,y:rl.y,z:0},frontLeft),right=member('Right',{x:rr.x,y:rr.y,z:0},frontRight);
+          const sides=$('doorSides').value;
+          door={left,right,sides,members:sides==='both'?[left,right]:sides==='left'?[left]:[right],frontSpacing:v.doorFrontWidth,rearSpacing:rr.x-rl.x,run:v.doorRun,OD:v.doorOD,wall:v.doorWall,sideAngle:Math.atan2(v.doorFrontHeight-v.doorRearHeight,v.doorRun)*180/Math.PI};
+        }
+      }
+    }
+    return {brace,stays,harness,door,errors};
   }
   function renderStayViews(g){
     const stay=g.addons.stays;
@@ -564,7 +599,8 @@
   function copy(){const s=getSheet();if(!s)return;const done=()=>{for(const id of ['copy','copyTop']){const b=$(id),old=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=old,1600);}};if(navigator.clipboard?.writeText){navigator.clipboard.writeText(s).then(done).catch(()=>download('main-hoop-bending-sheet.txt',s,'text/plain'));}else download('main-hoop-bending-sheet.txt',s,'text/plain');}
   for(const id of vals)$(id).addEventListener('input',render);
   $('braceUpperSide').addEventListener('change',render);
-  for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
+   $('doorSides').addEventListener('change',render);
+  for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields'],['useHarness','harnessFields'],['useDoor','doorFields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
   $('mode2').addEventListener('click',()=>setMode(2));$('mode4').addEventListener('click',()=>setMode(4));
   $('copy').addEventListener('click',copy);$('copyTop').addEventListener('click',copy);
   $('print').addEventListener('click',()=>window.print());$('printTop').addEventListener('click',()=>window.print());
