@@ -16,7 +16,7 @@ const document={
   querySelectorAll(){return [];}
 };
 const ctx=vm.createContext({document,window:{},navigator:{},console,Blob:class{},URL:{},XMLSerializer:class{},setTimeout(){},alert(){}});
-const injected=scripts[0].replace(/  updateFrontControls\(\);render\(\);\s*\}\)\(\);\s*$/, '  updateFrontControls();render(); window.__inspectRollCage=()=>latest; window.__inspectCutCSV=()=>cageCutCSV(latest.cutList); window.__inspectCutPrint=()=>cageCutPrintHTML(latest.cutList); window.__bendCSV=()=>cageBendMarkCSV(latest.bendMarkList); window.__bendPrint=()=>cageBendMarkPrintHTML(latest.bendMarkList);\n})();');
+const injected=scripts[0].replace(/  updateRulesClass\(\);updateFrontControls\(\);render\(\);\s*\}\)\(\);\s*$/, '  updateRulesClass();updateFrontControls();render(); window.__inspectRollCage=()=>latest; window.__inspectCutCSV=()=>cageCutCSV(latest.cutList); window.__inspectCutPrint=()=>cageCutPrintHTML(latest.cutList); window.__bendCSV=()=>cageBendMarkCSV(latest.bendMarkList); window.__bendPrint=()=>cageBendMarkPrintHTML(latest.bendMarkList);\n})();');
 assert.notEqual(injected,scripts[0],'Test probe injection must match script tail');
 vm.runInContext(injected,ctx,{timeout:12000,filename:'roll-cage/index.html'});
 function isSpan(id){assert.match(els.get(id).textContent,/^\d+[.]?\d* mm$/,'Missing computed span for '+id);}
