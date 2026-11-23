@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151719">
+  <meta name="description" content="Steel fabrication triangle calculator: missing dimensions, angles, frame diagonals and 3-4-5 squareness checks.">
+  <title>Triangle Calculator | DCB ENG</title>
+  <link rel="canonical" href="https://dcb-eng.github.io/triangle-calculator/">
+  <style>
+:root{color-scheme:dark;--bg:#101214;--panel:#191c1f;--panel-in:#111416;--border:#33383c;--text:#f0f2f3;--muted:#a0a7ad;--light:#cdd2d5;--orange:#ff841e;--orange-2:#ffae5b;--red:#ff7171;--green:#8edaa3;--radius:15px}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{margin:0;background:radial-gradient(ellipse at 95% 5%,rgba(255,132,30,.08),transparent 40%),var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--orange);outline-offset:3px}
+.shell{max-width:1200px;margin:0 auto;padding:0 27px}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:26px 0;border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:12px;letter-spacing:.09em}
+.brand-icon{width:42px;height:42px;display:grid;place-items:center;border:1px solid #805027;border-radius:10px;background:#2e2118;color:var(--orange)}
+.brand-icon svg{width:28px;height:28px}
+.brand strong{display:block;font-size:15px;font-weight:800}.brand span:not(.brand-icon){display:block;color:var(--muted);font-size:11px;letter-spacing:.06em;margin-top:1px}
+.top-meta{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px}.status-dot{width:7px;height:7px;background:#8ec59b;border-radius:50%}
+.heading{padding:49px 0 28px}.eyebrow,.section-kicker{color:var(--orange);font-size:11px;letter-spacing:.16em;font-weight:800}
+h1{margin:9px 0;font-size:clamp(33px,4.5vw,53px);letter-spacing:-.05em;line-height:1.1}h1 span{color:var(--orange)}.heading p{margin:14px 0 0;color:#b8bfc4;max-width:680px;font-size:15px}
+.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-bottom:17px}.tab{color:#c4c9cd;border:1px solid var(--border);background:#1b1e21;border-radius:10px;padding:13px 14px;text-align:left;font-weight:700;transition:background .15s,border-color .15s}.tab:hover{border-color:#a25f2a}.tab.active{background:#352419;border:1px solid #f2882c;color:#ffd6b0}.tab-number{font-size:11px;color:#888f95;margin-right:8px}.tab.active .tab-number{color:var(--orange)}
+.workspace{display:grid;grid-template-columns:minmax(320px,.85fr) minmax(0,1.15fr);gap:18px;align-items:stretch}.panel{background:linear-gradient(180deg,#1c2023,var(--panel));border:1px solid var(--border);border-radius:var(--radius);padding:24px;min-width:0}.panel-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:24px}.panel h2{font-size:21px;margin:5px 0 0;letter-spacing:-.025em}.pill{border:1px solid #4d5357;border-radius:6px;padding:4px 9px;color:#cbd0d3;font-size:11px;font-weight:800;letter-spacing:.05em;white-space:nowrap}.pill-active{color:#ffc592;border-color:#765035;background:#302219}.pill-error{color:#ffb1b1;background:#3c2222;border-color:#804444}.pill-ok{color:#a9edb9;border-color:#3f6949;background:#213326}
+.field{display:block;margin:0 0 21px}.field-label{display:flex;justify-content:space-between;gap:8px;color:#dce0e3;font-weight:650;margin:0 0 8px}.field-label small{font-size:11px;color:#8f989e;font-weight:400}.field-select,.field-input{display:block;width:100%;height:49px;border:1px solid #4a5156;border-radius:8px;background:#121517;color:#f7f7f7;padding:0 14px;font-size:18px;font-weight:650;appearance:auto}.field-select{font-size:14px}.field-input:focus,.field-select:focus{border-color:var(--orange)}.field-help{color:#a8afb4;font-size:12px;margin:7px 0 0;line-height:1.5}.measure-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:4px;border-radius:10px;background:#111416;border:1px solid #4a5156}
+.measure-choice{background:transparent;color:#c3cbd1;border:1px solid transparent;border-radius:7px;min-height:43px;padding:8px 10px;font-size:13px;font-weight:750}
+.measure-choice.selected{background:#362418;border-color:#d57d2e;color:#ffcb99}
+.measure-choice:hover:not(.selected){background:#252c30;color:#fff}
+.control-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--border);margin-top:15px;padding-top:18px;color:#8e969c;font-size:11px}.ghost-button{color:#ebeff1;background:transparent;border:0;padding:8px 0;font-weight:700;font-size:12px}.ghost-button:hover{color:var(--orange)}
+.drawing{min-height:262px;display:grid;place-items:center;background:repeating-linear-gradient(0deg,transparent,transparent 30px,rgba(255,255,255,.023) 31px),repeating-linear-gradient(90deg,transparent,transparent 30px,rgba(255,255,255,.023) 31px),#121517;border:1px solid #31373b;border-radius:10px;overflow:hidden}.drawing svg{width:100%;height:auto;min-height:240px;max-height:295px}.drawing-note{color:#8d989f;font-size:11px;margin:9px 0 21px}.shape-fill{fill:rgba(255,132,30,.075)}.shape-edge{fill:none;stroke:#ff8d32;stroke-width:3;stroke-linejoin:round;stroke-linecap:round}.shape-diag{stroke:#c7d0d6;stroke-width:2.6;fill:none}.shape-muted{fill:none;stroke:#747e86;stroke-width:1.4;stroke-dasharray:5 6}.shape-angle{stroke:#ffae5b;stroke-width:1.4;fill:none}.shape-label{fill:#f5f6f7;font-size:17px;font-weight:700;paint-order:stroke;stroke:#121517;stroke-width:6px;stroke-linejoin:round}.shape-sub{fill:#ffb36c;font-size:14px;font-weight:800;paint-order:stroke;stroke:#121517;stroke-width:5px;stroke-linejoin:round}
+.output{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.result{background:#121619;border:1px solid #333a3e;border-radius:9px;padding:14px 15px;min-width:0}.result-label{display:block;color:#a7afb5;font-size:12px;margin-bottom:4px}.result-value{display:block;color:#f1f4f5;font-size:clamp(16px,2.25vw,24px);font-weight:800;letter-spacing:-.02em;overflow-wrap:anywhere}.result.primary{border-color:#995825;background:#302218}.result.primary .result-value{color:#ffae65}.result.unit .result-value{font-size:20px}.message{margin-top:15px;color:#a9b1b6;font-size:12px;line-height:1.55}.message.warning{color:#ffb7a1}.message.success{color:#9bdfad}.message.error{color:#ffacac}.result-actions{display:flex;align-items:center;gap:12px;margin-top:17px}.solid-button{border:0;border-radius:8px;background:var(--orange);color:#211407;font-weight:800;padding:12px 18px}.solid-button:hover{background:#ffa04d}.solid-button:disabled{opacity:.4;cursor:not-allowed}.copy-feedback{font-size:11px;color:#acdcb6}.invalid{color:#ffaaaa;font-size:13px;background:#311d1d;border:1px solid #783d3d;padding:14px;border-radius:8px;grid-column:1/-1}
+.footnote{display:flex;gap:10px;color:#a1a9ae;font-size:12px;margin:20px 0 35px;line-height:1.6}.footnote-mark{display:grid;place-items:center;flex:0 0 20px;height:20px;border-radius:50%;background:#473522;color:#ffb463;font-weight:800}footer{display:flex;gap:12px;padding:22px 0 35px;border-top:1px solid var(--border);color:#707b82;font-size:11px;font-weight:800;letter-spacing:.12em}
+@media(max-width:770px){.shell{padding:0 15px}.heading{padding:32px 0 23px}.workspace{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(2,1fr)}.panel{padding:17px}.control-footer{align-items:flex-start;flex-wrap:wrap}.topbar{padding:16px 0}.top-meta{display:none}}
+@media(max-width:380px){.tabs{grid-template-columns:1fr}.output{grid-template-columns:1fr}.result-value{font-size:20px}}
+@media print{.measure-switch{background:white}.measure-choice{color:#111}.measure-choice.selected{color:#a54b00}body{background:white;color:#111}.topbar,.tabs,.result-actions,.control-footer{display:none}.shell{max-width:none}.workspace{display:block}.panel{background:white;color:#111;border-color:#aaa;margin-bottom:15px}.field-input,.field-select,.result{background:white;color:black}.result-value,.result-label,.panel h2{color:black}.drawing{background:white}.drawing-note,.footnote{color:#444}.heading{padding:15px 0}.heading h1{color:#111}}
+
+/* Match the shared quick-action links used on other DCB ENG pages. */
+.dcb-nav{background:#181b20;border-bottom:1px solid #393e46;color:#f1f3f5;font:14px/1.45 system-ui,"Segoe UI",Arial,sans-serif}
+.dcb-nav *{box-sizing:border-box}
+.dcb-nav__inner{max-width:1140px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.dcb-nav__brand{flex:none;color:#fff!important;text-decoration:none!important;font-size:18px;font-weight:800;letter-spacing:.015em}
+.dcb-nav__brand span{color:#ffa726}
+.dcb-nav__links{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin:0;padding:0}
+.dcb-nav__link{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;min-height:36px;border:1px solid transparent;border-radius:7px;text-decoration:none!important;color:#c9cdd3!important;font-size:13px;font-weight:600;white-space:nowrap;transition:background-color .15s,border-color .15s,color .15s}
+.dcb-nav__link:hover{background:#30343b;border-color:#565c64;color:#fff!important}
+.dcb-nav__link:focus-visible,.dcb-nav__brand:focus-visible{outline:2px solid #ffa726;outline-offset:3px}
+.dcb-nav__link[aria-current="page"]{background:#3c2d20;border-color:#8d5d2c;color:#ffbe6e!important}
+@media(max-width:680px){.dcb-nav__inner{align-items:flex-start;flex-direction:column;gap:8px;padding:10px 14px}.dcb-nav__links{justify-content:flex-start;gap:4px}.dcb-nav__link{padding:7px 9px;font-size:12px;min-height:32px}}
+@media print{.dcb-nav{display:none}}
+
+</style>
+</head>
+<body>
+  <div class="dcb-nav"><div class="dcb-nav__inner">
+    <a class="dcb-nav__brand" href="https://dcb-eng.github.io/">DCB <span>ENG</span></a>
+    <nav class="dcb-nav__links" aria-label="Workshop tools">
+      <a class="dcb-nav__link" href="https://dcb-eng.github.io/">Home</a>
+      <a class="dcb-nav__link" href="https://dcb-eng.github.io/steel-nesting/">Steel Nesting</a>
+      <a class="dcb-nav__link" href="https://dcb-eng.github.io/steel-weight/">Steel Weight</a>
+      <a class="dcb-nav__link" aria-current="page" href="https://dcb-eng.github.io/triangle-calculator/">Triangle</a>
+      <a class="dcb-nav__link" href="https://dcb-eng.github.io/step-dstv-converter/">STEP → DSTV</a>
+    </nav>
+  </div></div>
+  <div class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon" aria-hidden="true">
+          <svg viewBox="0 0 40 40"><path d="M6 32 L33 32 L33 5 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><path d="M25 32v-8h8" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        </span>
+        <div><strong>DCB ENG</strong><span>Fabrication calculators</span></div>
+      </div>
+      <span class="top-meta"><span class="status-dot"></span> Metric · millimetres</span>
+    </header>
+
+    <div class="heading">
+      <div class="eyebrow">FABRICATION / DRAWING CHECKS</div>
+      <h1>Triangle <span>Calculator</span></h1>
+      <p>Check dimensions, angles and diagonals before cutting, setting out or welding a steel frame.</p>
+    </div>
+
+    <nav class="tabs" role="tablist" aria-label="Calculation type">
+      <button type="button" role="tab" aria-selected="true" class="tab active" data-mode="right"><span class="tab-number">01</span> Right triangle</button>
+      <button type="button" role="tab" aria-selected="false" class="tab" data-mode="frame"><span class="tab-number">02</span> Frame diagonals</button>
+      <button type="button" role="tab" aria-selected="false" class="tab" data-mode="general"><span class="tab-number">03</span> Any triangle</button>
+      <button type="button" role="tab" aria-selected="false" class="tab" data-mode="345"><span class="tab-number">04</span> 3–4–5 set-out</button>
+    </nav>
+
+    <main class="workspace">
+      <section class="panel controls" aria-labelledby="inputs-heading">
+        <div class="panel-header"><div><div class="section-kicker">MEASUREMENTS</div><h2 id="inputs-heading">Enter dimensions</h2></div><span class="pill">mm</span></div>
+        <div id="fields" aria-live="off"></div>
+        <div class="control-footer"><button class="ghost-button" type="button" id="reset-button">↺ Reset example</button><span>All lengths in millimetres</span></div>
+      </section>
+
+      <section class="panel result-panel" aria-labelledby="results-heading">
+        <div class="panel-header"><div><div class="section-kicker">LIVE SKETCH</div><h2 id="results-heading">Calculated dimensions</h2></div><span id="calc-status" class="pill pill-active">READY</span></div>
+        <div class="drawing" id="diagram" role="img" aria-label="Dimensioned triangle diagram"></div>
+        <p class="drawing-note" id="drawing-note">Sketch illustrates the calculated dimensions.</p>
+        <div id="output" class="output" aria-live="polite"></div>
+        <div id="message" class="message" role="status"></div>
+        <div class="result-actions"><button class="solid-button" type="button" id="copy-button">Copy measurements <span aria-hidden="true">⧉</span></button><span id="copy-feedback" class="copy-feedback" aria-live="polite"></span></div>
+      </section>
+    </main>
+
+    <div class="footnote"><span class="footnote-mark">!</span><span>Use consistent measurement points (outside-to-outside or centreline-to-centreline). Frame diagonal agreement alone does not prove a frame is square unless the frame geometry is also constrained and its sides are checked.</span></div>
+    <footer>DCB ENG <span>·</span> DRAWING DIMENSION CHECKER</footer>
+  </div>
+  <script>
+/* Steel fabrication triangle calculator. No framework or external libraries. */
+(() => {
+  'use strict';
+  const DEG = 180 / Math.PI;
+  const RAD = Math.PI / 180;
+  const fmt = (v, digits = 2) => Number.isFinite(v) ? new Intl.NumberFormat('en-AU', {maximumFractionDigits:digits}).format(v) : '—';
+  const mm = v => `${fmt(v)} mm`;
+  const degrees = v => `${fmt(v)}°`;
+  const number = v => {
+    if (v == null || String(v).trim() === '') return NaN;
+    const n = Number(String(v).replace(/,/g, '').trim());
+    return Number.isFinite(n) ? n : NaN;
+  };
+  const positive = v => Number.isFinite(v) && v > 0;
+  const fail = message => ({ok:false, error:message});
+  const ok = (values, rows, message, tone='') => ({ok:true, values, rows, message, tone});
+  const row = (label, value, primary=false) => ({label,value,primary});
+
+  const methods = {
+    legs: {name:'Run + rise',fields:[['run','Horizontal run'],['rise','Vertical rise']]},
+    runDiag: {name:'Run + diagonal',fields:[['run','Horizontal run'],['diag','Diagonal / hypotenuse']]},
+    riseDiag: {name:'Rise + diagonal',fields:[['rise','Vertical rise'],['diag','Diagonal / hypotenuse']]},
+    runAngle: {name:'Run + angle',fields:[['run','Horizontal run'],['angle','Angle from horizontal',true]]},
+    riseAngle: {name:'Rise + angle',fields:[['rise','Vertical rise'],['angle','Angle from horizontal',true]]},
+    diagAngle: {name:'Diagonal + angle',fields:[['diag','Diagonal / hypotenuse'],['angle','Angle from horizontal',true]]}
+  };
+
+  const angleMethods = new Set(['runAngle','riseAngle','diagAngle']);
+  const generalMethods = {
+    sss: {name:'Three lengths (SSS)',fields:[['a','Side a'],['b','Side b'],['c','Side c']]},
+    sasBC: {name:'Sides b + c, included angle A',fields:[['b','Side b'],['c','Side c'],['A','Included angle A',true]]},
+    sasAC: {name:'Sides a + c, included angle B',fields:[['a','Side a'],['c','Side c'],['B','Included angle B',true]]},
+    sasAB: {name:'Sides a + b, included angle C',fields:[['a','Side a'],['b','Side b'],['C','Included angle C',true]]},
+    aas: {name:'Two angles + one length (ASA / AAS)',fields:[['A','Angle A',true],['B','Angle B',true]]}
+  };
+
+  function validAngle(value, max=180) {return Number.isFinite(value) && value>0 && value<max;}
+
+  function solveRight(input) {
+    const type = methods[input.method] ? input.method : 'legs';
+    const method = methods[type];
+    for (const [key,label,angle] of method.fields) {
+      const value = number(input[key]);
+      if (!positive(value)) return fail(`${label} must be greater than zero.`);
+      if (angle && !(value < 90)) return fail('Angle must be greater than 0° and less than 90°.');
+    }
+    let run = number(input.run), rise = number(input.rise), diag = number(input.diag), angle = number(input.angle);
+    // On workshop drawings the given angle may be from the vertical rather than the base.
+    if (angleMethods.has(type)) {
+      if (input.angleRef && !['horizontal','vertical'].includes(input.angleRef)) return fail('Choose horizontal or vertical as the angle reference.');
+      if (input.angleRef==='vertical') angle=90-angle;
+    }
+    switch (type) {
+      case 'legs': diag = Math.hypot(run,rise); angle = Math.atan2(rise,run)*DEG; break;
+      case 'runDiag': if (diag <= run) return fail('The diagonal must be longer than the horizontal run.'); rise = Math.sqrt((diag-run)*(diag+run)); angle = Math.atan2(rise,run)*DEG; break;
+      case 'riseDiag': if (diag <= rise) return fail('The diagonal must be longer than the vertical rise.'); run = Math.sqrt((diag-rise)*(diag+rise)); angle = Math.atan2(rise,run)*DEG; break;
+      case 'runAngle': rise = run*Math.tan(angle*RAD); diag = run/Math.cos(angle*RAD); break;
+      case 'riseAngle': run = rise/Math.tan(angle*RAD); diag = rise/Math.sin(angle*RAD); break;
+      case 'diagAngle': run = diag*Math.cos(angle*RAD); rise = diag*Math.sin(angle*RAD); break;
+    }
+    if (![run,rise,diag,angle].every(positive) || ![run,rise,diag,angle].every(Number.isFinite)) return fail('These dimensions produce a result outside the supported range.');
+    return ok({run,rise,diag,angle}, [
+      row('Horizontal run',mm(run)),row('Vertical rise',mm(rise)),
+      row('Diagonal',mm(diag),true),row('Angle from horizontal',degrees(angle),true),
+      row('Angle from vertical',degrees(90-angle)),row('Gradient',`${fmt(rise/run*100)}%`)
+    ],'For right-angle triangles only. The angle is measured up from the horizontal run.');
+  }
+
+  function solveFrame(input) {
+    const width = number(input.width), length=number(input.length),tol=number(input.tol);
+    if (!positive(width) || !positive(length)) return fail('Frame width and length must be greater than zero.');
+    if (!Number.isFinite(tol) || tol < 0) return fail('Tolerance must be zero or a positive number.');
+    const d1 = number(input.d1), d2=number(input.d2);
+    const entered1=String(input.d1).trim() !== '', entered2=String(input.d2).trim() !== '';
+    if (entered1 && !positive(d1) || entered2 && !positive(d2)) return fail('Measured diagonals must be positive, or left blank.');
+    const target = Math.hypot(width,length);
+    const e1=entered1?d1-target:NaN, e2=entered2?d2-target:NaN;
+    const difference=entered1&&entered2?Math.abs(d1-d2):NaN;
+    const acceptable = (!entered1 || Math.abs(e1)<=tol+1e-9) && (!entered2 || Math.abs(e2)<=tol+1e-9) && (!Number.isFinite(difference) || difference<=tol+1e-9);
+    const measured = entered1 || entered2;
+    const signed = v => `${v >= 0 ? '+' : '−'}${mm(Math.abs(v))}`;
+    const rows = [row('Theoretical diagonal',mm(target),true),row('Specified tolerance',`±${mm(tol)}`),
+      row('Diagonal 1 difference',entered1?signed(e1):'Not entered'),row('Diagonal 2 difference',entered2?signed(e2):'Not entered'),
+      row('Difference between diagonals',Number.isFinite(difference)?mm(difference):'Enter both')];
+    let message='The theoretical diagonal is calculated from the drawing width and length. Add the measured diagonals to check the frame.';
+    let tone='';
+    if (measured) {
+      message=acceptable?'Measured diagonals are within the selected tolerance of the theoretical diagonal. Also verify side lengths and frame shape.':'Outside tolerance. Check overall dimensions, diagonal measurement points and the frame set-out before welding.';
+      tone=acceptable?'success':'warning';
+    }
+    return ok({width,length,target,d1,d2,e1,e2,difference,tol,entered1,entered2,acceptable,measured},rows,message,tone);
+  }
+
+  function solveGeneral(input) {
+    const type = generalMethods[input.method] ? input.method : 'sss';
+    const selection = generalMethods[type];
+    const required = [...selection.fields];
+    const knownSide = ['a','b','c'].includes(input.knownSide) ? input.knownSide : 'c';
+    if (type==='aas') required.push([knownSide,`Known side ${knownSide}`]);
+    for (const [key,label,angle] of required) {
+      const value=number(input[key]);
+      if (!positive(value)) return fail(`${label} must be greater than zero.`);
+      if (angle && !validAngle(value)) return fail(`${label} must be greater than 0° and less than 180°.`);
+    }
+
+    let a=number(input.a),b=number(input.b),c=number(input.c);
+    let A=number(input.A),B=number(input.B),C=number(input.C);
+    if (type==='sasBC' || type==='sasAC' || type==='sasAB') {
+      // Law of cosines, rearranged to avoid loss of precision for small included angles.
+      const thirdSide=(first,second,angle)=>Math.hypot(first-second,2*Math.sqrt(first*second)*Math.sin(angle*RAD/2));
+      if (type==='sasBC') a=thirdSide(b,c,A);
+      if (type==='sasAC') b=thirdSide(a,c,B);
+      if (type==='sasAB') c=thirdSide(a,b,C);
+    }
+    if (type==='aas') {
+      if (!(A+B<180)) return fail('The two known angles must add up to less than 180°.');
+      C=180-A-B;
+      const theta={a:A,b:B,c:C}[knownSide];
+      const scale=number(input[knownSide])/Math.sin(theta*RAD);
+      a=scale*Math.sin(A*RAD);b=scale*Math.sin(B*RAD);c=scale*Math.sin(C*RAD);
+    }
+    if (![a,b,c].every(positive) || ![a,b,c].every(Number.isFinite)) return fail('These measurements produce an invalid triangle.');
+    if (!(a+b>c && b+c>a && c+a>b)) return fail('These measurements cannot form a triangle. The sum of any two sides must exceed the third.');
+    if (type!=='aas') {
+      const clamp=x=>Math.max(-1,Math.min(1,x));
+      // Angles A, B and C are opposite sides a, b and c respectively.
+      A=Math.acos(clamp((b*b+c*c-a*a)/(2*b*c)))*DEG;
+      B=Math.acos(clamp((a*a+c*c-b*b)/(2*a*c)))*DEG;
+      C=180-A-B;
+    }
+    // Heron's formula (Kahan's rearrangement) avoids cancellation for skinny triangles.
+    const sides=[a,b,c].sort((x,y)=>y-x),[x,y,z]=sides;
+    const rad=(x+(y+z))*(z-(x-y))*(z+(x-y))*(x+(y-z));
+    let area=Math.sqrt(Math.max(0,rad))/4;
+    if (type==='aas') area=b*c*Math.sin(A*RAD)/2;
+    if (![A,B,C,area].every(Number.isFinite) || ![A,B,C].every(positive) || area<=0) return fail('This triangle is too flat to calculate reliably.');
+    const altitude=2*area/c;
+    if (![altitude,a+b+c].every(Number.isFinite)) return fail('These measurements are outside the supported range.');
+    return ok({a,b,c,A,B,C,area,altitude,perimeter:a+b+c},[
+      row('Side a',mm(a)),row('Side b',mm(b)),row('Side c',mm(c),true),
+      row('Angle A',degrees(A),true),row('Angle B',degrees(B)),row('Angle C',degrees(C)),
+      row('Altitude to side c',mm(altitude)),row('Perimeter',mm(a+b+c)),row('Area',`${fmt(area)} mm²`)
+    ],'Angles A, B and C sit opposite sides a, b and c. Angles alone cannot determine actual lengths; at least one side length is needed.');
+  }
+
+  function solve345(input) {
+    const short=number(input.short);
+    if (!positive(short)) return fail('The 3-part leg must be greater than zero.');
+    const long=short*4/3, diag=short*5/3;
+    return ok({run:long,rise:short,diag,angle:Math.atan2(short,long)*DEG},[
+      row('3-part side',mm(short),true),row('4-part side',mm(long),true),
+      row('5-part diagonal',mm(diag),true),row('Corner angle','90°')
+    ],'Mark these three distances from the same corner to set out a 90° angle. For larger frames, use longer multiples for greater measurement accuracy.');
+  }
+
+  // Export pure calculation functions for tests or reuse by a host website.
+  if (typeof window !== 'undefined') window.SteelTriangleMath={solveRight,solveFrame,solveGeneral,solve345};
+
+  function svgBase(paths, description) {
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 350" role="img" aria-label="${description}">${paths}</svg>`;
+  }
+  const line = (x1,y1,x2,y2,cls) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="${cls}"/>`;
+  const text = (x,y,t,cls='shape-label',anchor='middle')=>`<text x="${x}" y="${y}" text-anchor="${anchor}" class="${cls}">${t}</text>`;
+
+  function rightDiagram(m) {
+    const {run,rise,diag,angle}=m;
+    const scale=Math.min(390/run,215/rise);
+    const w=run*scale,h=rise*scale;
+    const x0=112, y0=280, x1=x0+w, y1=y0-h;
+    const dL=fmt(diag,1),rL=fmt(run,1),hL=fmt(rise,1);
+    return svgBase(`<polygon points="${x0},${y0} ${x1},${y0} ${x1},${y1}" class="shape-fill"/>`+
+      line(x0,y0,x1,y0,'shape-edge')+line(x1,y0,x1,y1,'shape-edge')+line(x1,y1,x0,y0,'shape-diag')+
+      `<path d="M${x1-18} ${y0}v-18h18" class="shape-angle"/>`+
+      text((x0+x1)/2,y0+30,`${rL} mm`)+text(x1+15,(y0+y1)/2,`${hL} mm`,'shape-label','start')+
+      text((x0+x1)/2-17,(y0+y1)/2-15,`${dL} mm`,'shape-sub')+
+      text(x0+31,y0-12,`${fmt(angle,1)}°`,'shape-sub','start')+
+      text(x1-8,y0-25,'90°','shape-sub','end'), 'Right triangle with run, rise, diagonal and a 90-degree corner');
+  }
+  function frameDiagram(m) {
+    const ratio=m.width/m.length;
+    const w=360*Math.min(1,Math.max(.38,ratio));
+    const h=218*Math.min(1,Math.max(.4,1/ratio));
+    const x0=300-w/2,x1=300+w/2,y0=175-h/2,y1=175+h/2;
+    return svgBase(`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" class="shape-fill"/>`+
+      `<rect x="${x0}" y="${y0}" width="${w}" height="${h}" class="shape-edge"/>`+
+      line(x0,y0,x1,y1,'shape-diag')+line(x0,y1,x1,y0,'shape-muted')+
+      text(300,y1+28,`${fmt(m.width,1)} mm`)+text(x1+17,175,`${fmt(m.length,1)} mm`,'shape-label','start')+
+      text(250,153,'D1','shape-sub')+text(348,153,'D2','shape-sub')+
+      text(300,27,`Design diagonal: ${fmt(m.target,1)} mm`,'shape-sub'), 'Rectangular frame with both diagonals marked');
+  }
+  function generalDiagram(m) {
+    const {a,b,c}=m;
+    const cx=(b*b+c*c-a*a)/(2*c), cy=Math.sqrt(Math.max(0,b*b-cx*cx));
+    const minX=Math.min(0,c,cx), maxX=Math.max(0,c,cx), rangeX=maxX-minX;
+    const scale=Math.min(435/Math.max(rangeX,1e-12),214/Math.max(cy,1e-12));
+    const xA=85+(0-minX)*scale, xB=85+(c-minX)*scale,xC=85+(cx-minX)*scale;
+    const yA=280,yB=280,yC=280-cy*scale;
+    return svgBase(`<polygon points="${xA},${yA} ${xB},${yB} ${xC},${yC}" class="shape-fill shape-edge"/>`+
+      text(xA-8,yA+19,'A','shape-sub')+text(xB+12,yB+19,'B','shape-sub')+text(xC,yC-14,'C','shape-sub')+
+      text((xA+xB)/2,yA+28,`c = ${fmt(c,1)}`)+text((xA+xC)/2-18,(yA+yC)/2,`b = ${fmt(b,1)}`,'shape-sub')+
+      text((xB+xC)/2+19,(yB+yC)/2,`a = ${fmt(a,1)}`,'shape-sub'), 'General triangle with vertices A B C and sides a b c');
+  }
+
+  const initial={
+    right:{method:'legs',run:'3000',rise:'4000',diag:'5000',angle:'30',angleRef:'horizontal'},
+    frame:{width:'3000',length:'6000',d1:'',d2:'',tol:'3'},
+    general:{method:'sss',a:'5000',b:'4000',c:'3000',A:'60',B:'50',C:'70',knownSide:'c'},
+    '345':{short:'1200'}
+  };
+  const labels={right:'RIGHT TRIANGLE',frame:'FRAME DIAGONALS',general:'ANY TRIANGLE','345':'3–4–5 SET-OUT'};
+  const current={right:{...initial.right},frame:{...initial.frame},general:{...initial.general},'345':{...initial['345']}};
+  let mode='right', last=null;
+
+  const htmlEsc = v => String(v??'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const field = (key,label,opts={}) => `<label class="field"><span class="field-label">${label}<small>${opts.unit||'mm'}</small></span>`+
+    `<input class="field-input" data-key="${key}" type="text" inputmode="decimal" autocomplete="off" spellcheck="false" value="${htmlEsc(current[mode][key])}" placeholder="${opts.optional?'Optional':'Enter value'}" aria-label="${label}">`+
+    (opts.help?`<span class="field-help">${opts.help}</span>`:'')+'</label>';
+  const selectField=(id,label,options,value,help='') => `<label class="field"><span class="field-label">${label}</span><select id="${id}" class="field-select">`+
+    options.map(([v,title])=>`<option value="${v}" ${value===v?'selected':''}>${title}</option>`).join('')+'</select>'+
+    (help?`<span class="field-help">${help}</span>`:'')+'</label>';
+
+  function renderFields(){
+    const container=document.getElementById('fields');
+    let html='';
+    if(mode==='right'){
+      const useAngle=angleMethods.has(current.right.method);
+      html+=`<div class="field"><span class="field-label">I know…</span><div class="measure-switch" role="group" aria-label="Measurement type">`+
+        `<button type="button" class="measure-choice ${!useAngle?'selected':''}" data-measure="lengths" aria-pressed="${!useAngle}">Two lengths</button>`+
+        `<button type="button" class="measure-choice ${useAngle?'selected':''}" data-measure="angle" aria-pressed="${useAngle}">Length + angle</button>`+
+        `</div></div>`;
+      html+=selectField('method','Known measurements',Object.entries(methods).filter(([key])=>angleMethods.has(key)===useAngle).map(([key,def])=>[key,def.name]),current.right.method,'Choose which lengths or angles you have on the drawing.');
+      for(const [key,name,angle] of methods[current.right.method].fields) html+=field(key,angle?'Drawing angle':name,{unit:angle?'degrees':'mm'});
+      if(useAngle) {
+        html+=selectField('angle-ref','Angle measured from', [['horizontal','Horizontal run / base'],['vertical','Vertical rise / upright']],current.right.angleRef,'Choose the edge the drawing measures the angle from.');
+        html+='<p class="field-help">One length and one acute angle are enough to work out the other dimensions. Two angles with no known length cannot give actual millimetres.</p>';
+      }else html+='<p class="field-help">Or select <strong>Length + angle</strong> if only one length is shown on your drawing.</p>';
+    } else if(mode==='frame'){
+      html+=field('width','Frame width');html+=field('length','Frame length');
+      html+=field('d1','Measured diagonal 1',{optional:true,help:'Leave blank to calculate the theoretical diagonal only.'});
+      html+=field('d2','Measured diagonal 2',{optional:true});
+      html+=field('tol','Allowed difference',{help:'Checks each diagonal against the theoretical length and the spread between measured diagonals.'});
+    } else if(mode==='general'){
+      html+=selectField('general-method','Known measurements',Object.entries(generalMethods).map(([key,def])=>[key,def.name]),current.general.method);
+      for(const [key,name,angle] of generalMethods[current.general.method].fields) html+=field(key,name,{unit:angle?'degrees':'mm'});
+      if(current.general.method==='aas'){
+        html+=selectField('general-side','Which side length is known?', [['a','Side a — opposite angle A'],['b','Side b — opposite angle B'],['c','Side c — opposite angle C']],current.general.knownSide);
+        html+=field(current.general.knownSide,`Known side ${current.general.knownSide}`);
+        html+='<p class="field-help">Two angles determine the shape. One side fixes the size. Angles must add up to less than 180°.</p>';
+      } else if(current.general.method==='sss') html+='<p class="field-help">Enter three lengths, or use the dropdown to work from angles instead.</p>';
+      else html+='<p class="field-help">Use the angle between the two known sides (not the angle opposite either side).</p>';
+    } else {
+      html+=field('short','3-part side',{help:'Enter a convenient setting-out distance for the short leg. The 4-part leg and diagonal are calculated.'});
+    }
+    container.innerHTML=html;
+    for(const b of container.querySelectorAll('[data-measure]')) b.addEventListener('click',()=>{
+      current.right.method=b.dataset.measure==='angle'?'runAngle':'legs';renderFields();refresh();
+    });
+    const method=document.getElementById('method');
+    if(method) method.addEventListener('change',e=>{current.right.method=e.target.value;renderFields();refresh();});
+    const ref=document.getElementById('angle-ref');
+    if(ref) ref.addEventListener('change',e=>{current.right.angleRef=e.target.value;refresh();});
+    const gm=document.getElementById('general-method');
+    if(gm) gm.addEventListener('change',e=>{current.general.method=e.target.value;renderFields();refresh();});
+    const gs=document.getElementById('general-side');
+    if(gs) gs.addEventListener('change',e=>{current.general.knownSide=e.target.value;renderFields();refresh();});
+    for(const input of container.querySelectorAll('[data-key]')) input.addEventListener('input',e=>{
+      current[mode][e.target.dataset.key]=e.target.value;refresh();
+    });
+  }
+  function refresh(){
+    const results={right:solveRight,frame:solveFrame,general:solveGeneral,'345':solve345};
+    last=results[mode](current[mode]);
+    const badge=document.getElementById('calc-status');
+    const output=document.getElementById('output'),message=document.getElementById('message'),diagram=document.getElementById('diagram');
+    const copy=document.getElementById('copy-button');
+    badge.className='pill';message.className='message';
+    if(!last.ok){
+      badge.textContent='CHECK INPUT';badge.classList.add('pill-error');
+      output.innerHTML=`<div class="invalid">${last.error}</div>`;
+      diagram.innerHTML='<div class="invalid" style="margin:16px">Enter valid dimensions to display the triangle.</div>';
+      message.textContent='';copy.disabled=true;return;
+    }
+    copy.disabled=false;
+    let status='CALCULATED';
+    if(mode==='frame'&&last.values.measured){status=last.values.acceptable?'IN TOLERANCE':'OUT OF TOLERANCE';badge.classList.add(last.values.acceptable?'pill-ok':'pill-error');}
+    else badge.classList.add('pill-active');
+    badge.textContent=status;
+    output.innerHTML=last.rows.map(r=>`<div class="result${r.primary?' primary':''}"><span class="result-label">${r.label}</span><strong class="result-value">${r.value}</strong></div>`).join('');
+    message.textContent=last.message;if(last.tone)message.classList.add(last.tone);
+    diagram.innerHTML=(mode==='frame'?frameDiagram(last.values):mode==='general'?generalDiagram(last.values):rightDiagram(last.values));
+    document.getElementById('drawing-note').textContent=mode==='frame'?'Diagram illustrative; not to scale. Measure both diagonals between identical corners.':'Diagram illustrates side relationships; appearance may be adjusted for legibility.';
+  }
+  function activate(newMode){
+    mode=newMode;
+    document.querySelectorAll('.tab').forEach(button=>{
+      const active=button.dataset.mode===mode;button.classList.toggle('active',active);button.setAttribute('aria-selected',String(active));
+    });
+    document.getElementById('copy-feedback').textContent='';renderFields();refresh();
+  }
+  async function copyResult(){
+    if(!last || !last.ok) return;
+    const head=`${labels[mode]} — mm`;
+    const activeKeys=mode==='right' ? [...methods[current.right.method].fields.map(f=>f[0]),...(angleMethods.has(current.right.method)?['angleRef']:[])] :
+      mode==='general' ? [...generalMethods[current.general.method].fields.map(f=>f[0]),...(current.general.method==='aas'?[current.general.knownSide]:[])] : Object.keys(current[mode]);
+    const known=activeKeys.map(k=>`${k}: ${current[mode][k]}`).join(' | ');
+    const body=last.rows.map(r=>`${r.label}: ${r.value}`).join('\n');
+    const payload=`${head}\nInputs: ${known}\n${body}\n${last.message}`;
+    const feedback=document.getElementById('copy-feedback');
+    try{
+      if(navigator.clipboard && window.isSecureContext) await navigator.clipboard.writeText(payload);
+      else {
+        const area=document.createElement('textarea');area.value=payload;area.style.position='fixed';area.style.left='-9999px';document.body.append(area);area.select();
+        const worked=document.execCommand('copy');area.remove();if(!worked)throw new Error('Clipboard unavailable');
+      }
+      feedback.textContent='Copied';
+    }catch{feedback.textContent='Copy unavailable here; select the results manually.';}
+  }
+  if(typeof document!=='undefined') document.addEventListener('DOMContentLoaded',()=>{
+    document.querySelectorAll('.tab').forEach(b=>b.addEventListener('click',()=>activate(b.dataset.mode)));
+    document.getElementById('reset-button').addEventListener('click',()=>{current[mode]={...initial[mode]};renderFields();refresh();});
+    document.getElementById('copy-button').addEventListener('click',copyResult);
+    activate('right');
+  });
+})();
+
+</script>
+</body>
+</html>
