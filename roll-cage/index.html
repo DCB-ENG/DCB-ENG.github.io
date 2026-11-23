@@ -1301,6 +1301,97 @@
   <p class="warning"><strong>Fabrication note:</strong> Prep blank includes extra stock for coping/trim and is NOT the finished tip-to-tip cut length of a coped tube. Mark-out positions are geometric, not bender feed marks; print fishmouth templates separately at 1:1. Check cage rules, material grade and physical fit before fabrication.</p></main></body></html>`;
 }
 
+  function cageBendMarkData(g){
+  const tubes=(g.memberMarkouts||[]).map(m=>{
+    const isFront=/^front-leg-(left|right)$/.test(m.id);
+    const side=isFront?m.id.split('-')[2]:null;
+    const clr=m.id==='main-hoop'?g.v.radius:isFront?g.v.frontCLR:null;
+    const clock=isFront?g.addons.front?.[side]?.clock:null;
+    const bends=m.bends.map((b,i)=>{
+      const previous=i?m.bends[i-1].end:0;
+      return {id:b.id,angle:b.angle,clr,start:b.start,mid:b.mid,end:b.end,
+        straightBefore:b.start-previous,clockFromPrevious:i?clock===null?0:clock:null};
+    });
+    return {id:m.id,partNumber:m.partNumber,member:m.title,qty:1,
+      od:m.od,wall:m.wall,blank:m.blank,developed:m.span,extra:m.extra,
+      datum:m.startDescription,farEnd:m.endDescription,
+      bends,clr,clock,bendCount:bends.length,
+      straightAfterLast:bends.length?m.blank-bends[bends.length-1].end:m.blank,
+      notes:m.notes};
+  });
+  return {job:g.cutList?.job||'',material:g.cutList?.material||'Not specified',
+    tubes,tubeCount:tubes.length,bentTubeCount:tubes.filter(t=>t.bends.length>0).length,
+    bendCount:tubes.reduce((n,t)=>n+t.bends.length,0)};
+}
+
+  function cageBendMarkRowsHTML(tube){
+  if(!tube.bends.length)return `<div class="cage-bend-no-bends">No bends — this tube is straight. Use the joint-centre references in its individual straight-tube mark-out and finish with the separate fishmouth templates.</div>`;
+  const head=`<tr><th>Bend / ref</th><th>Angle</th><th>CLR (mm)</th><th>Start (mm)</th><th>Centre (mm)</th><th>End (mm)</th><th>Straight before (mm)</th><th>Clock from previous</th></tr>`;
+  const rows=tube.bends.map(b=>`<tr><td><b>${cageSafeHTML(b.id)}</b></td><td>${round(b.angle,2)}°</td><td>${round(b.clr,1)}</td>
+    <td>${round(b.start,1)}</td><td>${round(b.mid,1)}</td><td>${round(b.end,1)}</td>
+    <td>${round(b.straightBefore,1)}</td><td>${b.clockFromPrevious===null?'—':`${round(b.clockFromPrevious,1)}°`}</td></tr>`).join('');
+  return `<div class="table-scroll"><table class="cage-bend-table"><thead>${head}</thead><tbody>${rows}</tbody></table></div>`;
+}
+
+  function renderCageBendList(g){
+  const data=cageBendMarkData(g);g.bendMarkList=data;
+  $('cageBendListCount').textContent=`${data.tubeCount} tubes · ${data.bentTubeCount} bent members · ${data.bendCount} bends`;
+  $('printCageBendList').disabled=!data.tubes.length;
+  $('saveCageBendCSV').disabled=!data.tubes.length;
+  $('cageBendListBody').innerHTML=data.tubes.map(t=>`<article class="cage-bend-member">
+    <div class="cage-bend-member-head"><strong><span class="member-part-label">${t.partNumber}</span>${cageSafeHTML(t.member)}</strong>
+    <span class="bend-member-stats">CHS ${round(t.od,2)} × ${round(t.wall,2)} · prep blank ${round(t.blank,1)} mm · ${t.bendCount} bend${t.bendCount===1?'':'s'}</span></div>
+    <div class="cage-bend-datum"><b>0 mm DATUM:</b> ${cageSafeHTML(t.datum)} → <b>far end:</b> ${cageSafeHTML(t.farEnd)}. Extra stock at datum: ${round(t.extra,1)} mm.</div>
+    ${cageBendMarkRowsHTML(t)}
+    ${t.bends.length?`<div class="cage-bend-sum">Final straight from last bend end to square-blank far end: <b>${round(t.straightAfterLast,1)} mm</b>.
+      ${t.clock!==null?`Signed B1 → B2 plane rotation: <b>${round(t.clock,1)}°</b> (verify bender rotation direction).`:'All bends remain in the main-hoop plane.'}</div>`:''}
+  </article>`).join('');
+}
+
+  function cageBendMarkCSV(data){
+  const lines=[['Job','Part number','Qty','Member','CHS OD (mm)','CHS wall (mm)','Material / grade','Prep blank (mm)','Datum at 0 mm','Far end','Bend number / FL reference','Bend angle (deg)','CLR (mm)','Straight before bend (mm)','Bend start from datum (mm)','Bend centre from datum (mm)','Bend end from datum (mm)','Clock from previous bend (deg)','Straight after last bend (mm)','Notes']];
+  for(const t of data.tubes){
+    const bends=t.bends.length?t.bends:[null];
+    for(const b of bends)lines.push([data.job,t.partNumber,t.qty,t.member,round(t.od,2),round(t.wall,2),data.material,round(t.blank,1),
+      t.datum,t.farEnd,b?.id||'NO BENDS',b?round(b.angle,2):'',b?round(b.clr,1):'',
+      b?round(b.straightBefore,1):'',b?round(b.start,1):'',b?round(b.mid,1):'',b?round(b.end,1):'',
+      b?.clockFromPrevious===null||!b?'':round(b.clockFromPrevious,1),
+      b===bends[bends.length-1]?round(t.straightAfterLast,1):'',t.notes]);
+  }
+  const safe=s=>{const v=String(s);return /^[\s]*[=+@]/.test(v)?"'"+v:v;};
+  return '\ufeff'+lines.map(row=>row.map(x=>`"${safe(x).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+}
+
+  function cageBendMarkPrintHTML(data){
+  const contents=data.tubes.map(t=>`<section class="tube">
+    <h2>${cageSafeHTML(t.partNumber)} · ${cageSafeHTML(t.member)}</h2>
+    <p>CHS ${round(t.od,2)} × ${round(t.wall,2)} mm &nbsp; | &nbsp; Square prep blank <strong>${round(t.blank,1)} mm</strong>
+      &nbsp; | &nbsp; ${t.bendCount} bend${t.bendCount===1?'':'s'}</p>
+    <p><strong>DATUM (0 mm):</strong> ${cageSafeHTML(t.datum)} → <strong>FAR END:</strong> ${cageSafeHTML(t.farEnd)}.
+      Datum-end allowance ${round(t.extra,1)} mm.</p>
+    ${t.bends.length?`<table><thead><tr><th>Bend / ref</th><th>Angle</th><th>CLR</th><th>Start</th><th>Centre</th><th>End</th><th>Straight before</th><th>Clock from prior</th></tr></thead>
+      <tbody>${t.bends.map(b=>`<tr><td>${cageSafeHTML(b.id)}</td><td>${round(b.angle,2)}°</td><td>${round(b.clr,1)}</td><td>${round(b.start,1)}</td><td>${round(b.mid,1)}</td>
+      <td>${round(b.end,1)}</td><td>${round(b.straightBefore,1)}</td><td>${b.clockFromPrevious===null?'—':`${round(b.clockFromPrevious,1)}°`}</td></tr>`).join('')}</tbody></table>
+      <p><strong>Final straight to square far end:</strong> ${round(t.straightAfterLast,1)} mm.
+      ${t.clock===null?'Bends in one plane.':`B1→B2 signed clock: ${round(t.clock,1)}°; check bender orientation.`}</p>`:
+      '<p class="straight">NO BENDS. Straight blank; use the separate end-notch diagrams to prepare joints.</p>'}
+    </section>`).join('');
+  return `<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><title>${cageSafeHTML(data.job||'Roll cage')} — bend mark-out list</title>
+  <style>@page{size:A4 landscape;margin:12mm}*{box-sizing:border-box}body{margin:0;background:#e7e9ea;color:#151d22;font:11px Arial,sans-serif}
+  .toolbar{position:sticky;top:0;text-align:center;background:#1b232a;color:#fff;padding:12px}.toolbar button{background:#fc912c;border:0;border-radius:6px;padding:9px 16px;font-weight:bold;cursor:pointer}
+  main{width:273mm;background:#fff;margin:12px auto;padding:12px 18px;box-shadow:0 3px 16px #0002}
+  h1{font-size:20px;margin:0 0 7px}h2{font-size:14px;margin:0 0 5px}.meta{margin:0 0 14px}
+  section.tube{break-inside:avoid;page-break-inside:avoid;margin:10px 0 15px;padding:9px;border:1px solid #b9c3c8;border-radius:5px}
+  section.tube p{margin:5px 0 8px}table{width:100%;border-collapse:collapse;font-size:10px}th,td{border-bottom:1px solid #cfd5d9;padding:4px 6px;text-align:left;white-space:nowrap}th{background:#f0f2f3}
+  .straight{font-weight:bold;color:#444}.note{border-top:1px solid #aaa;padding-top:10px;font-size:10px;line-height:1.5}
+  @media print{body{background:#fff}.toolbar{display:none}main{width:auto;margin:0;padding:0;box-shadow:none}}</style></head>
+  <body><div class="toolbar"><button onclick="window.print()">PRINT BEND MARK-OUT LIST — A4 LANDSCAPE</button></div>
+  <main><h1>Roll cage — part-numbered bend mark-out list</h1><p class="meta">Job: <strong>${cageSafeHTML(data.job||'Not assigned')}</strong>
+    &nbsp; | &nbsp; Material: <strong>${cageSafeHTML(data.material)}</strong> &nbsp; | &nbsp;
+    ${data.tubeCount} tubes · ${data.bentTubeCount} bent members · ${data.bendCount} bends · all dimensions mm</p>
+  ${contents}<p class="note"><strong>Measure every mark from the listed square-blank datum end.</strong> Start/end are tangency points; centre is the midpoint of the developed arc (not the virtual intersection of straights). Prep stock at the datum end is included. These are geometric bend marks, NOT automatically calibrated bender feed/clamp positions. Verify CLR, clocking, springback and actual fit-up before cutting or bending.</p></main></body></html>`;
+}
+
   function memberMarkoutSpecs(g){
   const v=g.v,a=g.addons,fit=Math.max(0,v.fitExtra),list=[];
   const push=(member)=>{if(Number.isFinite(member.blank)&&member.blank>0&&Number.isFinite(member.span)&&member.span>0)list.push(member);};
