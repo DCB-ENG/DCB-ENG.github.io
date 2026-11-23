@@ -115,11 +115,25 @@
 .member-markout-card .row-actions button{font-size:12px}
 .member-markout-card .row-actions a{color:#a9d5f5;font-size:12px}
 @media print{#allMemberMarksPanel{break-before:page}.member-markout-card{break-inside:avoid;background:#fff!important;border-color:#bbb}.member-mark-ruler,.member-mark-ruler svg{background:#fff!important}.member-markout-heading h3,.member-markout-heading .mark-subtitle,.member-mark-summary,.member-mark-summary strong,.member-mark-bends span,.member-mark-bends b{color:#111!important}.member-markout-card .row-actions{display:none!important}}
+
+/* Part-numbered roll cage tube cutting list */
+#cageCutPanel .cage-cut-fields{margin:8px 0 12px}
+.cage-cut-table-scroll{margin:9px 0}
+.cage-cut-table th,.cage-cut-table td{white-space:normal;min-width:76px;vertical-align:top}
+.cage-cut-table th:first-child,.cage-cut-table td:first-child{min-width:122px;white-space:nowrap;font-weight:750;color:#ffb363}
+.cage-cut-table th:nth-child(2),.cage-cut-table td:nth-child(2){min-width:42px;text-align:center}
+.cage-cut-table th:nth-child(6),.cage-cut-table td:nth-child(6){color:#ffbc77;font-weight:800;white-space:nowrap}
+.cage-cut-summary{margin:10px 0;background:#131b1f;border:1px solid #485861;border-radius:9px;padding:11px 13px;color:#d6e1e7;font-variant-numeric:tabular-nums;font-size:13px}
+.cage-cut-summary b{color:#ffb86f}
+#cageCutPanel .cage-cut-totals td,#cageCutPanel .cage-cut-totals th{font-variant-numeric:tabular-nums}
+.member-part-label{border:1px solid #926337;color:#ffd39a;background:#35271e;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:800;letter-spacing:.02em;margin-right:7px;display:inline-block}
+@media(max-width:700px){.cage-cut-table th,.cage-cut-table td{font-size:11px}#cageCutPanel .cage-cut-fields{grid-template-columns:1fr}}
+@media print{#cageCutPanel{break-before:page}#cageCutPanel .cage-cut-fields{display:block}#cageCutPanel .row-actions{display:none}#cageCutPanel .cage-cut-summary{color:#111;background:white;border-color:#bbb}}
 </style>
 </head>
 <body>
 <div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/bolt-torque/">Bolt Torque</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" href="/pipe-branch/">Pipe Branch</a><a class="dcb-nav__link" aria-current="page" href="/roll-cage/">Roll Cage</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
-<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Front legs · Individual tube mark-outs · Bracing · 3D fishmouths · v1.9</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><a class="link-button" href="#frontPanel">Front legs</a><a class="link-button" href="#allMemberMarksPanel">All tube marks</a><a class="link-button" href="#notchPanel">Wrap-around templates</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
+<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Front legs · Individual tube mark-outs · Bracing · 3D fishmouths · v1.9</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><a class="link-button" href="#frontPanel">Front legs</a><a class="link-button" href="#cageCutPanel">Tube cut list</a><a class="link-button" href="#allMemberMarksPanel">All tube marks</a><a class="link-button" href="#notchPanel">Wrap-around templates</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
 <main class="wrap-main"><p class="intro">Measure the <strong>available inside width and height</strong>, then enter your tube size and the <strong>centreline radius (CLR)</strong> of your actual bending die. The live drawing and three-mark layout update as you change the measurements. Optional diagonal brace and paired rear stays have their own straight-tube cut list and rear/plan views. Each member has its own CHS sizing. Harness bars connect the rear stays, optional continuous front legs follow the roof and A-pillars, and a windscreen header joins their upper sections. With front legs enabled, side intrusion bars connect to their actual 3D centreline rather than an approximate front reference. Supported tube-to-tube ends generate individually labelled 1:1 fishmouth wrap-arounds. Every enabled tube also has its own straight-blank marking diagram with bent-tube start/centre/end marks or straight-tube joint-centre reference stations, plus individual print and SVG export. All dimensions are in millimetres. Marks are geometric positions, independent of bender brand.</p>
 <div class="layout"><aside class="panel controls"><h2>Hoop layout</h2><div class="choose"><button type="button" id="mode2" class="active" aria-pressed="true">2-bend U hoop</button><button type="button" id="mode4" aria-pressed="false">4-bend tapered</button></div>
 <h3>Vehicle measurements</h3><div class="fields"><div class="field"><label for="width">Available width (mm)</label><input type="number" min="1" step="1" id="width" value="1250"><span class="hint">Between side obstacles</span></div><div class="field"><label for="height">Available height (mm)</label><input type="number" min="1" step="1" id="height" value="1300"><span class="hint">Floor / mounting cut to roof</span></div><div class="field field-hidden tapered"><label for="roofWidth">Roof available width (mm)</label><input type="number" min="1" step="1" id="roofWidth" value="1020"><span class="hint">Available width near roof</span></div><div class="field field-hidden tapered"><label for="shoulderWidth">Shoulder available width (mm)</label><input type="number" min="1" step="1" id="shoulderWidth" value="1250"><span class="hint">Between obstacles at shoulder height</span></div><div class="field field-hidden tapered"><label for="shoulder">Shoulder corner height (mm)</label><input type="number" min="0" step="1" id="shoulder" value="750"><span class="hint">Virtual vertical-to-slope corner</span></div><div class="field"><label for="sideGap">Side clearance (each, mm)</label><input type="number" min="0" step="1" id="sideGap" value="12"></div><div class="field"><label for="topGap">Roof clearance (mm)</label><input type="number" min="0" step="1" id="topGap" value="12"></div></div>
@@ -260,6 +274,32 @@
 <div class="mark-ruler"><svg id="markingSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 170" role="img" aria-label="Developed straight tube showing the three marks for every bend"></svg></div>
 <div class="mark-cards" id="markCards"></div>
 <div class="datum">All marks include the optional extra length at the beginning of the blank. This is a geometric layout; follow your bender's own reference-mark method and compensate for actual bend growth and springback using a test piece.</div>
+</section>
+<section class="panel" id="cageCutPanel">
+  <div class="drawing-header" style="padding:0 0 10px">
+    <h2 style="margin:0">Numbered tube cutting list</h2>
+    <span class="unit">Stable part IDs · all enabled cage members · millimetres</span>
+  </div>
+  <div class="fields cage-cut-fields">
+    <div class="field"><label for="cageJobRef">Job / cage reference (optional)</label><input type="text" id="cageJobRef" maxlength="22" placeholder="e.g. 45186"><span class="hint">If entered, adds a prefix: 45186-RC-001</span></div>
+    <div class="field"><label for="cageMaterial">Material / grade (optional)</label><input type="text" id="cageMaterial" maxlength="50" placeholder="Specify your approved tube grade"><span class="hint">Recorded only; not a material-compliance check</span></div>
+  </div>
+  <p class="marking-info">One part number is permanently assigned to each member type. Optional tubes keep their number when switched off, so the other parts <strong>do not get renumbered</strong>. Mirrored left/right tubes remain separate parts for bending and coping traceability.</p>
+  <div class="row-actions">
+    <button type="button" class="primary" id="printCageCutList">Print cut list · A4</button>
+    <button type="button" id="saveCageCutCSV">Download numbered CSV</button>
+    <span class="unit" id="cageCutCount">—</span>
+  </div>
+  <div class="table-scroll cage-cut-table-scroll">
+    <table class="cage-cut-table">
+      <thead><tr><th>Part number</th><th>Qty</th><th>Tube / member</th><th>CHS OD × wall</th><th>Developed / centreline (mm)</th><th>Prep blank (mm)</th><th>Bends</th><th>End connections / datum</th></tr></thead>
+      <tbody id="cageCutBody"></tbody>
+    </table>
+  </div>
+  <h3>Material totals by CHS size</h3>
+  <div class="table-scroll"><table class="cage-cut-totals"><thead><tr><th>CHS OD × wall</th><th>Pieces</th><th>Combined prep blanks</th><th>Total developed / centreline</th></tr></thead><tbody id="cageCutTotals"></tbody></table></div>
+  <div class="cage-cut-summary" id="cageCutSummary"></div>
+  <p class="notes"><strong>Cutting instruction:</strong> Prep blank length includes the selected allowance at each end. It is <strong>not</strong> the finished fishmouth-to-fishmouth length. The centreline length describes the final tube geometry; it is not automatically a CNC or bending-machine cut length. Confirm relevant motorsport cage rules, CHS grade, notch geometry and actual bending behaviour before production.</p>
 </section>
 <section class="panel" id="allMemberMarksPanel">
   <div class="drawing-header">
