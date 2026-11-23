@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="True-size A4 and A3 wrap-around cutting templates for DCB ENG segmented pipe bends, with tiled pages and printer calibration.">
+<title>Printable Pipe Wrap Templates | DCB ENG</title>
+<style id="page-size">@page{size:A4 portrait;margin:0}</style>
+<style>
+:root{color-scheme:dark;--bg:#101115;--surface:#1c1f24;--text:#f1f3f5;--muted:#b9c2cc;--accent:#ffa726;--border:#41464d}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 75% 0%,#22262c,#101115 62%);color:var(--text);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{width:min(1080px,calc(100% - 32px));margin:0 auto;padding:32px 0 70px}
+h1{font-size:clamp(1.8rem,4vw,2.65rem);letter-spacing:-.035em;line-height:1.15;margin:10px 0 9px}
+h2{font-size:1.09rem;margin:0 0 11px}
+p{margin:7px 0}.muted{color:var(--muted)}
+a{color:#ffbf71}.eyebrow{color:var(--accent);font-weight:800;letter-spacing:.12em;text-transform:uppercase;font-size:.73rem}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:15px;padding:18px;margin-top:17px}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(145px,1fr));gap:14px;align-items:end}
+label{display:block;font-size:.85rem;font-weight:750;margin-bottom:6px}select{min-height:45px;width:100%;border-radius:9px;border:1px solid #666e78;background:#101317;color:white;padding:8px 10px;font:inherit}
+select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+button,.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:43px;border:1px solid #8b683c;border-radius:9px;padding:10px 15px;background:#3b2a1d;color:white;font:inherit;font-weight:750;cursor:pointer;text-decoration:none}
+button.primary{background:var(--accent);border-color:var(--accent);color:#21170e}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+.warning{color:#ffdcc7;background:#3a2d23;border-left:3px solid var(--accent);padding:12px 14px;margin-top:14px;border-radius:8px}
+.error{border-color:#af6064;background:#4d292d;color:#ffe5e5}
+.notes{font-size:.85rem;color:var(--muted);line-height:1.6}
+.pages{display:grid;gap:24px;margin-top:22px;max-width:100%;justify-items:center}
+.sheet{color:#151515;background:#fff;width:210mm;height:297mm;padding:10mm;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 8px 34px #0008;flex:none}
+.sheet.a3{width:297mm;height:420mm}
+.sheet-head{height:16mm;flex:none;border-bottom:.25mm solid #444;display:flex;justify-content:space-between;align-items:center;gap:6mm}
+.sheet-head div:first-child{min-width:0}
+.sheet-head strong{font:700 10pt Arial,sans-serif;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet-head small{font:8pt Arial,sans-serif;display:block}
+.sheet-head .tile-index{font:700 9pt Arial,sans-serif;white-space:nowrap}
+.template-svg{display:block;width:190mm;height:249mm;flex:none}
+.sheet.a3 .template-svg{width:277mm;height:372mm}
+.sheet-foot{height:12mm;flex:none;border-top:.25mm solid #555;display:flex;align-items:center;justify-content:space-between;gap:4mm;font:7.5pt Arial,sans-serif}
+.scale-bar{width:50mm;height:4mm;border:0.35mm solid #111;display:flex;flex:none;justify-content:space-between;align-items:center;position:relative}
+.scale-bar:before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:.3mm solid #111}
+.scale-bar .scale-label{background:white;padding:0 .7mm;position:absolute;left:50%;top:0;transform:translate(-50%,-75%);font:7pt Arial,sans-serif;white-space:nowrap}
+.sheet-foot .scale-note{font-size:7pt;white-space:nowrap}
+.page-info{text-align:right;max-width:110mm}
+@media(max-width:690px){.controls{grid-template-columns:1fr}.sheet-preview{overflow-x:auto}.panel{padding:15px}.wrap{width:calc(100% - 24px)}}
+@media print{
+:root{color-scheme:light}
+html,body{margin:0!important;padding:0!important;background:#fff!important;color:#111!important}
+.no-print,.warning,.pages-title{display:none!important}
+.wrap{margin:0;padding:0;width:100%;max-width:none}
+.pages{display:block;margin:0;padding:0;max-width:none}
+.sheet,.sheet.a3{margin:0;box-shadow:none;break-after:page;page-break-after:always;break-inside:avoid;page-break-inside:avoid}
+.sheet:last-child{break-after:auto;page-break-after:auto}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="no-print">
+    <a href="./">← Back to Pipe Bend Calculator</a>
+    <div class="eyebrow" style="margin-top:13px">DCB ENG / Fabrication templates</div>
+    <h1>1:1 pipe wrap-around templates</h1>
+    <p class="muted">Print and wrap the unrolled mitre shapes around round pipe. The shapes are based on the segmented bend's outside diameter and <strong>mitre angle from square</strong>.</p>
+    <div class="panel">
+      <div class="controls">
+        <div><label for="paper">Paper size</label><select id="paper"><option value="A4">A4 · 210 × 297 mm</option><option value="A3">A3 · 297 × 420 mm</option></select></div>
+        <div><label for="template-type">Template</label><select id="template-type"><option value="full">Complete piece patterns</option><option value="cut">Single mitre cut · reusable</option></select></div>
+        <div id="piece-field"><label for="piece">Pieces to print</label><select id="piece"><option value="all">All unique pieces</option><option value="first">Inlet / first</option><option value="middle">Middle (each)</option><option value="last">Outlet / last</option></select></div>
+      </div>
+      <p class="notes" id="dimensions"></p>
+      <div class="actions"><button type="button" id="print" class="primary">Print actual size / Save as PDF</button><button type="button" id="refresh">Rebuild patterns</button></div>
+      <div class="warning"><strong>Printing:</strong> select <strong>100% / Actual size</strong>, use the same paper size as above, disable <strong>Fit to page</strong> and browser headers/footers. <strong>Measure the 50 mm check bar on every sheet</strong> before using the pattern. If tiled, join sheets by matching the 25 mm registration grid, overlapping each tile by 10 mm. Use only the seam lines to set the pipe circumference.</div>
+      <p class="notes">The bold curves are cut edges; dashed lines are alignment guides. The <strong>seam is on the outside (long side) of the bend</strong>; the middle of the wrap is the inside (short side). The extra 8 mm strip is a taping tab, <em>not</em> extra circumference. For full pieces, cut out the template and trace both ends. For the reusable single-cut pattern, align the dashed square reference line to a square end: the shortest cut point is 35 mm beyond that line. Trace the curved edge and flip the pattern end-for-end for an opposite-facing cut. These are geometric layouts: allow separately for saw kerf, weld gap, bevel, fit-up and pipe tolerances.</p>
+      <div class="warning error" id="error" role="alert" hidden></div>
+    </div>
+    <h2 class="pages-title" style="margin-top:25px">Print preview <span id="page-count" class="muted"></span></h2>
+  </div>
+  <div class="pages" id="pages"></div>
+</div>
+<script>
+'use strict';
+(() => {
+ const $=id=>document.getElementById(id);
+ const params=new URLSearchParams(location.search);
+ const value=(name,defaultValue)=>params.has(name)?Number(params.get(name)):defaultValue;
+ const geometry={D:value('od',48.3),wall:value('wall',3.2),angle:value('angle',90),R:value('radius',150),inlet:value('inlet',100),outlet:value('outlet',100),joints:value('joints',4),qty:value('qty',1)};
+ const mm=n=>Number(n).toFixed(2).replace(/\.00$/,'');
+ const safe=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+ const overlap=10,tab=8;
+ let printable=false;
+ function validate(){
+   const c=geometry;
+   if(!['D','wall','angle','R','inlet','outlet','joints','qty'].every(key=>Number.isFinite(c[key])))throw Error('Invalid bend dimensions were passed from the calculator.');
+   if(c.D<=0||c.D>5000||c.wall<=0||c.wall>=c.D/2||c.R<=c.D/2||c.R>100000)throw Error('Pipe diameter, wall thickness or centreline radius is out of range.');
+   if(c.angle<=0||c.angle>=180||!Number.isSafeInteger(c.joints)||c.joints<1||c.joints>48)throw Error('Segmented bend angle or welded joints is out of range.');
+   if(c.inlet<0||c.outlet<0||c.inlet>100000||c.outlet>100000||!Number.isSafeInteger(c.qty)||c.qty<1||c.qty>10000)throw Error('Straight length or quantity is out of range.');
+   c.beta=c.angle*Math.PI/(360*c.joints);
+   c.k=c.R*Math.tan(c.beta);
+   c.h=(c.D/2)*Math.tan(c.beta);
+   c.C=Math.PI*c.D;
+   c.parts=[
+     {id:'first',name:'Inlet / first',cl:c.inlet+c.k,start:false,end:true,count:1},
+     ...(c.joints>1?[{id:'middle',name:'Middle (each)',cl:2*c.k,start:true,end:true,count:c.joints-1}]:[]),
+     {id:'last',name:'Outlet / last',cl:c.outlet+c.k,start:true,end:false,count:1}
+   ];
+ }
+ function tileCount(length,usable){return Math.max(1,Math.ceil(Math.max(0,length-usable)/(usable-overlap))+1);}
+ function pathOf(points){return points.map((p,i)=>(i?'L':'M')+p[0].toFixed(3)+' '+p[1].toFixed(3)).join(' ');}
+ function makePattern(c,part,kind){
+   const x0=6,N=Math.max(180,Math.min(1600,Math.ceil(c.C/2))),y0=kind==='full'?16:18;
+   const ys=[],ye=[];
+   for(let i=0;i<=N;i++){
+     const phi=2*Math.PI*i/N,x=x0+c.C*i/N,co=Math.cos(phi);
+     if(kind==='full'){
+       ys.push([x,y0+c.h+(part.start?-c.h*co:0)]);
+       ye.push([x,y0+c.h+part.cl+(part.end?c.h*co:0)]);
+     }else{
+       ys.push([x,y0+15]);
+       // The short cut point is 35 mm beyond the square-end reference ring.
+       ye.push([x,y0+50+c.h*(1+co)]);
+     }
+   }
+   // Exact seam-to-seam paper width equals OD*pi, with an 8 mm overwrap tape tab.
+   // The tab is not included in the cylindrical circumference.
+   const baseH=kind==='full'?y0+part.cl+2*c.h+15:y0+50+2*c.h+18;
+   const baseW=x0+c.C+tab+6;
+   const outline=pathOf(ys)+' '+pathOf([...ye].reverse()).replace(/^M/,'L')+' Z';
+   const guides=[c.C/4,c.C/2,c.C*3/4].map((x,i)=>`<line x1="${(x+x0).toFixed(3)}" y1="${(y0-7).toFixed(2)}" x2="${(x+x0).toFixed(3)}" y2="${(baseH-7).toFixed(2)}" stroke="#999" stroke-width="0.23" stroke-dasharray="2 2"/>`+
+     `<text x="${(x+x0).toFixed(3)}" y="${(y0-9).toFixed(2)}" font-size="2.7" text-anchor="middle" fill="#555">${['SIDE','INSIDE (SHORT)','SIDE'][i]}</text>`).join('');
+   const shortY=kind==='full'?(part.start?y0+c.h+c.h:y0+c.h):(y0+50);
+   const longY=kind==='full'?(part.end?y0+c.h+part.cl+c.h:y0+c.h+part.cl):y0+50+2*c.h;
+   const tabTop=ys[ys.length-1][1],tabBottom=ye[ye.length-1][1];
+   const plot=`
+    ${guides}
+    <path d="${outline}" fill="none" stroke="#111" stroke-width="0.6" stroke-linejoin="round"/>
+    <path d="${pathOf(ys)}" fill="none" stroke="#111" stroke-width="0.6"/>
+    <path d="${pathOf(ye)}" fill="none" stroke="#111" stroke-width="0.75"/>
+    <line x1="${x0}" y1="${ys[0][1].toFixed(3)}" x2="${x0}" y2="${ye[0][1].toFixed(3)}" stroke="#111" stroke-width="0.5"/>
+    <line x1="${(x0+c.C).toFixed(3)}" y1="${tabTop.toFixed(3)}" x2="${(x0+c.C).toFixed(3)}" y2="${tabBottom.toFixed(3)}" stroke="#111" stroke-width="0.45" stroke-dasharray="2 1"/>
+    <path d="M${(x0+c.C).toFixed(3)} ${tabTop.toFixed(3)} H${(x0+c.C+tab).toFixed(3)} V${tabBottom.toFixed(3)} H${(x0+c.C).toFixed(3)}" fill="none" stroke="#555" stroke-dasharray="1.8 1.5" stroke-width="0.4"/>
+    <text x="${(x0+c.C+tab/2).toFixed(3)}" y="${((tabTop+tabBottom)/2).toFixed(3)}" font-size="2.7" fill="#555" transform="rotate(-90 ${(x0+c.C+tab/2).toFixed(3)} ${((tabTop+tabBottom)/2).toFixed(3)})" text-anchor="middle">TAB</text>
+    <text x="${x0}" y="${(y0-9).toFixed(3)}" font-size="2.8" fill="#333">SEAM / OUTSIDE (LONG)</text>
+    <text x="${x0}" y="${(baseH-4).toFixed(3)}" font-size="3" fill="#333">OD ${mm(c.D)} mm · circumference ${mm(c.C)} mm · mitre ${(c.beta*180/Math.PI).toFixed(2)}°</text>
+    ${kind==='cut'?`<line x1="${x0}" x2="${(x0+c.C).toFixed(3)}" y1="${(y0+15).toFixed(3)}" y2="${(y0+15).toFixed(3)}" stroke="#666" stroke-width="0.3" stroke-dasharray="3 2"/>`+`<text x="${(x0+3).toFixed(3)}" y="${(y0+12).toFixed(3)}" font-size="2.8" fill="#555">REFERENCE LINE</text>`:''}
+   `;
+   return {W:baseW,H:baseH,plot,part,kind,shortY,longY};
+ }
+ function gridForTile(tileW,tileH,ox,oy){
+   let s='';
+   const fromX=Math.ceil(ox/25)*25,toX=ox+tileW;
+   for(let x=fromX;x<=toX;x+=25){const v=x-ox;s+=`<line x1="${v.toFixed(2)}" y1="0" x2="${v.toFixed(2)}" y2="${tileH}" stroke="#aaa" stroke-width="0.14" stroke-dasharray="1.2 2"/>`;}
+   const fromY=Math.ceil(oy/25)*25,toY=oy+tileH;
+   for(let y=fromY;y<=toY;y+=25){const v=y-oy;s+=`<line x1="0" y1="${v.toFixed(2)}" x2="${tileW}" y2="${v.toFixed(2)}" stroke="#aaa" stroke-width="0.14" stroke-dasharray="1.2 2"/>`;}
+   return s;
+ }
+ function sheetHTML(c,paper,part,kind,tileX,tileY,nx,ny,tileW,tileH,index,total){
+   const ox=tileX*(tileW-overlap),oy=tileY*(tileH-overlap),tileLabel=`Tile ${tileX+1}/${nx} across · ${tileY+1}/${ny} down`;
+   const {plot}=makePattern(c,part,kind);
+   const name=kind==='cut'?'Reusable single mitre':part.name;
+   const headerMeta=kind==='cut'?`Single end · ${(c.beta*180/Math.PI).toFixed(2)}° from square`:
+      `${mm(part.cl)} mm CL · ${mm(part.cl-(Number(part.start)+Number(part.end))*c.h)} short · ${mm(part.cl+(Number(part.start)+Number(part.end))*c.h)} long`;
+   return `<section class="sheet ${paper==='A3'?'a3':''}" data-piece="${kind==='cut'?'cut':part.id}" data-col="${tileX+1}" data-row="${tileY+1}" data-x="${ox}" data-y="${oy}">
+      <div class="sheet-head"><div><strong>DCB ENG | ${safe(name)} | OD ${mm(c.D)} mm</strong><small>${safe(headerMeta)} · ${safe(tileLabel)}</small></div><div class="tile-index">${index} / ${total}</div></div>
+      <svg class="template-svg" xmlns="http://www.w3.org/2000/svg" width="${tileW}mm" height="${tileH}mm" viewBox="0 0 ${tileW} ${tileH}" aria-label="True scale ${safe(name)} pipe wrap template">
+      ${gridForTile(tileW,tileH,ox,oy)}<g transform="translate(${-ox} ${-oy})">${plot}</g>
+      </svg>
+      <div class="sheet-foot"><div class="scale-bar"><span class="scale-label">50 mm CHECK</span></div><div class="page-info">Actual size (100%) · match grid at tiled joins<br>Paper: ${paper} · overlap tiles 10 mm</div></div>
+    </section>`;
+ }
+ function rebuild(){
+   const error=$('error'), pages=$('pages');error.hidden=true;pages.replaceChildren();printable=false;$('print').disabled=true;
+   const paper=$('paper').value,kind=$('template-type').value,choice=$('piece').value;
+   $('piece-field').hidden=kind==='cut';
+   $('page-size').textContent=`@page{size:${paper} portrait;margin:0}`;
+   try{
+     validate();
+     const c=geometry, dims=paper==='A3'?{W:277,H:372}:{W:190,H:249};
+     $('dimensions').textContent=`Pipe OD: ${mm(c.D)} mm · Wall: ${mm(c.wall)} mm · Wrap circumference: ${mm(c.C)} mm · Joint mitre: ${(c.beta*180/Math.PI).toFixed(2)}° from square · Quantity: ${c.qty}.`;
+     const parts=kind==='cut'?[{id:'cut',name:'Reusable single mitre',cl:0,start:false,end:false,count:1}]:c.parts.filter(p=>choice==='all'||p.id===choice);
+     if(!parts.length)throw Error('No middle piece is required when the elbow has only one welded joint. Choose another piece.');
+     const jobs=parts.map(part=>{const pattern=makePattern(c,part,kind);return {part,pattern,nx:tileCount(pattern.W,dims.W),ny:tileCount(pattern.H,dims.H)};});
+     const count=jobs.reduce((acc,j)=>acc+j.nx*j.ny,0);
+     if(count>80)throw Error(`This pattern needs ${count} pages at 1:1. Choose A3, a single cut or fewer pieces; it will not be silently scaled down.`);
+     let idx=0,buf='';
+     for(const job of jobs)for(let row=0;row<job.ny;row++)for(let col=0;col<job.nx;col++)buf+=sheetHTML(c,paper,job.part,kind,col,row,job.nx,job.ny,dims.W,dims.H,++idx,count);
+     pages.innerHTML=buf;
+     $('page-count').textContent=`· ${count} ${count===1?'sheet':'sheets'} · 1:1 / 100%`;
+     $('print').disabled=false;printable=true;
+   }catch(e){error.textContent=e.message;error.hidden=false;$('page-count').textContent='· unavailable';}
+ }
+ ['paper','template-type','piece'].forEach(id=>$(id).addEventListener('change',rebuild));
+ $('refresh').addEventListener('click',rebuild);
+ $('print').addEventListener('click',()=>{if(printable)window.print();});
+ rebuild();
+})();
+</script>
+</body>
+</html>
