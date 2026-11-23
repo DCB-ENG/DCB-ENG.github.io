@@ -146,13 +146,27 @@
 .cage-bend-sum{font-size:12px;color:#b3bfc7;margin-top:10px;line-height:1.45}
 .cage-bend-no-bends{padding:9px;border-radius:7px;border:1px dashed #55636d;color:#cdd7dd;background:#1c262b;font-size:12px}
 @media print{#cageBendListPanel{break-before:page}.cage-bend-member{break-inside:avoid;border-color:#aaa;background:white}.cage-bend-member-head strong,.cage-bend-member-head .bend-member-stats,.cage-bend-datum,.cage-bend-datum b,.cage-bend-sum,.cage-bend-no-bends{color:#161616}.cage-bend-list{display:block}}
+
+.rules-messages{display:grid;gap:7px;margin:12px 0}.rule-message{border:1px solid #46535c;padding:9px 12px;border-radius:8px;background:#151d21;font-size:13px;line-height:1.5}.rule-message.warn{border-color:#b26c3e;background:#312219;color:#ffce9e}.rule-message.pass{border-color:#316b54;color:#b1efce}.rule-message.manual{color:#bed0dc}#rulesPanel .fields{margin-top:10px}#rulesPanel a{color:#ffaa51}
 </style>
 </head>
 <body>
 <div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/bolt-torque/">Bolt Torque</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" href="/pipe-branch/">Pipe Branch</a><a class="dcb-nav__link" aria-current="page" href="/roll-cage/">Roll Cage</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
-<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Tube cut list · Bend mark lists · Front legs · Fishmouths · v1.11</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><a class="link-button" href="#frontPanel">Front legs</a><a class="link-button" href="#cageCutPanel">Tube cut list</a><a class="link-button" href="#cageBendListPanel">Bend marks</a><a class="link-button" href="#allMemberMarksPanel">All tube marks</a><a class="link-button" href="#notchPanel">Wrap-around templates</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
-<main class="wrap-main"><p class="intro">Measure the <strong>available inside width and height</strong>, then enter your tube size and the <strong>centreline radius (CLR)</strong> of your actual bending die. The live drawing and three-mark layout update as you change the measurements. Optional diagonal brace and paired rear stays have their own straight-tube cut list and rear/plan views. Each member has its own CHS sizing. Harness bars connect the rear stays, optional continuous front legs follow the roof and A-pillars, and a windscreen header joins their upper sections. With front legs enabled, side intrusion bars connect to their actual 3D centreline rather than an approximate front reference. Supported tube-to-tube ends generate individually labelled 1:1 fishmouth wrap-arounds. Every enabled tube has its own straight-blank marking diagram, a stable cut-list part number (optionally prefixed with a job reference), and a corresponding printable fishmouth end label. Export numbered CSV or a print-ready A4 cut list, plus individual mark-out diagrams and a consolidated per-tube bend mark-out schedule with printable and CSV versions. All dimensions are in millimetres. Marks are geometric positions, independent of bender brand.</p>
-<div class="layout"><aside class="panel controls"><h2>Hoop layout</h2><div class="choose"><button type="button" id="mode2" class="active" aria-pressed="true">2-bend U hoop</button><button type="button" id="mode4" aria-pressed="false">4-bend tapered</button></div>
+<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Cage class checks · Reinforcements · Laser STEP · v1.12</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><a class="link-button" href="#frontPanel">Front legs</a><a class="link-button" href="#cageCutPanel">Tube cut list</a><a class="link-button" href="#cageBendListPanel">Bend marks</a><a class="link-button" href="#allMemberMarksPanel">All tube marks</a><a class="link-button" href="#notchPanel">Wrap-around templates</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
+<main class="wrap-main"><p class="intro">Measure the <strong>available inside width and height</strong>, then enter your tube size and the <strong>centreline radius (CLR)</strong> of your actual bending die. The live drawing and three-mark layout update as you change the measurements. Optional diagonal brace and paired rear stays have their own straight-tube cut list and rear/plan views. Each member has its own CHS sizing. The separate rear-stay crossbar connects the rear stays, optional continuous front legs follow the roof and A-pillars, and a windscreen header joins their upper sections. With front legs enabled, side intrusion bars connect to their actual 3D centreline rather than an approximate front reference. Supported tube-to-tube ends generate individually labelled 1:1 fishmouth wrap-arounds. Every enabled tube has its own straight-blank marking diagram, a stable cut-list part number (optionally prefixed with a job reference), and a corresponding printable fishmouth end label. Export numbered CSV or a print-ready A4 cut list, plus individual mark-out diagrams and a consolidated per-tube bend mark-out schedule with printable and CSV versions. All dimensions are in millimetres. Marks are geometric positions, independent of bender brand.</p>
+<section class="panel" id="rulesPanel"><div class="drawing-header"><h2 style="margin:0">Cage rules &amp; class checks</h2><span class="unit">2026 · advisory, not certification</span></div>
+<div class="fields">
+<div class="field"><label for="rulesBody">Governing body</label><select id="rulesBody"><option value="generic">Generic · no rule selection</option><option value="aasa">AASA · 2026 Safety Cage Policy</option><option value="ma">Motorsport Australia · 2026 Schedule J</option></select></div>
+<div class="field"><label for="rulesClass">Structure class</label><select id="rulesClass"><option value="generic">Not selected</option></select></div>
+<div class="field"><label for="driverSide">Driver position</label><select id="driverSide"><option value="right">Right-hand drive</option><option value="left">Left-hand drive</option></select></div>
+<div class="field"><label for="occupants">Occupants</label><select id="occupants"><option value="1">Driver only</option><option value="2">Driver + passenger/co-driver</option></select></div>
+<div class="field"><label for="vehicleWeight">Start-line mass (kg)</label><input type="number" id="vehicleWeight" value="1250" min="1" step="1"></div>
+<div class="field"><label for="tubeSpec">Actual tube type (verify certificate)</label><select id="tubeSpec"><option value="unverified">Not verified</option><option value="cds">CDS / CDW unalloyed steel</option><option value="as1163">AS/NZS 1163 CHS</option></select></div>
+<div class="field"><label for="doorOpeningHeight">Door opening H (mm)</label><input type="number" id="doorOpeningHeight" value="900" min="1" step="1"></div>
+<div class="field"><label for="doorSillHeight">Door sill height above datum (mm)</label><input type="number" id="doorSillHeight" value="0" step="1"></div>
+</div>
+<p class="notes">Not an approval or registration. Requirements also depend on event type, class, occupant count, vehicle and welding/mounting details. <a href="https://www.aasa.com.au/ncr-appendices" target="_blank" rel="noopener noreferrer">AASA 2026 policy</a> · <a href="https://motorsport.org.au/regulations/manual/technical-appendix/" target="_blank" rel="noopener noreferrer">Motorsport Australia Schedule J</a>.</p>
+<div class="cage-cut-summary" id="rulesSummary">Select a ruleset to see member and placement checks.</div><div id="rulesMessages" class="rules-messages"></div></section><div class="layout"><aside class="panel controls"><h2>Hoop layout</h2><div class="choose"><button type="button" id="mode2" class="active" aria-pressed="true">2-bend U hoop</button><button type="button" id="mode4" aria-pressed="false">4-bend tapered</button></div>
 <h3>Vehicle measurements</h3><div class="fields"><div class="field"><label for="width">Available width (mm)</label><input type="number" min="1" step="1" id="width" value="1250"><span class="hint">Between side obstacles</span></div><div class="field"><label for="height">Available height (mm)</label><input type="number" min="1" step="1" id="height" value="1300"><span class="hint">Floor / mounting cut to roof</span></div><div class="field field-hidden tapered"><label for="roofWidth">Roof available width (mm)</label><input type="number" min="1" step="1" id="roofWidth" value="1020"><span class="hint">Available width near roof</span></div><div class="field field-hidden tapered"><label for="shoulderWidth">Shoulder available width (mm)</label><input type="number" min="1" step="1" id="shoulderWidth" value="1250"><span class="hint">Between obstacles at shoulder height</span></div><div class="field field-hidden tapered"><label for="shoulder">Shoulder corner height (mm)</label><input type="number" min="0" step="1" id="shoulder" value="750"><span class="hint">Virtual vertical-to-slope corner</span></div><div class="field"><label for="sideGap">Side clearance (each, mm)</label><input type="number" min="0" step="1" id="sideGap" value="12"></div><div class="field"><label for="topGap">Roof clearance (mm)</label><input type="number" min="0" step="1" id="topGap" value="12"></div></div>
 <h3>Pipe + bending die</h3><div class="fields"><div class="field"><label for="od">Tube outside diameter (mm)</label><input type="number" min="1" step="0.01" id="od" value="44.45"></div><div class="field"><label for="wall">Wall thickness (mm)</label><input type="number" min=".1" step=".1" id="wall" value="2.6"></div><div class="field"><label for="radius">Bender CLR (mm)</label><input type="number" min="1" step="1" id="radius" value="150"><span class="hint">Centre of tube to die centre</span></div><div class="field"><label for="extra">Trim stock at each end (mm)</label><input type="number" min="0" step="1" id="extra" value="0"><span class="hint">Optional extra straight stock</span></div></div><div class="definition"><strong>How to measure:</strong> Width is the maximum space at the legs. Height is from the intended tube end/mounting plane to the roof obstacle. For 4 bends, enter the available width at the shoulders and roof, plus the shoulder transition height. Different shoulder and base widths produce angled lower legs. All dimensions describe the <strong>finished centreline geometry</strong>, not an estimated springback amount.</div>
 <div class="addon-group">
@@ -178,8 +192,8 @@
 <div class="field"><label for="stayWall">Rear stay wall thickness (mm)</label><input type="number" id="stayWall" value="2.6" min=".1" step=".1"></div>
     </div>
   </div>
-<label class="addon-heading"><input type="checkbox" id="useHarness" checked> Harness crossbar <span class="comp-pill">rear stays</span></label>
-<div class="addon-fields" id="harnessFields"><p class="addon-hint">Straight crossbar between both rear stays, located using height above the hoop mounting plane.</p><div class="fields">
+<label class="addon-heading"><input type="checkbox" id="useHarness" checked> Rear-stay crossbar <span class="comp-pill">not main-hoop harness</span></label>
+<div class="addon-fields" id="harnessFields"><p class="addon-hint">Straight transverse tube joining rear stays. This is NOT the AASA full-width main-hoop harness mounting bar.</p><div class="fields">
 <div class="field"><label for="harnessHeight">Bar centre height (mm)</label><input type="number" id="harnessHeight" value="600" min="0" step="1"></div>
 <div class="field"><label for="harnessOD">Harness CHS OD (mm)</label><input type="number" id="harnessOD" list="braceODPresets" value="38.1" min="1" step=".01"></div>
 <div class="field"><label for="harnessWall">Harness wall (mm)</label><input type="number" id="harnessWall" value="2.6" min=".1" step=".1"></div>
@@ -229,6 +243,31 @@
     </div>
     <div class="definition"><strong>Layout only:</strong> Front-leg geometry is a measured centreline fit, not a cage approval. Confirm the front leg follows the A-pillar, leaves occupant clearances and meets the permitted bend and mounting requirements. The AASA SC-1 illustration shows separate front legs and a windscreen header; it does not establish safe dimensions for a particular vehicle. Check your cage class and the <a href="https://www.aasa.com.au/ncr-appendices" target="_blank" rel="noopener noreferrer">current AASA safety cage requirements</a>, including header location, mounting, occupant clearance and tube specifications.</div>
   </div>
+<label class="addon-heading"><input type="checkbox" id="useHoopHarness"> Main-hoop harness bar <span class="comp-pill">full hoop width</span></label>
+<div class="addon-fields off" id="hoopHarnessFields"><p class="addon-hint">Single straight tube from left to right main hoop. For belts, separately validate harness angles, welds and fitting locations.</p>
+<div class="fields"><div class="field"><label for="hoopHarnessHeight">Harness bar height (mm)</label><input type="number" id="hoopHarnessHeight" value="650" step="1"></div>
+<div class="field"><label for="hoopHarnessOD">Harness bar CHS OD (mm)</label><input type="number" id="hoopHarnessOD" list="braceODPresets" value="38.1" step=".01"></div>
+<div class="field"><label for="hoopHarnessWall">Harness bar wall (mm)</label><input type="number" id="hoopHarnessWall" value="2.6" step=".1"></div></div></div>
+<label class="addon-heading"><input type="checkbox" id="useMainCross"> Second main-hoop diagonal <span class="comp-pill">X cross</span></label>
+<div class="addon-fields off" id="mainCrossFields"><p class="addon-hint">Opposite-hand diagonal using the primary diagonal connection heights and CHS. Check the central crossing and mandatory gussets.</p></div>
+<label class="addon-heading"><input type="checkbox" id="useRoofX"> Roof cross (two diagonals) <span class="comp-pill">front legs required</span></label>
+<div class="addon-fields off" id="roofXFields"><p class="addon-hint">Opposed roof diagonals from rear main-hoop points to opposite upper front-leg/header points. Intersecting roof tubes require separate design of their crossing/gussets.</p>
+<div class="fields"><div class="field"><label for="roofOD">Roof brace CHS OD (mm)</label><input id="roofOD" type="number" list="braceODPresets" value="38.1" step=".01"></div>
+<div class="field"><label for="roofWall">Roof brace wall (mm)</label><input id="roofWall" type="number" value="2.6" step=".1"></div></div></div>
+<label class="addon-heading"><input type="checkbox" id="usePillarA"> A-pillar reinforcing braces <span class="comp-pill">left + right</span></label>
+<div class="addon-fields off" id="pillarAFields"><p class="addon-hint">Straight diagonal chords between measured upper and lower points on each front leg. Check actual door/pillar clearance before building.</p>
+<div class="fields"><div class="field"><label for="pillarAUpperHeight">A-pillar upper joint height (mm)</label><input id="pillarAUpperHeight" type="number" value="980" step="1"></div>
+<div class="field"><label for="pillarALowerHeight">A-pillar lower joint height (mm)</label><input id="pillarALowerHeight" type="number" value="65" step="1"></div></div></div>
+<label class="addon-heading"><input type="checkbox" id="usePillarB"> B-pillar reinforcing braces <span class="comp-pill">left + right</span></label>
+<div class="addon-fields off" id="pillarBFields"><p class="addon-hint">Straight tubes triangulating between the main hoop and the upper roof section of each front leg.</p>
+<div class="fields"><div class="field"><label for="pillarBRearHeight">B-pillar lower hoop joint height (mm)</label><input id="pillarBRearHeight" type="number" value="650" step="1"></div>
+<div class="field"><label for="pillarBRoofFraction">Roof attachment (% of roof run)</label><input id="pillarBRoofFraction" type="number" value="25" min="5" max="80" step="1"></div></div></div>
+<label class="addon-heading"><input type="checkbox" id="useDoor2"> Second door bar (per selected side) <span class="comp-pill">double anti-intrusion</span></label>
+<div class="addon-fields off" id="door2Fields"><p class="addon-hint">Second straight bar crossing the first. Does not automatically design the crossing joint or gussets.</p>
+<div class="fields"><div class="field"><label for="door2RearHeight">Second door rear joint height (mm)</label><input id="door2RearHeight" type="number" value="400" step="1"></div>
+<div class="field"><label for="door2FrontHeight">Second door front joint height (mm)</label><input id="door2FrontHeight" type="number" value="170" step="1"></div>
+<div class="field"><label for="door2OD">Second door CHS OD (mm)</label><input id="door2OD" type="number" list="braceODPresets" value="38.1" step=".01"></div>
+<div class="field"><label for="door2Wall">Second door wall (mm)</label><input id="door2Wall" type="number" value="2.6" step=".1"></div></div></div>
   <h3>Tube preparation</h3>
   <div class="fields"><div class="field full"><label for="fitExtra">Extra material for coping, at each end (mm)</label><input type="number" id="fitExtra" value="20" min="0" step="1"><span class="hint">Added to each straight brace/stay span as a rough prep blank allowance. Trim/cope to fit.</span></div></div>
   <div class="definition"><strong>Important:</strong> Member lengths are measured between the <strong>intersection of member centrelines</strong>, not from the finished fishmouth tips. The prep length is a suggested oversized straight blank, <em>not</em> a calculated cope contour or an engineered cage joint.</div>
@@ -278,12 +317,20 @@
   <p class="notes">Sections and bend marks are theoretical centreline dimensions; they are not bender clamp/feed reference marks or production-ready compensated machine instructions. The front-leg rear end joins the main hoop; floor mounting feet are not tube-to-tube joints. The front legs are each one continuous tube, not assembled from individual straight sections. Validate bend-plane rotation against your bender and test tube.</p>
   <div class="row-actions"><button id="frontSvgDownload">Save front-structure views SVG</button><button id="frontBendCsvDownload">Save front-leg bend CSV</button></div>
 </section>
-<section class="panel" id="notchPanel">
+<section class="panel" id="reinforcementPanel"><div class="drawing-header"><h2 style="margin:0">Reinforcement layout · plan / front / side</h2><span class="unit">Projected centreline only · not an approved cage drawing</span></div>
+<div class="subviews">
+<div class="subview"><h3>Roof reinforcement · plan</h3><svg id="reinforcementPlanSvg" viewBox="0 0 650 360" aria-label="Roof brace plan"></svg></div>
+<div class="subview"><h3>Main hoop · front</h3><svg id="reinforcementFrontSvg" viewBox="0 0 650 360" aria-label="Main hoop cross and harness front"></svg></div>
+<div class="subview"><h3>Door, A- and B-pillar reinforcements · side</h3><svg id="reinforcementSideSvg" viewBox="0 0 650 360" aria-label="Pillar and door bar side elevation"></svg></div>
+</div><div class="cage-cut-summary" id="reinforcementSummary"></div></section><section class="panel" id="notchPanel">
   <div class="drawing-header" style="padding:0 0 10px"><h2 style="margin:0">All tube-to-tube joints · printable wrap-arounds</h2><span class="unit">1:1 CHS developed OD · individual end labels</span></div>
   <p class="notch-explain">Each separate tube end is calculated against its actual <strong>3D parent tube axis</strong> or the finished main-hoop centreline, including bends where a single cope contour is valid. Upper and lower ends, left and right sides, and harness ends are individually labelled. Rear stay footplates are <strong>not</strong> tube-to-tube joints.</p>
   <div class="notch-banner" id="notchStatus" role="status">Calculating joints…</div>
-  <div class="row-actions"><button class="primary" id="printNotches">Print all available · 1:1</button><button id="modelJSON">Save geometry JSON · future STEP</button><span class="unit" id="notchCount">—</span></div>
-  <div id="jointNotchCards" class="subviews notch-previews joint-cards"></div>
+  <div class="row-actions"><button class="primary" id="printNotches">Print all available · 1:1</button><button id="modelJSON">Save geometry JSON · for CAD STEP</button><span class="unit" id="notchCount">—</span></div>
+  <div class="definition" id="stepExportHelp"><strong>True 3D STEP files (desktop workflow):</strong> Export the geometry JSON above and use the
+<a href="https://github.com/DCB-ENG/DCB-ENG.github.io/blob/main/tools/roll_cage_step_export.py" target="_blank" rel="noopener noreferrer">CadQuery/OpenCascade STEP exporter</a>.
+The website is static; it does not generate STEP inside the browser. The converter builds hollow B-rep tube solids, copes ends against modelled parent tubes and checks STEP file round-trips. Unmodelled parent reference ends remain uncut. <strong>Crossing-bar junctions, gussets, mounting feet, weld gaps and laser-machine-specific setup are not automatically solved.</strong>
+<a href="https://github.com/DCB-ENG/DCB-ENG.github.io/blob/main/docs/roll-cage-step-export.md" target="_blank" rel="noopener noreferrer">Windows installation / usage guide</a>.</div><div id="jointNotchCards" class="subviews notch-previews joint-cards"></div>
   <p class="notes">Every sheet includes a <strong>100 mm calibration line</strong>. Print at actual size / 100% with no fit-to-page scaling; measure the line before cutting. The reference UP/FRONT directions are defined for <em>each tube end</em> and may not match when the tube is reversed. Mark reference lines on the physical tube first. Templates represent ideal external-cylinder intersection without weld gap, kerf, tube deflection or coating. Treat the front end of a side bar as unverified until you enter and confirm the actual front/A-pillar tube OD and both lean angles. Use a test fit before cutting final cage components.</p>
 </section>
 <section class="panel" id="marksPanel"><div class="drawing-header" style="padding:0 0 8px"><h2 style="margin:0">Straight-tube mark-out</h2><span class="unit">All measurements from ONE datum end</span></div>
@@ -354,7 +401,7 @@
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean','frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim','headerHeight','headerOD','headerWall'];
+  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean','frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim','headerHeight','headerOD','headerWall','hoopHarnessHeight','hoopHarnessOD','hoopHarnessWall','roofOD','roofWall','pillarAUpperHeight','pillarALowerHeight','pillarBRearHeight','pillarBRoofFraction','door2RearHeight','door2FrontHeight','door2OD','door2Wall'];
   let mode=2, latest=null;
   const round=(x,places=1)=>Number(x).toFixed(places);
   const dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
@@ -487,9 +534,25 @@
   return null;
 }
 
+  // Reuse unchanged expensive 3D cope profiles when only unrelated form inputs change.
+  const saddleCache=new Map();
   function generateTubeSaddle(spec){
+  const parentHoop=spec.parentHoop;
+  const parentPath=spec.parentPath;
+  const key=JSON.stringify([
+    spec.id,spec.branchOD,spec.branchWall,spec.parentOD,spec.outer,spec.other,
+    spec.parentAxis,spec.parentPoint,
+    parentHoop&&[parentHoop.v.radius,parentHoop.points,parentHoop.bends.map(b=>[b.entry,b.exit,b.angleRad,b.normal,b.incoming])],
+    parentPath&&[parentPath.radius,parentPath.points,parentPath.bends.map(b=>[b.entry,b.exit,b.angleRad,b.normal,b.incoming])]
+  ]);
+  if(saddleCache.has(key))return saddleCache.get(key);
   const j={...spec};
-  const fail=message=>({...j,error:message});
+  const fail=message=>{
+    const result={...j,error:message};
+    if(saddleCache.size>120)saddleCache.clear();
+    saddleCache.set(key,result);
+    return result;
+  };
   if(![j.branchOD,j.branchWall,j.parentOD].every(Number.isFinite)||j.branchOD<=0||j.parentOD<=0||j.branchWall<=0||j.branchWall>=j.branchOD/2)
     return fail("Enter a positive CHS OD and a wall thickness smaller than half the tube OD.");
   if(j.branchOD>j.parentOD+1e-6)
@@ -540,6 +603,8 @@
     profile:profile.map(p=>({...p,cut:p.depth-low})),parentType:j.parentHoop?"formed hoop":"straight CHS"});
   j.paper=paperForNotch(j);
   if(!j.paper)return fail("This wrap-around exceeds A3 landscape at 1:1. Use a tiled template or larger-format printing.");
+  if(saddleCache.size>120)saddleCache.clear();
+  saddleCache.set(key,j);
   return j;
 }
 
@@ -551,6 +616,32 @@
   const nominalSquare=!errors.length?brace.length-upper.minDepth-lower.minDepth:null;
   if(nominalSquare!==null&&nominalSquare<=0)errors.push("Notch setback exceeds the available diagonal length.");
   return {upper,lower,errors,nominalSquare,paper:upper.paper&&lower.paper?(upper.paper.w>=lower.paper.w?upper.paper:lower.paper):null};
+}
+
+  function extraMemberJoints(g){
+  const xs=g.addons.extras?.members||[],out=[];
+  for(const m of xs){
+    const endpoints=[{end:'NEAR',point:m.near,other:m.far,parent:m.nearParent},{end:'FAR',point:m.far,other:m.near,parent:m.farParent}];
+    for(const e of endpoints){
+      const q=e.parent,side=q?.side||'left',front=g.addons.front?.errors.length?null:g.addons.front;
+      const parentIsFront=q?.kind==='front'&&front&&front[side];
+      const parentIsHeader=q?.kind==='header'&&front?.header;
+      const axis=q?.kind==='hoop'?q.point?.tangent:parentIsFront?
+        q.point?.tangent||front[side].bends[0]?.incoming:parentIsHeader?{x:1,y:0,z:0}:null;
+      const parentOD=q?.kind==='hoop'?g.v.od:parentIsFront?g.v.frontOD:parentIsHeader?g.v.headerOD:g.v.frontTubeOD;
+      const name=q?.kind==='hoop'?'Main hoop':parentIsFront?`${side} front leg`:parentIsHeader?'Windscreen header':'Measured front reference tube';
+      const id=m.id+'-'+e.end.toLowerCase(),title=`${m.title.toUpperCase()} — ${e.end} / ${name.toUpperCase()}`;
+      if(!axis||!Number.isFinite(parentOD)||q?.kind==='reference'&&!$('frontTubeConfirmed').checked){
+        out.push({id,title,member:m.title,end:e.end+' END',error:q?.kind==='reference'?'Confirm the front receiving tube OD and lean angles.':'No local parent tube tangent could be established.'});
+        continue;
+      }
+      const j=generateTubeSaddle({id,title,member:m.title,end:e.end+' END',branchOD:m.od,branchWall:m.wall,parentOD,
+        outer:e.point,other:e.other,parentAxis:axis,parentHoop:q?.kind==='hoop'?g:undefined,
+        parentPath:parentIsFront?front[side]:undefined,parentPoint:parentIsHeader?front.header.left:undefined,parentName:name});
+      out.push(j);
+    }
+  }
+  return out;
 }
 
   function allTubeJoints(g){
@@ -609,6 +700,7 @@
       }
     }
   }
+  joins.push(...extraMemberJoints(g));
   return joins;
 }
 
@@ -751,6 +843,208 @@
     return result;
   }
 
+  function extraMemberGeometry(g,base,errors){
+  const v=g.v,fit=Math.max(0,v.fitExtra),extra={members:[],hoopHarness:null,cross:null,roof:null,pillarA:null,pillarB:null,door2:null};
+  const enabled=id=>$(id).checked;
+  const validTube=(od,wall)=>Number.isFinite(od)&&Number.isFinite(wall)&&od>0&&wall>0&&wall<od/2;
+  const parentHoop=(point)=>({kind:'hoop',point});
+  const parentFront=(side,point)=>({kind:'front',side,point});
+  const add=(id,title,od,wall,p,q,near,far)=>{
+    if(!validTube(od,wall)){errors.push(title+': invalid CHS size/wall.');return null;}
+    if(!p||!q||!near||!far){errors.push(title+': unable to locate a parent tube joint.');return null;}
+    const length=mag3(sub3(v3(q),v3(p)));
+    if(!Number.isFinite(length)||length<=od){errors.push(title+': member is too short for this CHS.');return null;}
+    const m={id,title,od,wall,near:v3(p),far:v3(q),nearParent:near,farParent:far,length,blank:length+2*fit};
+    extra.members.push(m);return m;
+  };
+  if(enabled('useHoopHarness')){
+    const h=v.hoopHarnessHeight, left=hoopAtHeight(g,h,'left'),right=hoopAtHeight(g,h,'right');
+    extra.hoopHarness=add('hoop-harness','Full-width main-hoop harness bar',v.hoopHarnessOD,v.hoopHarnessWall,
+      left,right,parentHoop(left),parentHoop(right));
+    if(!left||!right)errors.push('Main hoop harness bar: select a height within the existing hoop.');
+  }
+  if(enabled('useMainCross')){
+    if(!base.brace){errors.push('Main-hoop X needs the primary diagonal enabled and valid.');}
+    else{
+      const up=hoopAtHeight(g,v.braceTop,base.brace.lowerSide),low=hoopAtHeight(g,v.braceBottom,base.brace.upperSide);
+      extra.cross=add('main-cross','Main-hoop second diagonal / X',v.braceOD,v.braceWall,up,low,parentHoop(up),parentHoop(low));
+    }
+  }
+  const front=base.front&&base.front.errors.length===0?base.front:null;
+  const needsFront=enabled('useRoofX')||enabled('usePillarA')||enabled('usePillarB');
+  if(needsFront&&!front)errors.push('Roof and A/B-pillar reinforcing braces require valid continuous front legs.');
+  if(front){
+    if(enabled('useRoofX')){
+      const roof=[];
+      for(const side of ['left','right']){
+        const other=side==='left'?'right':'left';
+        const h=front.header,from=h? h[other] : null;
+        if(!h){errors.push('Roof X requires an enabled windscreen header to receive both front joints.');continue;}
+        const toward=other==='left'?1:-1,offset=Math.min(50,h.length*0.2);
+        const q={x:from.x+toward*offset,y:from.y,z:from.z},p=hoopAtHeight(g,v.frontTieHeight,side);
+        const m=add(`roof-${side}`,`${side.toUpperCase()} rear-to-opposite-header roof diagonal`,
+          v.roofOD,v.roofWall,p,q,parentHoop(p),{kind:'header',point:q});
+        if(m)roof.push(m);
+      }
+      extra.roof=roof.length?roof:null;
+    }
+    if(enabled('usePillarA')){
+      const arr=[];
+      for(const side of ['left','right']){
+        const leg=front[side];
+        const upper=frontLegAtHeight(leg,v.pillarAUpperHeight),lower=frontLegAtHeight(leg,v.pillarALowerHeight,false);
+        const m=add(`pillar-a-${side}`,`${side.toUpperCase()} A-pillar reinforcement`,v.frontOD,v.frontWall,
+          upper,lower,parentFront(side,upper),parentFront(side,lower));
+        if(m)arr.push(m);
+      }
+      extra.pillarA=arr.length?arr:null;
+    }
+    if(enabled('usePillarB')){
+      const arr=[],fract=v.pillarBRoofFraction/100;
+      if(!Number.isFinite(fract)||fract<=0||fract>=1){errors.push('B-pillar roof attachment percentage must be between 0 and 100.');}
+      else for(const side of ['left','right']){
+        const leg=front[side],low=hoopAtHeight(g,v.pillarBRearHeight,side),start=leg.points[0],end=leg.bends[0].entry;
+        const upper={x:start.x+(end.x-start.x)*fract,y:start.y+(end.y-start.y)*fract,z:start.z+(end.z-start.z)*fract};
+        const m=add(`pillar-b-${side}`,`${side.toUpperCase()} B-pillar reinforcement`,v.frontOD,v.frontWall,
+          low,upper,parentHoop(low),parentFront(side,upper));
+        if(m)arr.push(m);
+      }
+      extra.pillarB=arr.length?arr:null;
+    }
+  }
+  if(enabled('useDoor2')){
+    const arr=[],sides=$('doorSides').value==='both'?['left','right']:[$('doorSides').value];
+    if(!enabled('useDoor'))errors.push('Double door bars need the primary side-intrusion bars.');
+    else for(const side of sides){
+      const cx=g.Wc/2,sgn=side==='left'?-1:1;
+      const rear=hoopAtHeight(g,v.door2RearHeight,side);
+      const fr=front?frontLegAtHeight(front[side],v.door2FrontHeight):null;
+      const ahead=fr||(!front&&v.doorRun>0?{x:cx+sgn*v.doorFrontWidth/2,y:v.door2FrontHeight,z:-v.doorRun}:null);
+      const m=add(`door2-${side}`,`${side.toUpperCase()} second side-intrusion bar`,v.door2OD,v.door2Wall,
+        rear,ahead,parentHoop(rear),fr?parentFront(side,fr):{kind:'reference',side,point:ahead});
+      if(m)arr.push(m);
+    }
+    extra.door2=arr.length?arr:null;
+  }
+  return extra;
+}
+
+  function ruleReview(g){
+  const body=$('rulesBody').value||'generic',cls=$('rulesClass').value||'generic',
+    occupants=Number($('occupants').value||1),driver=$('driverSide').value||'right',
+    mass=Number($('vehicleWeight').value),material=$('tubeSpec').value||'unverified';
+  const a=g.addons,ex=a.extras||{},items=[];
+  const push=(kind,code,explanation)=>items.push({kind,code,explanation});
+  if(body==='generic'){push('manual','SELECT RULESET','Generic fabrication layout; no sanctioning-body requirements have been checked.');return {body,cls,items,checks:0,alerts:0};}
+  if(!Number.isFinite(mass)||mass<=0)push('warn','MASS','Enter a valid start-line vehicle mass before relying on tube-size checks.');
+  const has=id=>$(id)?.checked||false;
+  const req=(ok,title,article)=>push(ok?'pass':'warn',title,ok?`Geometry/member is present — inspect the actual joint and ${article}.`:`Required member is absent or geometrically invalid — see ${article}.`);
+  const pair=ex=>Array.isArray(ex)&&ex.length===2;
+  req(!!a.stays,'Two rear stays',body==='aasa'?'AASA 2.5':'Schedule J Article 12/13');
+  if(body==='aasa'){
+    if(cls==='1'||cls==='1a'||cls==='2')req(!!a.brace,'Single primary diagonal','AASA 2.4');
+    if(cls==='3')req(!!ex.cross,'Main-hoop X / cross','AASA 2.13 / SC-14');
+    if(['2','3'].includes(cls)){
+      req(!!a.front&&!a.front.errors.length,'Continuous front legs','AASA 2.7');
+      req(!!a.front?.header,'Windscreen header','AASA 2.8');
+    }
+    if(['1a','2','3'].includes(cls)){
+      req(!!a.door?.members?.some(m=>m.name.toLowerCase()===driver),'Door protection on driver side','AASA 2.9');
+      if(occupants===2)req(!!a.door&&a.door.members.length===2,'Door protection on both sides','AASA 2.9');
+      if(cls==='1a')push('manual','CLASS 1a FRONT SILL','Confirm the front door bar mounts to the sill at the front of the opening (SC-16); this is not modelled as a structural sill joint.');
+    }
+    if(cls==='3'){
+      req(!!ex.hoopHarness,'Main-hoop full-width harness bar','AASA 2.6');
+      req(pair(ex.roof),'Roof V / cross reinforcement','AASA 2.12');
+      req(pair(ex.pillarA),'A-pillar reinforcements','AASA 2.10');
+      req(pair(ex.pillarB),'B-pillar reinforcements','AASA 2.11');
+      req(pair(ex.door2)&&ex.door2.length===(a.door?.members?.length||0),'Double anti-intrusion on selected sides','AASA 2.14');
+      push('manual','JUNCTION GUSSETS','Main-hoop X and crossing door/roof members require junction reinforcement where specified in SC-14, SC-21 and SC-22.');
+    }
+  }else if(body==='ma'){
+    if(cls==='type2'){
+      req(!!a.brace,'Primary diagonal','Schedule J Article 13.1(d)');
+      if(a.front)push('manual','TYPE 2 STRUCTURE','A full cage can be fitted, but Type 2 has its own permitted designs and event limitations (Article 13).');
+    }else if(cls==='type3'){
+      req(!!a.brace||!!ex.cross,'Main hoop/rear diagonal reinforcement','Schedule J Article 12.3');
+      req(!!a.front&&!a.front.errors.length,'Full cage front structure','Schedule J Article 12.1');
+      req(!!a.front?.header,'Transverse windscreen member','Schedule J Article 12.1');
+      push('manual','EVENT-DEPENDENT REINFORCEMENTS','Roof, A-pillar, side intrusion and other reinforcements depend on the event and selected Schedule J drawing: Articles 12.3 and 15. Confirm eligibility manually.');
+    }else push('manual','SELECT TYPE','Select the full or half cage type appropriate to your event.');
+    push('manual','MOTORSPORT AUSTRALIA DESIGN','Cage Type 2/3 labels are not AASA Classes 2/3. Confirm the exact event, registration and drawing set.');
+  }
+  if(a.stays){
+    const angle=Math.atan2(g.v.rearRun,g.v.stayTop-g.v.rearFootHeight)*180/Math.PI;
+    const max=body==='ma'&&cls==='type2'?60:Infinity;
+    push(angle>=30-1e-6&&angle<=max+1e-6?'pass':'warn','REAR STAY SIDE-VIEW ANGLE',
+      `${round(angle,1)}° from vertical (side view); ${body==='ma'&&cls==='type2'?'Type 2 closed car: 30–60°':'AASA 2.5: at least 30°'}. Confirm straight mounting and rear structural reinforcement.`);
+  }
+  if(a.brace){
+    const top=g.v.braceTop,lower=g.v.braceBottom,correctSide=a.brace.upperSide===driver;
+    if(body==='aasa'&&['1','1a','2'].includes(cls)){
+      push(correctSide?'pass':'warn','DRIVER-SIDE DIAGONAL TOP',correctSide?'Primary upper end is on the selected driver side.':'Upper diagonal must be behind the driver; swap upper attachment side.');
+      if(a.stays){
+        const distance=mag3(sub3(v3(a.brace.upper),v3(a.stays[driver])));
+        push(distance<=100?'pass':'warn','DIAGONAL TOP TO REAR-STAY JOINT',
+          `${round(distance,1)} mm straight-line separation; AASA 2.4 requires attachment within 100 mm (confirm distance along tube and actual weld joint).`);
+      }
+      push(lower<=100?'pass':'warn','DIAGONAL LOWER TO MOUNTING PLANE',
+        `${round(lower,1)} mm vertical offset from hoop mounting datum; AASA 2.4 requires within 100 mm of mounting point, not simply floor plane.`);
+    }
+    if(body==='ma'&&cls==='type2')push(correctSide?'pass':'warn','TYPE 2 DIAGONAL DRIVER SIDE',
+      correctSide?'Upper end is on selected driver side.':'Schedule J Type 2 requires upper diagonal end on driver side.');
+  }
+  if(a.door&&body==='aasa'){
+    const H=Number($('doorOpeningHeight').value),sill=Number($('doorSillHeight').value);
+    if(!Number.isFinite(H)||H<=0||!Number.isFinite(sill))push('warn','DOOR OPENING','Enter actual opening H and sill datum before door-height checks.');
+    else{
+      const max=sill+H/2,barEnds=a.door.members.map(m=>({name:m.name,rear:m.rear.y,front:m.front.y}));
+      for(const bar of ex.door2||[])barEnds.push({name:bar.title,rear:bar.near.y,front:bar.far.y});
+      for(const b of barEnds){
+        const within=b.rear<=max&&b.front<=max;
+        push(within?'pass':'warn','DOOR BAR ATTACHMENT HEIGHT',`${b.name}: rear ${round(b.rear,1)} mm, front ${round(b.front,1)} mm; local half-door opening height limit ${round(max,1)} mm (AASA 2.9 / SC-16).`);
+      }
+    }
+  }
+  if(body==='aasa'&&ex.pillarA?.length&&a.front?.header){
+    for(const m of ex.pillarA){
+      const side=m.id.endsWith('left')?'left':'right',d=mag3(sub3(m.near,a.front.header[side]));
+      push(d<=100?'pass':'warn','A-PILLAR UPPER JOINT OFFSET',`${side}: ${round(d,1)} mm 3D separation from windscreen-header/front-leg junction; normal SC-18 allowance 100 mm (SC-19 alternative 200 mm requires its specified reinforcing arrangement).`);
+    }
+  }
+  if(material==='unverified')push('manual','TUBING CERTIFICATION','Tube OD/wall alone cannot establish steel grade, tensile strength, weldability or traceability. Check supplier certificates.');
+  else if(material==='as1163'&&(body==='ma'||body==='aasa'&&cls==='3'))push('warn','AS/NZS 1163 MATERIAL',body==='ma'?'Schedule J Article 8 normally specifies cold-drawn CDS/CDW steel, not AS/NZS 1163 CHS without special certification.':'AASA Section 2.19 authorises AS/NZS 1163 only for Classes 1/1a/2, not Class 3.');
+  else{
+    const od=g.v.od,wall=g.v.wall;
+    if(body==='aasa'){
+      const main=material==='as1163'?(od>=48.25&&wall>=2.3):(mass>1150?od>=44.4&&wall>=2.5:od>=38.05&&wall>=2.4);
+      push(main?'pass':'warn','MAIN-HOOP MINIMUM TUBE SIZE',
+        `${round(od,2)} × ${round(wall,2)} mm; check Table ${material==='as1163'?'ST-4':'ST-3'} and the actual size/grade. Nominal diameter comparisons are advisory.`);
+    }else if(body==='ma'){
+      const main=(od>=44.4&&wall>=2.5)||(od>=50&&wall>=2);
+      push(main?'pass':'warn','MAIN ROLL BAR TUBE SIZE',`${round(od,2)} × ${round(wall,2)} mm; Schedule J Table J-1 nominal main-rollbar options 44.45 × 2.5 or 50 × 2.0 mm.`);
+    }
+  }
+  push('manual','REQUIRED OFFLINE CHECKS','Mounting foot and counterplate details; helmet/seat/harness clearance; door geometry; bend ovalisation; weld and gusset access; full cage inspection and registration. No overall compliance is asserted.');
+  return {body,cls,items,checks:items.filter(x=>x.kind==='pass').length,alerts:items.filter(x=>x.kind==='warn').length};
+}
+
+  function renderRuleReview(g){
+  if(!g||!g.addons){$('rulesSummary').textContent='Invalid hoop: fix geometry before checking selected rules.';$('rulesMessages').innerHTML='';return;}
+  const r=ruleReview(g);g.ruleReview=r;
+  const name=r.body==='aasa'?'AASA 2026 · Class '+r.cls:r.body==='ma'?'Motorsport Australia 2026 · '+r.cls:'Generic workshop layout';
+  $('rulesSummary').textContent=`${name}: ${r.alerts} design alert(s), ${r.checks} individual checks within limits. This is NOT approval, certification or a complete rules audit.`;
+  $('rulesMessages').innerHTML=r.items.map(x=>`<div class="rule-message ${x.kind}"><strong>${x.kind==='pass'?'CHECKED':x.kind==='warn'?'ATTENTION':'VERIFY MANUALLY'} · ${cageSafeHTML(x.code)}</strong> — ${cageSafeHTML(x.explanation)}</div>`).join('');
+}
+
+  function updateRulesClass(){
+  const b=$('rulesBody').value,previous=$('rulesClass').value;
+  const types=b==='aasa'?[['1','Class 1 — half cage'],['1a','Class 1a — side-impact'],['2','Class 2 — full cage'],['3','Class 3 — reinforced full cage']]:
+    b==='ma'?[['type2','Type 2 — half cage'],['type3','Type 3 — full cage']]:[['generic','Not selected']];
+  $('rulesClass').innerHTML=types.map(([k,title])=>`<option value="${k}">${title}</option>`).join('');
+  $('rulesClass').value=types.some(([k])=>k===previous)?previous:types[0][0];
+}
+
   function addonsGeometry(g){
     const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null,front=null;
     const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked,useFrontLegs=$('useFrontLegs').checked;
@@ -837,7 +1131,8 @@
         }
       }
     }
-    return {brace,stays,harness,door,front,errors};
+    const extras=extraMemberGeometry(g,{brace,stays,harness,door,front},errors);
+    return {brace,stays,harness,door,front,extras,errors};
   }
   function renderStayViews(g){
     const stay=g.addons.stays,harness=g.addons.harness;
@@ -1122,6 +1417,25 @@
   renderFrontStationLabels(g);
 }
 
+  function renderReinforcements(g){
+  const a=g.addons,e=a.extras||{},members=e.members||[],front=a.front?.errors.length?null:a.front;
+  $('reinforcementSummary').textContent=`${members.length} optional reinforcement tube(s) in this geometry. Crossing roof/door/main-hoop diagonals require separately designed junctions, gussets, and validation against the selected rules.`;
+  const common='<text x="325" y="22" text-anchor="middle" fill="#a4b7c3" font-size="13">Projected centreline • all measurements in mm</text>';
+  const px=p=>[325+(p.x-g.Wc/2)*Math.min(480/g.Wc,240/(g.v.frontFootRun||1000)),62-(p.z||0)*Math.min(480/g.Wc,240/(g.v.frontFootRun||1000))];
+  const fx=p=>[325+(p.x-g.Wc/2)*Math.min(480/g.Wc,240/g.Hc),319-p.y*Math.min(480/g.Wc,240/g.Hc)];
+  const sx=p=>[490+(p.z||0)*Math.min(360/(g.v.frontFootRun||1000),230/g.Hc),319-p.y*Math.min(360/(g.v.frontFootRun||1000),230/g.Hc)];
+  const line=(m,fn,colour)=>{const p=fn(m.near),q=fn(m.far);return `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${colour}" stroke-width="4" stroke-linecap="round"><title>${cageSafeHTML(m.title)} · ${round(m.length,1)} mm</title></line>`;};
+  const roof=members.filter(m=>m.id.startsWith('roof-')),main=members.filter(m=>m.id==='main-cross'||m.id==='hoop-harness');
+  const side=members.filter(m=>/pillar-|door2-/.test(m.id));
+  const addHeader=front?.header?`<line x1="${px(front.header.left)[0]}" y1="${px(front.header.left)[1]}" x2="${px(front.header.right)[0]}" y2="${px(front.header.right)[1]}" stroke="#778b98" stroke-width="6"/>`:'';
+  $('reinforcementPlanSvg').innerHTML=common+addHeader+roof.map(m=>line(m,px,'#e9ad64')).join('')+
+    (roof.length?'<text x="325" y="343" text-anchor="middle" fill="#ffbe74" font-size="13">Roof X · verify header junctions + crossed members</text>':'<text x="325" y="160" text-anchor="middle" fill="#8198a5">Enable roof cross and front legs</text>');
+  $('reinforcementFrontSvg').innerHTML=common+main.map(m=>line(m,fx,m.id==='hoop-harness'?'#c4a0ff':'#ffb871')).join('')+
+    (main.length?'<text x="325" y="343" text-anchor="middle" fill="#dec6ff" font-size="13">Purple: full-width harness · orange: second hoop diagonal</text>':'<text x="325" y="160" text-anchor="middle" fill="#8198a5">Enable main-hoop harness bar or X diagonal</text>');
+  $('reinforcementSideSvg').innerHTML=common+side.map(m=>line(m,sx,m.id.startsWith('door2')?'#ffc55f':m.id.startsWith('pillar-a')?'#76cef0':'#a4deac')).join('')+
+    (side.length?'<text x="325" y="343" text-anchor="middle" fill="#bed2dd" font-size="13">Cyan A-pillar · green B-pillar · amber second door</text>':'<text x="325" y="160" text-anchor="middle" fill="#8198a5">Enable A/B-pillar or second door bar</text>');
+}
+
   function renderAddons(g){
     const a=g.addons;
     $('addonsWarning').style.display=a.errors.length?'block':'none';
@@ -1147,10 +1461,12 @@
     if(a.harness)rows.push([1,'Harness crossbar',a.harness.length,a.harness.blank,`CHS ${round(a.harness.OD,2)} × ${round(a.harness.wall,2)} · both ends to rear stays`]);
     if(a.door)for(const m of a.door.members)rows.push([1,`${m.name} side intrusion bar`,m.length,m.blank,`CHS ${round(a.door.OD,2)} × ${round(a.door.wall,2)} · ${round(m.angle,1)}° elevation`]);
     if(a.front&&!a.front.errors.length){for(const side of ['left','right'])rows.push([1,`${side.toUpperCase()} continuous front leg`,a.front[side].total,a.front[side].blank,`CHS ${round(a.front.OD,2)} × ${round(a.front.wall,2)} · ${a.front[side].bends.length} bends`]);if(a.front.header)rows.push([1,'Windscreen header',a.front.header.length,a.front.header.blank,`CHS ${round(a.front.header.OD,2)} × ${round(a.front.header.wall,2)} · single straight tube`]);}
+    if(a.extras?.members?.length)for(const m of a.extras.members)rows.push([1,m.title,m.length,m.blank,`CHS ${round(m.od,2)} × ${round(m.wall,2)} · verify crossing/gussets`]);
     $('addonsBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${round(r[2],1)} mm</td><td><strong>${round(r[3],1)} mm</strong></td><td>${r[4]}</td></tr>`).join(''):'<tr><td colspan="5">Enable a component and enter valid dimensions to see the cut list.</td></tr>';
     renderStayViews(g);
     renderDoorViews(g);
     renderFrontStructure(g);
+    renderReinforcements(g);
     renderNotches(g);
   }
   function renderDrawing(g){
@@ -1215,13 +1531,23 @@
   if(/^windscreen-header-(left|right)$/.test(id))return 'windscreen-header';
   if(/^door-left-/.test(id))return 'side-intrusion-left';
   if(/^door-right-/.test(id))return 'side-intrusion-right';
+  if(/^hoop-harness-/.test(id))return 'hoop-harness';
+  if(/^main-cross-/.test(id))return 'main-cross';
+  if(/^roof-left-/.test(id))return 'roof-left';
+  if(/^roof-right-/.test(id))return 'roof-right';
+  if(/^pillar-a-left-/.test(id))return 'pillar-a-left';
+  if(/^pillar-a-right-/.test(id))return 'pillar-a-right';
+  if(/^door2-left-/.test(id))return 'door2-left';
+  if(/^door2-right-/.test(id))return 'door2-right';
+  if(/^pillar-b-left-/.test(id))return 'pillar-b-left';
+  if(/^pillar-b-right-/.test(id))return 'pillar-b-right';
   return null;
 }
 
   function cagePartNumber(id){
   const fixed={'main-hoop':'001','front-leg-left':'002','front-leg-right':'003','windscreen-header':'004',
     'diagonal-brace':'005','rear-stay-left':'006','rear-stay-right':'007','harness-bar':'008',
-    'side-intrusion-left':'009','side-intrusion-right':'010'};
+    'side-intrusion-left':'009','side-intrusion-right':'010','hoop-harness':'011','main-cross':'012','roof-left':'013','roof-right':'014','pillar-a-left':'015','pillar-a-right':'016','door2-left':'017','door2-right':'018','pillar-b-left':'019','pillar-b-right':'020'};
   const suffix=fixed[id];
   if(!suffix)throw Error('Unknown roll-cage member ID: '+id);
   const job=String($('cageJobRef').value||'').toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,20);
@@ -1430,7 +1756,7 @@
   }
   if(a.harness){
     const h=a.harness;
-    push({id:'harness-bar',title:'Harness crossbar between rear stays',kind:'straight',od:h.OD,wall:h.wall,span:h.length,blank:h.blank,extra:fit,
+    push({id:'harness-bar',title:'Rear-stay crossbar',kind:'straight',od:h.OD,wall:h.wall,span:h.length,blank:h.blank,extra:fit,
       datum:'LEFT REAR STAY',farEnd:'RIGHT REAR STAY',startDescription:'Left stay tube joint',endDescription:'Right stay tube joint',
       bends:[],notes:`Straight crossbar at ${round(h.height,1)} mm high · both ends coped`,jointStart:'harness-left',jointEnd:'harness-right'});
   }
@@ -1442,6 +1768,14 @@
         bends:[],notes:`True 3D length incl. lateral offset ${round(Math.abs(m.lateral),1)} mm · no bends`,
         jointStart:`door-${side}-rear`,jointEnd:`door-${side}-front`});
     }
+  }
+  if(a.extras?.members?.length)for(const em of a.extras.members){
+    const nearID=em.id+'-near',farID=em.id+'-far';
+    push({id:em.id,title:em.title,kind:'straight',od:em.od,wall:em.wall,span:em.length,blank:em.blank,extra:fit,
+      datum:'NEAR / FIRST JOINT',farEnd:'FAR / SECOND JOINT',
+      startDescription:em.nearParent.kind==='hoop'?'Main hoop':em.nearParent.kind==='front'?'Front leg':'Measured front reference',
+      endDescription:em.farParent.kind==='hoop'?'Main hoop':em.farParent.kind==='front'?'Front leg':em.farParent.kind==='header'?'Windscreen header':'Measured front reference',
+      bends:[],notes:'Additional reinforcement · confirm joint/gusset configuration and rules',jointStart:nearID,jointEnd:farID});
   }
   return list;
 }
@@ -1546,7 +1880,7 @@
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
+    if(g.issues.length){renderRuleReview(null);err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';for(const id of ['reinforcementPlanSvg','reinforcementFrontSvg','reinforcementSideSvg'])$(id).innerHTML='';$('reinforcementSummary').textContent='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
@@ -1561,12 +1895,13 @@
     renderMemberMarkouts(g);
     renderCageCutList(g);
     renderCageBendList(g);
+    renderRuleReview(g);
   }
   function setMode(n){mode=n;for(const m of [2,4]){$('mode'+m).classList.toggle('active',m===n);$('mode'+m).setAttribute('aria-pressed',String(m===n));}document.querySelectorAll('.tapered').forEach(x=>x.classList.toggle('field-hidden',n!==4));render();}
   function getSheet(){if(!latest)return '';const g=latest,v=g.v;const text=[`ROLL CAGE FABRICATION SHEET — ${g.mode}-bend hoop`, `Measured space: W ${round(v.width,1)} mm × H ${round(v.height,1)} mm`, `Tube OD ${round(v.od,2)} mm | wall ${round(v.wall,2)} mm | bender CLR ${round(v.radius,2)} mm`, `Side clearance ${round(v.sideGap,1)} mm | top clearance ${round(v.topGap,1)} mm`,...(g.mode===4?[`Roof available width ${round(v.roofWidth,1)} mm | shoulder available width ${round(v.shoulderWidth,1)} mm | shoulder corner height ${round(v.shoulder,1)} mm`]:[]),`Developed finished centreline length: ${round(g.total,1)} mm`,`Trim allowance: ${round(v.extra,1)} mm at each end`,`Suggested starting blank: ${round(g.blank,1)} mm`,`BEND MARKS (all measured from same starting blank end / zero datum):`,'Bend | Turn angle | Start of bend | Centre of bend | End of bend',...g.bends.map(b=>`${b.name} | ${round(b.angle,2)}° | ${round(b.start+v.extra,1)} mm | ${round(b.mid+v.extra,1)} mm | ${round(b.end+v.extra,1)} mm`),'STRAIGHT SECTIONS:',...g.sections.map(x=>`${x.label}: ${round(x.length,1)} mm`),'Important: Start and end = geometric tangency points; centre = half bend arc length. These are developed-centreline estimates, not calibrated machine feed marks. Validate bends, growth and springback on a test piece.'];
     const a=g.addons;if(a.brace){text.push('DIAGONAL BRACE:',`Upper: ${a.brace.upperSide} at ${round(v.braceTop,1)} mm | lower: ${a.brace.lowerSide} at ${round(v.braceBottom,1)} mm`,`Centreline joint-to-joint ${round(a.brace.length,1)} mm | prep blank ${round(a.brace.blank,1)} mm (includes ${round(v.fitExtra,1)} mm each end)`,`In-plane angle ${round(a.brace.angle,1)}° to horizontal`,`Brace CHS ${round(v.braceOD,2)} × ${round(v.braceWall,2)} mm`);if(a.brace.notches&&!a.brace.notches.errors.length){const n=a.brace.notches;text.push(`UPPER notch joint angle ${round(n.upper.angle,2)}°, max notch depth ${round(n.upper.cutDepth,2)} mm`,`LOWER notch joint angle ${round(n.lower.angle,2)}°, max notch depth ${round(n.lower.cutDepth,2)} mm`,`Theoretical tip-to-tip square length before notching ${round(n.nominalSquare,1)} mm (check fit, not production cut length).`);}}
     if(a.stays){text.push('TWO REAR STAYS:',`Top joint height ${round(v.stayTop,1)} mm, upper joint spacing ${round(a.stays.upperWidth,1)} mm`,`Rearward run ${round(v.rearRun,1)} mm, rear mount height ${round(v.rearFootHeight,1)} mm, rear mount spacing ${round(v.rearFootWidth,1)} mm`,`Each true 3D joint-to-joint ${round(a.stays.length,1)} mm | prep blank ${round(a.stays.blank,1)} mm (includes ${round(v.fitExtra,1)} mm each end)`,`Inclination ${round(a.stays.angle,1)}° below horizontal, side-view projection ${round(a.stays.sideAngle,1)}°, plan-view splay ${round(a.stays.splayAngle,1)}°`);}
-    if(a.harness)text.push('HARNESS CROSSBAR BETWEEN REAR STAYS:',`CHS ${round(v.harnessOD,2)} × ${round(v.harnessWall,2)} mm · centre height ${round(a.harness.height,1)} mm · behind hoop ${round(a.harness.z,1)} mm`,`Joint-centre length ${round(a.harness.length,1)} mm · prep blank ${round(a.harness.blank,1)} mm`);
+    if(a.harness)text.push('REAR-STAY CROSSBAR (NOT MAIN-HOOP HARNESS):',`CHS ${round(v.harnessOD,2)} × ${round(v.harnessWall,2)} mm · centre height ${round(a.harness.height,1)} mm · behind hoop ${round(a.harness.z,1)} mm`,`Joint-centre length ${round(a.harness.length,1)} mm · prep blank ${round(a.harness.blank,1)} mm`);
     if(a.door)text.push('SIDE INTRUSION BAR(S):',`CHS ${round(v.doorOD,2)} × ${round(v.doorWall,2)} mm · front/rear heights ${round(v.doorFrontHeight,1)} / ${round(v.doorRearHeight,1)} mm · forward run ${round(v.doorRun,1)} mm · front spacing ${round(v.doorFrontWidth,1)} mm`,...a.door.members.map(m=>`${m.name} joint-centre 3D length ${round(m.length,1)} mm · prep blank ${round(m.blank,1)} mm · lateral offset ${round(m.lateral,1)} mm · elevation ${round(m.angle,1)}°`));
     if(a.front&&!a.front.errors.length){text.push('CONTINUOUS FRONT LEGS (single tube each):',`CHS ${round(v.frontOD,2)} × ${round(v.frontWall,2)} mm · CLR ${round(v.frontCLR,1)} mm · trim ${round(v.frontTrim,1)} mm each end`);for(const side of ['left','right']){const leg=a.front[side];text.push(`${side.toUpperCase()}: developed ${round(leg.total,1)} mm · blank ${round(leg.blank,1)} mm · B1→B2 signed clock ${round(leg.clock,1)}°`,...leg.bends.map(b=>`${b.name} ${round(b.angle,2)}°: START ${round(b.start+v.frontTrim,1)} / CENTRE ${round(b.mid+v.frontTrim,1)} / END ${round(b.end+v.frontTrim,1)} mm from rear end`));}if(a.front.header)text.push(`WINDSCREEN HEADER: CHS ${round(v.headerOD,2)} × ${round(v.headerWall,2)} mm, span ${round(a.front.header.length,1)} mm, prep blank ${round(a.front.header.blank,1)} mm.`);}
     if(a.front&&!a.front.errors.length){text.push('FRONT LEG FL1-FL5 REFERENCE POINTS:');const l=frontStationRefs(a.front,'left'),r=frontStationRefs(a.front,'right');for(let i=0;i<l.length;i++){const p=l[i].point;const w=r[i].point.x-p.x;text.push(`${l[i].id} ${l[i].name}: height ${round(p.y,1)} mm, forward ${round(Math.max(0,-p.z),1)} mm, left-right spacing ${round(w,1)} mm, ${l[i].kind==='virtual'?'VIRTUAL CORNER':'ON FINISHED TUBE'}`);}}
@@ -1578,9 +1913,14 @@
   function download(filename,data,mime){const blob=new Blob([data],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function copy(){const s=getSheet();if(!s)return;const done=()=>{for(const id of ['copy','copyTop']){const b=$(id),old=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=old,1600);}};if(navigator.clipboard?.writeText){navigator.clipboard.writeText(s).then(done).catch(()=>download('main-hoop-bending-sheet.txt',s,'text/plain'));}else download('main-hoop-bending-sheet.txt',s,'text/plain');}
   for(const id of vals)$(id).addEventListener('input',render);
+  $('rulesBody').addEventListener('change',()=>{updateRulesClass();render();});
+  $('rulesClass').addEventListener('change',render);
+  for(const id of ['driverSide','occupants','tubeSpec'])$(id).addEventListener('change',render);
+  for(const id of ['vehicleWeight','doorOpeningHeight','doorSillHeight'])$(id).addEventListener('input',render);
   $('braceUpperSide').addEventListener('change',render);
    $('doorSides').addEventListener('change',render);
    $('frontTubeConfirmed').addEventListener('change',render);
+  // Optional reinforcement geometry follows the existing member dimensions.
   function updateFrontControls(){
     const enabled=$('useFrontLegs').checked;
     $('frontLegFields').classList.toggle('off',!enabled);
@@ -1589,7 +1929,7 @@
   }
   $('useFrontLegs').addEventListener('change',()=>{updateFrontControls();render();});
   $('useHeader').addEventListener('change',()=>{updateFrontControls();render();});
-  for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields'],['useHarness','harnessFields'],['useDoor','doorFields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
+  for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields'],['useHarness','harnessFields'],['useDoor','doorFields'],['useHoopHarness','hoopHarnessFields'],['useMainCross','mainCrossFields'],['useRoofX','roofXFields'],['usePillarA','pillarAFields'],['usePillarB','pillarBFields'],['useDoor2','door2Fields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
   $('mode2').addEventListener('click',()=>setMode(2));$('mode4').addEventListener('click',()=>setMode(4));
   $('copy').addEventListener('click',copy);$('copyTop').addEventListener('click',copy);
   $('print').addEventListener('click',()=>window.print());$('printTop').addEventListener('click',()=>window.print());
@@ -1716,10 +2056,10 @@
   $('modelJSON').addEventListener('click',()=>{
     if(!latest)return;
     const g=latest,brace=g.addons.brace,stays=g.addons.stays,harness=g.addons.harness,door=g.addons.door,front=g.addons.front;
-    const payload={schema:'roll-cage-geometry-v3',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,frontStructure:front,cutList:g.cutList?{job:g.cutList.job,material:g.cutList.material,parts:g.cutList.rows,groups:g.cutList.groups,totalPrepLength:g.cutList.totalBlank}:null,bendMarkList:g.bendMarkList||null,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,partNumber:j.partNumber,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
+    const payload={schema:'roll-cage-geometry-v3',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,frontStructure:front,reinforcementMembers:g.addons.extras?.members||[],ruleReview:g.ruleReview||null,cutList:g.cutList?{job:g.cutList.job,material:g.cutList.material,parts:g.cutList.rows,groups:g.cutList.groups,totalPrepLength:g.cutList.totalBlank}:null,bendMarkList:g.bendMarkList||null,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,partNumber:j.partNumber,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
     download('roll-cage-geometry-for-future-step.json',JSON.stringify(payload,null,2),'application/json');
   });
-  updateFrontControls();render();
+  updateRulesClass();updateFrontControls();render();
 })();
 </script>
 </body></html>
