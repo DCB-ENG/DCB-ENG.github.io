@@ -35,6 +35,8 @@ assert.match(els.get('cageCutBody').innerHTML,/RC-001/);
 assert.match(els.get('cageCutBody').innerHTML,/RC-010/);
 assert.match(els.get('cageCutSummary').innerHTML,/combined prep-blank lengths/);
 assert.match(els.get('memberMarkoutCards').innerHTML,/RC-005/,'Individual marking cards include stable part numbers');
+assert.match(els.get('jointNotchCards').innerHTML,/PART RC-005/,'Fishmouth SVG identifies matching diagonal part');
+assert.match(els.get('jointNotchCards').innerHTML,/PART RC-008/,'Harness fishmouth SVG uses same cut-list part ID');
 assert.match(ctx.window.__inspectCutCSV(),/Part number/);
 assert.match(ctx.window.__inspectCutCSV(),/RC-010/);
 assert.match(ctx.window.__inspectCutPrint(),/RC-001/);
@@ -44,6 +46,7 @@ assert.match(ctx.window.__inspectCutPrint(),/NOT the finished tip-to-tip cut len
 els.get('cageJobRef').value='45186';els.get('cageJobRef').events.input();
 assert.equal(ctx.window.__inspectRollCage().cutList.rows[0].partNumber,'45186-RC-001');
 assert.match(els.get('memberMarkoutCards').innerHTML,/45186-RC-005/);
+assert.match(els.get('jointNotchCards').innerHTML,/PART 45186-RC-005/,'Changing the job also updates the finished fishmouth template ID');
 assert.match(ctx.window.__inspectCutCSV(),/45186-RC-005/);
 els.get('cageMaterial').value='CDS & <Grade>';els.get('cageMaterial').events.input();
 assert.match(els.get('cageCutSummary').innerHTML,/CDS &amp; &lt;Grade&gt;/,'User-entered material escaped in webpage');
@@ -52,6 +55,7 @@ assert.match(ctx.window.__inspectCutPrint(),/CDS &amp; &lt;Grade&gt;/,'Print she
 els.get('cageJobRef').value='';els.get('cageJobRef').events.input();
 els.get('cageMaterial').value='';els.get('cageMaterial').events.input();
 assert.equal(ctx.window.__inspectRollCage().cutList.rows[0].partNumber,'RC-001');
+assert.match(els.get('jointNotchCards').innerHTML,/PART RC-005/,'Clearing job reference restores standard template IDs');
 
 assert.deepEqual(Array.from(initialMarkouts,m=>m.id),[
   'main-hoop','diagonal-brace','rear-stay-left','rear-stay-right','harness-bar','side-intrusion-left','side-intrusion-right'
