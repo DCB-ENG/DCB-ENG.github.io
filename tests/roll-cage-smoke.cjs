@@ -36,6 +36,7 @@ assert.match(els.get('addonsWarning').textContent,/Harness bar height/);
 els.get('harnessHeight').value='600';els.get('harnessHeight').events.input();isSpan('harnessSpan');
 els.get('useStays').checked=false;els.get('useStays').events.change();assert.match(els.get('addonsWarning').textContent,/Harness bar requires/);
 els.get('useStays').checked=true;els.get('useStays').events.change();isSpan('harnessSpan');
+els.get('doorSides').value='both';els.get('doorSides').events.change();
 // All physical tube-to-tube ends have separate named 1:1 developed wrap-arounds.
 // The two side-bar front ends remain locked until front parent CHS geometry is confirmed.
 let g=ctx.window.__inspectRollCage();
