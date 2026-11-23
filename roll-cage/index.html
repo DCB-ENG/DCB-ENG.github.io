@@ -1399,6 +1399,22 @@
   });
   $('csvDownload').addEventListener('click',()=>{if(!latest)return;const v=latest.v;const lines=['Bend,Turn angle (deg),Start of bend from datum end (mm),Centre of bend from datum end (mm),End of bend from datum end (mm)',...latest.bends.map(b=>[b.name,round(b.angle,2),round(b.start+v.extra,1),round(b.mid+v.extra,1),round(b.end+v.extra,1)].join(','))];download('main-hoop-bend-schedule.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8');});
 
+  function printMemberMarkouts(members){
+  if(!members?.length)return;
+  const w=window.open('','_blank');
+  if(!w){alert('Your browser blocked the mark-out print sheet. Allow pop-ups and retry.');return;}
+  w.document.open();w.document.write(memberMarkPrintHTML(members));w.document.close();
+}
+  $('printMemberMarkouts').addEventListener('click',()=>{if(latest?.memberMarkouts)printMemberMarkouts(latest.memberMarkouts);});
+  $('saveMemberMarkoutsSVG').addEventListener('click',()=>{if(!latest?.memberMarkouts?.length)return;download('roll-cage-all-tube-markouts.svg',allMemberMarkSVG(latest.memberMarkouts),'image/svg+xml');});
+  $('memberMarkoutCards').addEventListener('click',event=>{
+    const button=event.target.closest('[data-member-mark-action]');
+    if(!button||!latest?.memberMarkouts)return;
+    const member=latest.memberMarkouts[Number(button.dataset.memberMarkIndex)];
+    if(!member)return;
+    if(button.dataset.memberMarkAction==='print')printMemberMarkouts([member]);
+    else if(button.dataset.memberMarkAction==='svg')download('roll-cage-'+member.id+'-markout.svg',memberMarkSVG(member),'image/svg+xml');
+  });
   function printJointTemplates(list){
     const available=list.filter(j=>!j.error&&j.paper&&j.profile);
     if(!available.length)return;
