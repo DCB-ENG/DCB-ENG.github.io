@@ -26,6 +26,24 @@ button{font:inherit;border:1px solid #696d73;background:#2b2e34;color:var(--text
 .table-scroll{overflow-x:auto;border:1px solid #464b52;border-radius:10px}table{border-collapse:collapse;width:100%;min-width:640px;text-align:left;font-variant-numeric:tabular-nums}th{font-size:.73rem;color:#bfc4cc;letter-spacing:.05em;text-transform:uppercase;background:#282d33}th,td{padding:10px 12px;border-bottom:1px solid #394047;white-space:nowrap}td{font-size:.85rem}td:not(:first-child),th:not(:first-child){text-align:right}tbody tr:last-child td{border-bottom:0}.table-help{color:var(--muted);font-size:.8rem;margin:11px 0 0}
 summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;margin:12px 0 0}code{font-size:.86em;background:#111418;padding:2px 5px;border-radius:4px;color:#ffca80}.fine{color:var(--muted);font-size:.77rem;line-height:1.65;margin:22px 0 0}
 .dcb-nav{background:#181b20;border-bottom:1px solid #393e46;color:#f1f3f5;font:14px/1.45 system-ui,"Segoe UI",Arial,sans-serif}.dcb-nav *{box-sizing:border-box}.dcb-nav__inner{max-width:1200px;margin:0 auto;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:14px}.dcb-nav__brand{flex:none;color:#fff!important;text-decoration:none!important;font-size:18px;font-weight:800;letter-spacing:.015em}.dcb-nav__brand span{color:#ffa726}.dcb-nav__links{display:flex;align-items:center;justify-content:flex-end;gap:6px;flex-wrap:wrap}.dcb-nav__link{display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;min-height:36px;border:1px solid transparent;border-radius:7px;text-decoration:none!important;color:#c9cdd3!important;font-size:13px;font-weight:600;white-space:nowrap}.dcb-nav__link:hover{background:#30343b;border-color:#565c64;color:#fff!important}.dcb-nav__link[aria-current="page"]{background:#3c2d20;border-color:#8d5d2c;color:#ffbe6e!important}
+
+/* Bender-type guide: local vector drawings, no externally hosted images. */
+.bender-guide{display:grid;grid-template-columns:minmax(235px,.94fr) minmax(0,1fr);align-items:center;gap:16px;padding:14px;border:1px solid #49515a;border-radius:12px;background:linear-gradient(135deg,#20262d,#151a20)}
+.bender-guide__art{min-width:0;padding:8px 6px;border:1px solid #343d47;background:#0e141a;border-radius:10px}
+.bender-guide__art svg{display:block;width:100%;height:auto;max-height:205px}
+.bender-guide__copy h3{color:#ffd297;font-size:1.04rem;margin:3px 0 7px}
+.bender-guide__copy p{font-size:.8rem;color:#cbd2d8;line-height:1.5;margin:6px 0}
+.bender-guide__copy strong{color:#f0f3f6}
+.bender-guide__eyebrow{color:#ffad48;font-weight:800;font-size:.69rem;text-transform:uppercase;letter-spacing:.1em}
+.bender-guide__notice{font-size:.75rem;color:#b8c3ce;margin:8px 0 0}
+.bender-guide-details{margin-top:10px;border:1px solid #444c54;border-radius:10px;padding:10px 13px;background:#171c21}
+.bender-guide-details summary{font-size:.84rem;font-weight:700;color:#ffca8a}
+.bender-guide-details table{min-width:600px;font-size:.8rem;margin-top:12px}
+.bender-guide-details th,.bender-guide-details td{white-space:normal;text-align:left!important;padding:10px 11px;vertical-align:top}
+.bender-guide-details th:first-child{width:126px}
+@media(max-width:720px){.bender-guide{grid-template-columns:1fr}.bender-guide__art{max-width:100%}}
+@media print{.bender-guide-details{display:none}.bender-guide{background:white;color:black}.bender-guide__copy h3,.bender-guide__copy strong,.bender-guide__copy p,.bender-guide__notice{color:#111}}
+
 /* Empirical springback calibration panel */
 .sb-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.85fr);gap:16px;align-items:start}
 .sb-output{border-radius:12px;padding:19px;background:linear-gradient(145deg,#323038,#191c20);border:1px solid #715b40}
@@ -83,6 +101,31 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
     <div class="field-grid" style="margin-bottom:16px">
       <div class="field"><label for="bender-method">Bending machine type</label><select id="bender-method"><option value="rotary-draw">Rotary draw</option><option value="hydraulic-ram">Hydraulic ram / press bender</option><option value="compression">Compression bender</option></select></div>
       <div class="field"><label for="bender-id" title="Optional name to keep different machines and dies separate in the calibration">Machine / die ID (optional) ⓘ</label><input id="bender-id" type="text" maxlength="70" placeholder="e.g. Pro Tools 105"></div>
+
+      <div class="field span2">
+        <div class="bender-guide" aria-label="How the selected pipe bender works">
+          <div id="bender-guide-art" class="bender-guide__art" aria-live="off"></div>
+          <div class="bender-guide__copy">
+            <div class="bender-guide__eyebrow">Machine type · illustrated guide</div>
+            <h3 id="bender-guide-title">Rotary draw</h3>
+            <p id="bender-guide-how"></p>
+            <p><strong>Typical use:</strong> <span id="bender-guide-use"></span></p>
+            <p><strong>Watch for:</strong> <span id="bender-guide-watch"></span></p>
+          </div>
+        </div>
+        <p class="bender-guide__notice">Illustrative mechanism diagrams, not exact machine drawings. Selecting a bender changes the guidance and calibration identity; it does not add an unverified springback correction.</p>
+        <details class="bender-guide-details">
+          <summary>How do I tell these three benders apart?</summary>
+          <div class="table-scroll" style="margin-top:11px"><table>
+            <thead><tr><th>Bender</th><th>What moves</th><th>How to recognise it</th></tr></thead>
+            <tbody>
+              <tr><td>Rotary draw</td><td>The bend die and clamp rotate together, pulling the tube around a fixed-radius former.</td><td>A circular bend die with a rotating arm and clamp; often used for roll cages.</td></tr>
+              <tr><td>Hydraulic ram</td><td>A centre ram pushes a die into pipe supported on two rollers or blocks.</td><td>A bottle-jack or hydraulic press with two outside supports.</td></tr>
+              <tr><td>Compression</td><td>A shoe or roller sweeps tube around a stationary bend former.</td><td>A fixed-radius former and a moving pressure shoe; the former itself stays still.</td></tr>
+            </tbody>
+          </table></div>
+        </details>
+      </div>
       <div class="field span2"><label for="steel-grade">Steel / material grade</label><select id="steel-grade">
         <option value="">Select a material / grade</option>
         <option value="rt1020">RaceTech RT350 · 1020 CDS / CDW / DOM mild steel</option>
@@ -182,6 +225,82 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
       [31.8,1.2,'Catalogue size'],[41.3,1.2,'RT1241'],[101.6,6.3,'Website listing']
     ]}
   });
+
+  // Local, self-contained schematic illustrations. These are explanatory,
+  // not manufacturing geometry or guaranteed representations of any model.
+  const BENDER_GUIDES={
+    'rotary-draw':{
+      title:'Rotary draw · rotating bend die',
+      how:'The tube is clamped to a grooved round die. The die and clamp rotate together and draw the tube round the former, while a pressure die supports the straight section.',
+      use:'Controlled bends with a defined centreline radius, including roll cages, chassis and exhaust tubing.',
+      watch:'Match the die centreline radius, tube grade and wall; a mandrel or wiper may be needed for thin walls and tight bends.',
+      drawing:`<svg viewBox="0 0 400 214" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Rotary draw: a rotating round bend die and clamp pull the tube around the radius while a pressure die supports the straight inlet">
+        <defs><marker id="bd-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#ffba5b"/></marker></defs>
+        <circle cx="190" cy="106" r="63" fill="#33414d" stroke="#b7c2cb" stroke-width="3"/>
+        <circle cx="190" cy="106" r="9" fill="#10181e" stroke="#8596a5" stroke-width="2"/>
+        <path d="M32 169H190 A63 63 0 0 0 253 106V24" stroke="#ffab35" stroke-width="15" stroke-linecap="round" fill="none"/>
+        <path d="M32 169H190 A63 63 0 0 0 253 106V24" stroke="#ffe0ac" stroke-width="1.6" stroke-dasharray="6 6" fill="none"/>
+        <rect x="66" y="177" width="88" height="17" rx="4" fill="#7794a5" stroke="#bbc7cf"/>
+        <rect x="259" y="79" width="29" height="52" rx="4" fill="#a1b0bc" stroke="#d1d9df"/>
+        <path d="M166 37 A75 75 0 0 1 260 64" stroke="#ffba5b" stroke-width="3" fill="none" marker-end="url(#bd-arrow)"/>
+        <g fill="#dee6eb" font-size="13" font-family="system-ui,Arial,sans-serif">
+         <text x="130" y="103" text-anchor="middle">Rotating</text><text x="130" y="119" text-anchor="middle">bend die</text>
+         <text x="79" y="210">Pressure die</text><text x="292" y="103">Clamp</text>
+        </g>
+      </svg>`
+    },
+    'hydraulic-ram':{
+      title:'Hydraulic ram · press bending',
+      how:'A hydraulic cylinder pushes a curved shoe into the middle of a pipe. Two side rollers or support blocks react against the load as the pipe bends between them.',
+      use:'Heavy-wall pipe and general-purpose shop bending where a precise constant centreline radius is less critical.',
+      watch:'Thin-wall tube can flatten or kink. The finished bend often does not follow one constant-radius arc, so measure the actual bend before relying on setback or springback estimates.',
+      drawing:`<svg viewBox="0 0 400 214" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hydraulic ram: centre hydraulic cylinder forces a shoe into a tube resting between two support rollers">
+        <defs><marker id="bd-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#ffba5b"/></marker></defs>
+        <path d="M28 67H86 Q200 183 314 67H371" fill="none" stroke="#ffab35" stroke-width="15" stroke-linecap="round"/>
+        <path d="M28 67H86 Q200 183 314 67H371" fill="none" stroke="#ffe0ac" stroke-width="1.5" stroke-dasharray="6 6"/>
+        <circle cx="86" cy="52" r="19" fill="#7894a5" stroke="#c7d1d8" stroke-width="3"/>
+        <circle cx="314" cy="52" r="19" fill="#7894a5" stroke="#c7d1d8" stroke-width="3"/>
+        <circle cx="86" cy="52" r="5" fill="#172028"/><circle cx="314" cy="52" r="5" fill="#172028"/>
+        <rect x="178" y="6" width="44" height="66" rx="6" fill="#465a69" stroke="#bccad5" stroke-width="2"/>
+        <rect x="190" y="70" width="20" height="58" rx="3" fill="#a8b9c5" stroke="#d4dee4" stroke-width="2"/>
+        <path d="M170 138 Q200 159 230 138 L222 126H178Z" fill="#8a9da9" stroke="#d2dbe0" stroke-width="2"/>
+        <path d="M237 40V93" stroke="#ffba5b" stroke-width="3" marker-end="url(#bd-arrow)"/>
+        <g fill="#dee6eb" font-size="13" font-family="system-ui,Arial,sans-serif">
+         <text x="233" y="18">Ram</text><text x="6" y="27">Support</text><text x="315" y="27">Support</text>
+         <text x="200" y="198" text-anchor="middle">Centre shoe presses down</text>
+        </g>
+      </svg>`
+    },
+    'compression':{
+      title:'Compression · stationary former',
+      how:'The tube is held against a fixed bend former while a moving pressure shoe or roller travels around it, pressing the tube into the desired curve. The former does not rotate.',
+      use:'Simple fixed-form bends and production work using matching forming shoes and clamps.',
+      watch:'Tube ovality and outside-wall thinning depend on tooling and material. The fixed former does not mean the finished springback is zero.',
+      drawing:`<svg viewBox="0 0 400 214" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Compression bending: a moving shoe presses the tube around a stationary circular former">
+        <defs><marker id="bd-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0 L10 5 L0 10Z" fill="#ffba5b"/></marker></defs>
+        <circle cx="187" cy="109" r="63" fill="#33414d" stroke="#b7c2cb" stroke-width="3"/>
+        <circle cx="187" cy="109" r="9" fill="#10181e" stroke="#8596a5" stroke-width="2"/>
+        <path d="M30 172H187 A63 63 0 0 0 250 109V29" stroke="#ffab35" stroke-width="15" fill="none" stroke-linecap="round"/>
+        <path d="M30 172H187 A63 63 0 0 0 250 109V29" stroke="#ffe0ac" stroke-width="1.5" stroke-dasharray="6 6" fill="none"/>
+        <rect x="140" y="179" width="44" height="19" rx="4" fill="#9fb1bd" stroke="#d1dde4"/>
+        <rect x="253" y="91" width="31" height="38" rx="12" fill="#7996a9" stroke="#d1dde4" stroke-width="2"/>
+        <path d="M173 33 A82 82 0 0 1 277 83" stroke="#ffba5b" stroke-width="3" fill="none" marker-end="url(#bd-arrow)"/>
+        <g fill="#dee6eb" font-size="13" font-family="system-ui,Arial,sans-serif">
+         <text x="136" y="101" text-anchor="middle">Fixed</text><text x="136" y="117" text-anchor="middle">former</text>
+         <text x="290" y="100">Moving</text><text x="290" y="117">shoe</text><text x="140" y="211">Clamp</text>
+        </g>
+      </svg>`
+    }
+  };
+  function updateBenderGuide(){
+    const g=BENDER_GUIDES[$('bender-method').value]||BENDER_GUIDES['rotary-draw'];
+    $('bender-guide-title').textContent=g.title;
+    $('bender-guide-how').textContent=g.how;
+    $('bender-guide-use').textContent=g.use;
+    $('bender-guide-watch').textContent=g.watch;
+    // Graphics are local, static authored strings; no user-provided HTML enters here.
+    $('bender-guide-art').innerHTML=g.drawing;
+  }
   const BENDER_NOTES={
     'rotary-draw':'Rotary draw: use the die centreline radius and check clamping, pressure die and mandrel setup.',
     'hydraulic-ram':'Hydraulic ram: the actual curve and bend radius can vary along the pipe. A single-radius model is especially approximate; measure the finished bend.',
@@ -449,6 +568,7 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
     if(['profile','size','schedule'].includes(el.id))return;
     el.addEventListener('input',()=>{if(el.id==='wall'&&!el.readOnly)savedManualWall=num('wall');if(['trial-commanded','trial-finished','springback-loss'].includes(el.id))springbackCalibrationSetup=springSetupKey();render();});
   });
+  $('bender-method').addEventListener('change',updateBenderGuide);
   $('steel-grade').addEventListener('change',updateSteelGrade);
   $('racetech-stock').addEventListener('change',chooseRaceTechSize);
   $('springback-mode').addEventListener('change',render);
@@ -467,7 +587,7 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
     window.open(url.toString(),'_blank','noopener');
   });
   $('copy').addEventListener('click',async()=>{const s=makeSummary(current);if(!s)return;try{await navigator.clipboard.writeText(s);$('copy').textContent='Copied';setTimeout(()=>$('copy').textContent='Copy results',1500);}catch(e){const ta=document.createElement('textarea');ta.value=s;document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();$('copy').textContent=ok?'Copied':'Copy unavailable';setTimeout(()=>$('copy').textContent='Copy results',1500);}});
-  populateSizes(48.3);populateSchedules();updateSteelGrade();
+  populateSizes(48.3);populateSchedules();updateBenderGuide();updateSteelGrade();
 })();
 </script>
 </body>
