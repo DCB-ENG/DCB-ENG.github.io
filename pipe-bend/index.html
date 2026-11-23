@@ -92,11 +92,11 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
       <div class="mode-picker" role="group" aria-label="Bend method"><button type="button" id="smooth-btn" aria-pressed="true">Smooth bend</button><button type="button" id="seg-btn" aria-pressed="false">Segmented bend</button></div>
       <h2>2. Pipe dimensions</h2>
       <div class="field-grid">
-        <div class="field"><label for="profile">Pipe profile</label><select id="profile"><option value="CHS">CHS / tube (OD)</option><option value="NB">Pipe (nominal bore)</option><option value="custom">Custom diameter</option></select></div>
-        <div class="field" id="size-field"><label for="size">Pipe size</label><select id="size"></select></div>
+        <div class="field"><label for="profile">Pipe profile</label><select id="profile"><option value="CHS">CHS / tube (OD)</option><option value="NB">Pipe (nominal bore)</option><option value="RT">RaceTech steel tubing (OD × wall)</option><option value="custom">Custom diameter</option></select></div>
+        <div class="field" id="size-field"><label for="size">Pipe size / tube dimensions</label><select id="size"></select></div>
         <div class="field" id="custom-od-field" hidden><label for="custom-od">Outside diameter (mm)</label><input type="number" id="custom-od" min="1" max="5000" step="0.1" value="48.3" inputmode="decimal"></div>
         <div class="field" id="schedule-field" hidden><label for="schedule" title="ASME B36.10M nominal pipe schedule thicknesses for the selected nominal pipe size. Use Custom for measured or non-standard wall thickness.">Wall schedule ⓘ</label><select id="schedule"><option value="40">Schedule 40</option></select><p class="hint">Schedules are only for ASME nominal pipe sizes.</p></div>
-        <div class="field"><label for="wall" title="For scheduled pipe this field shows the nominal wall thickness. Choose Custom wall to edit it; for CHS / tube enter thickness directly.">Wall thickness (mm) ⓘ</label><input type="number" id="wall" min="0.1" max="200" step="any" value="3.2" inputmode="decimal"><p id="pipe-id" class="hint">Calculated inside diameter: —</p></div>
+        <div class="field"><label for="wall" title="For scheduled pipe this field shows the nominal wall thickness. Choose Custom wall to edit it; for CHS / tube enter thickness directly.">Wall thickness (mm) ⓘ</label><input type="number" id="wall" min="0.1" max="200" step="any" value="3.2" inputmode="decimal"><p id="pipe-id" class="hint">Calculated inside diameter: —</p></div><p id="racetech-main-hint" class="hint span2" hidden>RaceTech reference tubing sizes (OD × wall), grouped by grade. Wall thickness fills automatically; select Custom diameter for a measured non-catalogue wall. Historical catalogue values, not live stock availability.</p>
       </div>
       <hr class="sectionline">
       <h2>3. Bend geometry</h2>
@@ -232,7 +232,7 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
   function populateSchedules(preferred='40'){
     const isNB=$('profile').value==='NB',sch=$('schedule');
     $('schedule-field').hidden=!isNB;
-    if(!isNB){$('wall').readOnly=false;$('wall').value=String(savedManualWall);return;}
+    if(!isNB){const tube=selectedRaceTechTube();$('wall').readOnly=Boolean(tube);$('wall').value=tube?String(tube.wall):String(savedManualWall);return;}
     const pipe=selectedNB();
     sch.innerHTML='';
     if(pipe){Object.keys(pipe.sch).sort((a,b)=>Number(a)-Number(b)).forEach(code=>{const opt=document.createElement('option');opt.value=code;opt.textContent=`SCH ${code} · ${pipe.sch[code].toFixed(2)} mm`;sch.appendChild(opt);});}
@@ -366,17 +366,63 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
   let springbackCalibrationSetup = null;
   const fmt = (n, digits=1) => Number.isFinite(n) ? n.toLocaleString('en-AU',{minimumFractionDigits:digits,maximumFractionDigits:digits}) : '—';
   const num = id => Number($(id).value);
-  function populateSizes(preferred=48.3){
-    const profile=$('profile').value, size=$('size');
-    size.innerHTML='';
-    $('size-field').hidden = profile === 'custom';
-    $('custom-od-field').hidden = profile !== 'custom';
-    if(profile==='custom')return;
-    const pairs = profile==='NB' ? NB.map(p=>[String(p.od),`DN ${p.dn} (${p.nps}\u2033 NPS) · ${p.od.toFixed(2)} mm OD`]) : CHS.map(od=>[String(od),`${od} mm OD`]);
-    for(const [val,label] of pairs){ const o=document.createElement('option');o.value=val;o.textContent=label;size.appendChild(o); }
-    if(pairs.some(p=>Number(p[0])===preferred))size.value=String(preferred);
+
+  function selectedRaceTechTube(){
+    if($('profile').value!=='RT')return null;
+    const parts=$('size').value.split(':');
+    const grade=parts[0],index=Number(parts[1]);
+    if(parts.length!==2||!Object.hasOwn(RACETECH,grade)||!Number.isSafeInteger(index)||index<0)return null;
+    const item=RACETECH[grade].sizes[index];
+    return item?{grade,index,od:item[0],wall:item[1],sku:item[2]}:null;
   }
-  function outsideDiameter(){return $('profile').value==='custom'?num('custom-od'):num('size');}
+  function populateSizes(preferred=48.3){
+    const profile=$('profile').value,size=$('size');
+    size.replaceChildren();
+    $('size-field').hidden=profile==='custom';
+    $('custom-od-field').hidden=profile!=='custom';
+    $('racetech-main-hint').hidden=profile!=='RT';
+    if(profile==='custom')return;
+    if(profile==='RT'){
+      // Use only actual listed OD / wall pairs. Never assume all combos exist.
+      const groups=[['rt1020','RT350 · 1020 CDS / DOM'],['rt1026','RT350 · 1026 CDS / DOM'],['rt4130','RT650 · 4130 chromoly']];
+      for(const [key,label] of groups){
+        const group=document.createElement('optgroup');group.label=label;
+        for(const [index,item] of RACETECH[key].sizes.entries()){
+          const option=document.createElement('option');
+          option.value=key+':'+index;
+          option.textContent=item[0]+' × '+item[1]+' mm · '+item[2];
+          group.appendChild(option);
+        }
+        size.appendChild(group);
+      }
+      const currentGrade=$('steel-grade').value;
+      const fallback=Object.hasOwn(RACETECH,currentGrade)?currentGrade+':0':'rt1020:6';
+      const chosen=typeof preferred==='string'&&preferred.startsWith('rt')?preferred:fallback;
+      size.value=[...size.options].some(o=>o.value===chosen)?chosen:fallback;
+      return;
+    }
+    const pairs=profile==='NB'
+      ? NB.map(p=>[String(p.od),'DN '+p.dn+' ('+p.nps+'″ NPS) · '+p.od.toFixed(2)+' mm OD'])
+      : CHS.map(od=>[String(od),od+' mm OD']);
+    for(const [value,label] of pairs){
+      const option=document.createElement('option');option.value=value;option.textContent=label;size.appendChild(option);
+    }
+    if(pairs.some(pair=>Number(pair[0])===Number(preferred)))size.value=String(preferred);
+  }
+  function outsideDiameter(){
+    if($('profile').value==='custom')return num('custom-od');
+    if($('profile').value==='RT')return selectedRaceTechTube()?.od??NaN;
+    return num('size');
+  }
+  function syncRaceTechPipe(){
+    const tube=selectedRaceTechTube();
+    if(!tube)return;
+    if($('steel-grade').value!==tube.grade){
+      $('steel-grade').value=tube.grade;
+      updateSteelGrade();
+    }
+    $('racetech-stock').value=String(tube.index);
+  }
   function calc(){
     const D=outsideDiameter(), wall=num('wall'), angle=num('angle'), R=num('radius'), inlet=num('inlet'), outlet=num('outlet'), qty=num('qty');
     const joints=num('joints');
@@ -519,17 +565,11 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
     render();
   }
   function chooseRaceTechSize(){
-    const grade=RACETECH[$('steel-grade').value],n=$('racetech-stock').value;
-    if(!grade||n==='')return;
-    const item=grade.sizes[Number(n)];
-    if(!item)return;
-    const [od,wall]=item;
-    $('profile').value='custom';
-    $('custom-od').value=String(od);
-    savedManualWall=wall;
-    populateSizes();
+    const grade=$('steel-grade').value,index=$('racetech-stock').value;
+    if(!Object.hasOwn(RACETECH,grade)||index==='')return;
+    $('profile').value='RT';
+    populateSizes(grade+':'+index);
     populateSchedules();
-    $('wall').value=String(wall);
     render();
   }
   function makeStats(c){
@@ -636,8 +676,8 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
   $('racetech-stock').addEventListener('change',chooseRaceTechSize);
   $('springback-mode').addEventListener('change',render);
   $('springback-projection').addEventListener('change',render);
-  $('profile').addEventListener('change',()=>{populateSizes(48.3);populateSchedules('40');render();});
-  $('size').addEventListener('change',()=>{populateSchedules($('schedule').value);render();});
+  $('profile').addEventListener('change',()=>{populateSizes(48.3);populateSchedules('40');syncRaceTechPipe();render();});
+  $('size').addEventListener('change',()=>{populateSchedules($('schedule').value);syncRaceTechPipe();render();});
   $('schedule').addEventListener('change',()=>{applySchedule();render();});
   $('smooth-btn').addEventListener('click',()=>{mode='smooth';render();});$('seg-btn').addEventListener('click',()=>{mode='segmented';render();});
   document.querySelectorAll('[data-angle]').forEach(b=>b.addEventListener('click',()=>{$('angle').value=b.dataset.angle;render();}));
