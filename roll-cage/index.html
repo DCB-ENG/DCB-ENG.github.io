@@ -532,13 +532,21 @@
     $('staySpan').textContent=a.stays?`${round(a.stays.length,1)} mm`:'—';
     $('stayAngle').textContent=a.stays?`${round(a.stays.angle,1)}° below horizontal · includes splay`:'Disabled or invalid';
     $('stayUpperWidth').textContent=a.stays?`${round(a.stays.upperWidth,1)} mm`:'—';
+    $('harnessSpan').textContent=a.harness?`${round(a.harness.length,1)} mm`:'—';
+    $('harnessOffset').textContent=a.harness?`${round(a.harness.z,1)} mm behind hoop`:'Disabled or invalid';
+    $('doorSpan').textContent=a.door?`${round(a.door.members[0].length,1)} mm`:'—';
+    $('doorAngle').textContent=a.door?`${round(a.door.sideAngle,1)}° side view · ${a.door.members.length} bar(s)`:'Disabled or invalid';
     const detail=[];
     if(a.brace)detail.push(`Diagonal: <strong>${a.brace.upperSide} upper ${round(g.v.braceTop,1)} mm</strong> → <strong>${a.brace.lowerSide} lower ${round(g.v.braceBottom,1)} mm</strong> above hoop base.`);
     if(a.stays)detail.push(`Rear stays: upper joints <strong>${round(g.v.stayTop,1)} mm</strong> above base, lower mounts <strong>${round(g.v.rearFootHeight,1)} mm</strong> above base, <strong>${round(g.v.rearRun,1)} mm</strong> behind hoop.`);
+    if(a.harness)detail.push(`Harness at <strong>${round(a.harness.height,1)} mm</strong> high, <strong>${round(a.harness.z,1)} mm</strong> behind hoop.`);
+    if(a.door)detail.push(`Side intrusion: ${a.door.members.map(m=>m.name).join(' + ')}, <strong>${round(a.door.run,1)} mm</strong> forward; front joint spacing <strong>${round(a.door.frontSpacing,1)} mm</strong>.`);
     $('addonsDetail').innerHTML=detail.join(' ');
     const rows=[];
     if(a.brace)rows.push([1,'Diagonal brace',a.brace.length,a.brace.blank,`${round(a.brace.angle,1)}° to horizontal · CHS ${round(g.v.braceOD,2)} × ${round(g.v.braceWall,2)}`]);
     if(a.stays){rows.push([1,'Left rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);rows.push([1,'Right rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);}
+    if(a.harness)rows.push([1,'Harness crossbar',a.harness.length,a.harness.blank,`CHS ${round(a.harness.OD,2)} × ${round(a.harness.wall,2)} · both ends to rear stays`]);
+    if(a.door)for(const m of a.door.members)rows.push([1,`${m.name} side intrusion bar`,m.length,m.blank,`CHS ${round(a.door.OD,2)} × ${round(a.door.wall,2)} · ${round(m.angle,1)}° elevation`]);
     $('addonsBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${round(r[2],1)} mm</td><td><strong>${round(r[3],1)} mm</strong></td><td>${r[4]}</td></tr>`).join(''):'<tr><td colspan="5">Enable a component and enter valid dimensions to see the cut list.</td></tr>';
     renderStayViews(g);
     renderDoorViews(g);
@@ -587,11 +595,13 @@
     })():'';
     // Front view additions: diagonal is in the hoop plane, while stay attachment
     // circles mark only the two rear stays' connections (the stays run backwards).
-    const brace=g.addons.brace,stays=g.addons.stays;
+    const brace=g.addons.brace,stays=g.addons.stays,harness=g.addons.harness,door=g.addons.door;
     const braceOverlay=brace?(()=>{const a=xy(brace.lower),b=xy(brace.upper);return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#69d5e8" stroke-width="6"/><line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#104356" stroke-width="1.7" stroke-dasharray="5 5"/><circle cx="${a.x}" cy="${a.y}" r="6" fill="#69d5e8" stroke="#111" stroke-width="2"/><circle cx="${b.x}" cy="${b.y}" r="6" fill="#69d5e8" stroke="#111" stroke-width="2"/><text x="${(a.x+b.x)/2+13}" y="${(a.y+b.y)/2-12}" fill="#9fecf6" font-size="15" font-weight="700">Diagonal ${round(brace.length,0)} mm</text><text x="${b.x+(brace.upperSide==='right'?20:-20)}" y="${b.y+9}" text-anchor="${brace.upperSide==='right'?'start':'end'}" fill="#9fecf6" font-size="12">Upper ${round(g.v.braceTop,0)} mm</text><text x="${a.x+(brace.lowerSide==='right'?20:-20)}" y="${a.y+5}" text-anchor="${brace.lowerSide==='right'?'start':'end'}" fill="#9fecf6" font-size="12">Lower ${round(g.v.braceBottom,0)} mm</text>`;})():'';
     const stayOverlay=stays?[stays.left,stays.right].map(p=>{const q=xy(p);return `<circle cx="${q.x}" cy="${q.y}" r="7.5" fill="#a7efc8" stroke="#123d2b" stroke-width="3"/>`;}).join(''):'';
+    const harnessOverlay=harness?(()=>{const a=xy(harness.left),b=xy(harness.right);return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#c4a0ff" stroke-width="5" stroke-dasharray="8 4"/><text x="${(a.x+b.x)/2}" y="${a.y-11}" font-size="13" text-anchor="middle" fill="#e0c8ff">Harness ${round(harness.length,0)} mm</text>`;})():'';
+    const doorOverlay=door?door.members.map(m=>{const q=xy(m.rear);return `<circle cx="${q.x}" cy="${q.y}" r="6" fill="#ffb76b" stroke="#553618" stroke-width="2"/>`;}).join(''):'';
     const overlayLabels=stays?`<text x="380" y="72" class="note" text-anchor="middle">Green dots = rear stay upper mounts (stays extend behind hoop)</text>`:'';
-    const inner=`${boundary}${dimWidth}${dimHeight}${legendTop}${roofGuide}${shoulderDimension}${overlayLabels}${braceOverlay}<path d="${path}" stroke="#d3dce1" stroke-width="${round(Math.max(d*s,3),3)}" stroke-linecap="butt" stroke-linejoin="round" fill="none"/><path d="${path}" stroke="#fc912c" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round" fill="none"/>${joints.map(dot).join('')}${stayOverlay}<text x="${round(xwall+10,1)}" y="${round(floorY+24,1)}" class="note">Tube start</text><text x="${round(dx-10,1)}" y="${round(floorY+24,1)}" class="note" text-anchor="end">Tube end</text><text x="380" y="549" class="note" text-anchor="middle">Finished front profile · dashed envelope connects measured widths</text>`;
+    const inner=`${boundary}${dimWidth}${dimHeight}${legendTop}${roofGuide}${shoulderDimension}${overlayLabels}${braceOverlay}${harnessOverlay}<path d="${path}" stroke="#d3dce1" stroke-width="${round(Math.max(d*s,3),3)}" stroke-linecap="butt" stroke-linejoin="round" fill="none"/><path d="${path}" stroke="#fc912c" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round" fill="none"/>${joints.map(dot).join('')}${stayOverlay}${doorOverlay}<text x="${round(xwall+10,1)}" y="${round(floorY+24,1)}" class="note">Tube start</text><text x="${round(dx-10,1)}" y="${round(floorY+24,1)}" class="note" text-anchor="end">Tube end</text><text x="380" y="549" class="note" text-anchor="middle">Finished front profile · dashed envelope connects measured widths</text>`;
     $('drawingSvg').innerHTML=inner;
   }
   function renderMarkOut(g){
@@ -616,7 +626,7 @@
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('upperNotchPreview').innerHTML='';$('lowerNotchPreview').innerHTML='';return;}
+    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('upperNotchPreview').innerHTML='';$('lowerNotchPreview').innerHTML='';return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
