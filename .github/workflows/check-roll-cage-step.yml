@@ -1,0 +1,40 @@
+name: Check Roll Cage STEP Exporter
+on:
+  push:
+    paths:
+      - 'tools/roll_cage_step_export.py'
+      - 'tests/fixtures/roll-cage-step-smoke.json'
+      - '.github/workflows/check-roll-cage-step.yml'
+  pull_request:
+    paths:
+      - 'tools/roll_cage_step_export.py'
+      - 'tests/fixtures/roll-cage-step-smoke.json'
+      - '.github/workflows/check-roll-cage-step.yml'
+  workflow_dispatch:
+jobs:
+  step-roundtrip:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install OpenCascade CAD kernel via CadQuery
+        run: python -m pip install --quiet cadquery
+      - name: Generate true B-rep STEP tubes and read back
+        run: |
+          python tools/roll_cage_step_export.py tests/fixtures/roll-cage-step-smoke.json /tmp/roll-cage-step-check
+          python - <<'PY'
+          import cadquery as cq
+          from pathlib import Path
+          root=Path('/tmp/roll-cage-step-check')
+          tubes=sorted(root.glob('TEST-RC-*.step'))
+          assert len(tubes)==2, tubes
+          for p in tubes:
+              shape=cq.importers.importStep(str(p))
+              assert len(shape.solids().vals())==1, p
+              assert shape.solids().val().isValid(), p
+              assert shape.solids().val().Volume()>0, p
+          assert (root/'roll-cage-assembly-preview.step').is_file()
+          print('Two analytic hollow STEP solids validated by STEP import round-trip')
+          PY
