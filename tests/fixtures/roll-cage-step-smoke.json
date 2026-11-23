@@ -1,0 +1,93 @@
+{
+  "schema": "roll-cage-geometry-v3",
+  "units": "mm",
+  "hoop": {
+    "mode": 2,
+    "OD": 44.45,
+    "wall": 2.6,
+    "CLR": 150,
+    "centerlineVertices": [
+      {
+        "x": 0,
+        "y": 0
+      },
+      {
+        "x": 0,
+        "y": 1050
+      },
+      {
+        "x": 1000,
+        "y": 1050
+      },
+      {
+        "x": 1000,
+        "y": 0
+      }
+    ],
+    "bends": [
+      {
+        "entry": {
+          "x": 0,
+          "y": 900
+        },
+        "midPoint": {
+          "x": 43.933982822018,
+          "y": 1006.066017177982
+        },
+        "exit": {
+          "x": 150,
+          "y": 1050
+        }
+      },
+      {
+        "entry": {
+          "x": 850,
+          "y": 1050
+        },
+        "midPoint": {
+          "x": 956.066017177982,
+          "y": 1006.066017177982
+        },
+        "exit": {
+          "x": 1000,
+          "y": 900
+        }
+      }
+    ]
+  },
+  "brace": {
+    "upper": {
+      "x": 1000,
+      "y": 800
+    },
+    "lower": {
+      "x": 0,
+      "y": 100
+    },
+    "OD": 38.1,
+    "wall": 2.6
+  },
+  "cutList": {
+    "job": "TEST",
+    "parts": [
+      {
+        "id": "main-hoop",
+        "partNumber": "TEST-RC-001",
+        "member": "Main hoop",
+        "od": 44.45,
+        "wall": 2.6,
+        "span": 2971.238898,
+        "blank": 2971.238898
+      },
+      {
+        "id": "diagonal-brace",
+        "partNumber": "TEST-RC-005",
+        "member": "Main hoop diagonal brace",
+        "od": 38.1,
+        "wall": 2.6,
+        "span": 1220.656,
+        "blank": 1260.656
+      }
+    ]
+  }
+}
