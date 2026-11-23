@@ -454,11 +454,34 @@
       joins.push(generateTubeSaddle({id:"harness-"+side,title:"HARNESS BAR — "+side.toUpperCase()+" / REAR STAY",member:"Harness bar",end:side.toUpperCase()+" END",branchOD:v.harnessOD,branchWall:v.harnessWall,parentOD:v.stayOD,outer:h,other,parentAxis:dir,parentName:side+" rear stay"}));
     }
   }
+  if(a.front&&!a.front.errors.length){
+    for(const side of ['left','right']){
+      const leg=a.front[side],attach=leg.points[0],next=leg.points[1],hoop=leg.hoopAttach;
+      joins.push(generateTubeSaddle({id:'front-leg-'+side+'-rear',title:side.toUpperCase()+' FRONT LEG — REAR / MAIN HOOP',
+        member:side+' continuous front leg',end:'REAR END',
+        branchOD:v.frontOD,branchWall:v.frontWall,parentOD:v.od,outer:attach,other:next,
+        parentAxis:hoop.tangent,parentHoop:g,parentName:'Main hoop'}));
+    }
+    if(a.front.header)for(const side of ['left','right']){
+      const joint=a.front.header[side],other=a.front.header[side==='left'?'right':'left'];
+      joins.push(generateTubeSaddle({id:'windscreen-header-'+side,title:'WINDSCREEN HEADER — '+side.toUpperCase()+' / FRONT LEG',
+        member:'Windscreen header',end:side.toUpperCase()+' END',
+        branchOD:v.headerOD,branchWall:v.headerWall,parentOD:v.frontOD,outer:joint,other,
+        parentAxis:joint.tangent,parentPath:a.front[side],parentName:side+' front leg'}));
+    }
+  }
   if(a.door){
     for(const member of a.door.members){
       const side=member.name.toLowerCase(),rear=hoopAtHeight(g,v.doorRearHeight,side);
       joins.push(generateTubeSaddle({id:"door-"+side+"-rear",title:member.name.toUpperCase()+" SIDE INTRUSION — REAR / MAIN HOOP",member:member.name+" side intrusion",end:"REAR END",branchOD:v.doorOD,branchWall:v.doorWall,parentOD:v.od,outer:member.rear,other:member.front,parentAxis:rear.tangent,parentHoop:g,parentName:"Main hoop"}));
-      if(!$("frontTubeConfirmed").checked){
+      if(a.front&&!a.front.errors.length){
+        const parent=a.front[side],hit=frontLegAtHeight(parent,member.front.y);
+        if(!hit)joins.push({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / MODELLED LEG",error:"Selected height does not intersect this front leg."});
+        else joins.push(generateTubeSaddle({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / FRONT LEG",
+          member:member.name+" side intrusion",end:"FRONT END",
+          branchOD:v.doorOD,branchWall:v.doorWall,parentOD:v.frontOD,outer:member.front,other:member.rear,
+          parentAxis:hit.tangent,parentPath:parent,parentName:member.name+" continuous front leg"}));
+      }else if(!$("frontTubeConfirmed").checked){
         joins.push({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / A-PILLAR",member:member.name+" side intrusion",end:"FRONT END",error:"Confirm the measured front parent tube OD and both lean angles before generating this wrap-around."});
       }else{
         const rad=Math.PI/180,lateral=v.frontTubeSideLean*rad,fore=v.frontTubeRearLean*rad,sgn=side==="left"?-1:1;
