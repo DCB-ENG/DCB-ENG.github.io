@@ -1012,7 +1012,7 @@
   $('frontPlanSvg').innerHTML=`<text x="300" y="21" text-anchor="middle" fill="#adbbc7" font-size="13">Plan view · main hoop at top · front below</text><line x1="${plan(l.points[0])[0]}" y1="${plan(l.points[0])[1]}" x2="${plan(r.points[0])[0]}" y2="${plan(r.points[0])[1]}" stroke="#89969e" stroke-width="8"/>${lines}${hp}<text x="300" y="54" text-anchor="middle" fill="#dce5e9" font-size="12">Hoop joint spacing ${round(r.points[0].x-l.points[0].x,0)} mm</text><text x="300" y="348" text-anchor="middle" fill="#cad1d8" font-size="12">Upper A-pillar spacing ${round(v.frontHeaderWidth,0)} mm</text>`;
   const fs=Math.min(470/Math.max(g.Wc,v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth),230/v.frontRoofTopHeight),face=p=>[300+(p.x-g.Wc/2)*fs,300-p.y*fs];
   const flines=['left','right'].map(k=>`<path d="${frontSVGPath(front[k],face)}" fill="none" stroke="#ffb46c" stroke-width="5"/>`).join('');
-  const hf=h?(()=>{const a=face(h.left),b=face(h.right);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c4a0ff" stroke-width="6"/><text x="300" y="${a[1]-12}" text-anchor="middle" font-size="13" fill="#dec8ff">WH1 header ${round(h.length,0)} mm</text>`;})():'';
+  const hf=h?(()=>{const a=face(h.left),b=face(h.right);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c4a0ff" stroke-width="6"/><text x="300" y="${a[1]-12}" text-anchor="middle" font-size="13" fill="#dec8ff">WH1 Header ${round(h.length,0)} mm</text>`;})():'';
   $('frontFaceSvg').innerHTML=`<text x="300" y="21" text-anchor="middle" fill="#adbbc7" font-size="12">Front elevation · longitudinal positions projected</text>${flines}${hf}`;
   renderFrontStationLabels(g);
 }
