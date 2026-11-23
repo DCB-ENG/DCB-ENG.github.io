@@ -604,10 +604,11 @@
     for(const e of endpoints){
       const q=e.parent,side=q?.side||'left',front=g.addons.front?.errors.length?null:g.addons.front;
       const parentIsFront=q?.kind==='front'&&front&&front[side];
+      const parentIsHeader=q?.kind==='header'&&front?.header;
       const axis=q?.kind==='hoop'?q.point?.tangent:parentIsFront?
-        q.point?.tangent||front[side].bends[0]?.incoming:null;
-      const parentOD=q?.kind==='hoop'?g.v.od:parentIsFront?g.v.frontOD:g.v.frontTubeOD;
-      const name=q?.kind==='hoop'?'Main hoop':parentIsFront?`${side} front leg`:'Measured front reference tube';
+        q.point?.tangent||front[side].bends[0]?.incoming:parentIsHeader?{x:1,y:0,z:0}:null;
+      const parentOD=q?.kind==='hoop'?g.v.od:parentIsFront?g.v.frontOD:parentIsHeader?g.v.headerOD:g.v.frontTubeOD;
+      const name=q?.kind==='hoop'?'Main hoop':parentIsFront?`${side} front leg`:parentIsHeader?'Windscreen header':'Measured front reference tube';
       const id=m.id+'-'+e.end.toLowerCase(),title=`${m.title.toUpperCase()} — ${e.end} / ${name.toUpperCase()}`;
       if(!axis||!Number.isFinite(parentOD)||q?.kind==='reference'&&!$('frontTubeConfirmed').checked){
         out.push({id,title,member:m.title,end:e.end+' END',error:q?.kind==='reference'?'Confirm the front receiving tube OD and lean angles.':'No local parent tube tangent could be established.'});
@@ -615,7 +616,7 @@
       }
       const j=generateTubeSaddle({id,title,member:m.title,end:e.end+' END',branchOD:m.od,branchWall:m.wall,parentOD,
         outer:e.point,other:e.other,parentAxis:axis,parentHoop:q?.kind==='hoop'?g:undefined,
-        parentPath:parentIsFront?front[side]:undefined,parentName:name});
+        parentPath:parentIsFront?front[side]:undefined,parentPoint:parentIsHeader?front.header.left:undefined,parentName:name});
       out.push(j);
     }
   }
@@ -856,9 +857,12 @@
       const roof=[];
       for(const side of ['left','right']){
         const other=side==='left'?'right':'left';
-        const p=hoopAtHeight(g,v.frontTieHeight,side),q=front[other].bends[0].entry;
-        const m=add(`roof-${side}`,`${side.toUpperCase()} rear-to-opposite-front roof diagonal`,
-          v.roofOD,v.roofWall,p,q,parentHoop(p),parentFront(other,q));
+        const h=front.header,from=h? h[other] : null;
+        if(!h){errors.push('Roof X requires an enabled windscreen header to receive both front joints.');continue;}
+        const toward=other==='left'?1:-1,offset=Math.min(50,h.length*0.2);
+        const q={x:from.x+toward*offset,y:from.y,z:from.z},p=hoopAtHeight(g,v.frontTieHeight,side);
+        const m=add(`roof-${side}`,`${side.toUpperCase()} rear-to-opposite-header roof diagonal`,
+          v.roofOD,v.roofWall,p,q,parentHoop(p),{kind:'header',point:q});
         if(m)roof.push(m);
       }
       extra.roof=roof.length?roof:null;
@@ -1612,7 +1616,7 @@
     push({id:em.id,title:em.title,kind:'straight',od:em.od,wall:em.wall,span:em.length,blank:em.blank,extra:fit,
       datum:'NEAR / FIRST JOINT',farEnd:'FAR / SECOND JOINT',
       startDescription:em.nearParent.kind==='hoop'?'Main hoop':em.nearParent.kind==='front'?'Front leg':'Measured front reference',
-      endDescription:em.farParent.kind==='hoop'?'Main hoop':em.farParent.kind==='front'?'Front leg':'Measured front reference',
+      endDescription:em.farParent.kind==='hoop'?'Main hoop':em.farParent.kind==='front'?'Front leg':em.farParent.kind==='header'?'Windscreen header':'Measured front reference',
       bends:[],notes:'Additional reinforcement · confirm joint/gusset configuration and rules',jointStart:nearID,jointEnd:farID});
   }
   return list;
