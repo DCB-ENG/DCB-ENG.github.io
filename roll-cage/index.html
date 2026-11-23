@@ -869,6 +869,48 @@
   ${sheets}</body></html>`;
 }
 
+  function frontSVGPath(leg,project){
+  const pcs=frontLegPieces(leg);if(!pcs.length)return '';
+  const q=project(leg.points[0]);let d=`M ${round(q[0],2)} ${round(q[1],2)}`;
+  for(const seg of pcs){const n=seg.isBend?28:1;for(let i=1;i<=n;i++){const p=project(seg.point(i/n));d+=` L ${round(p[0],2)} ${round(p[1],2)}`;}}
+  return d;
+}
+
+  function renderFrontStructure(g){
+  const front=g.addons.front,valid=front&&!front.errors.length,warning=$('frontWarning');
+  warning.style.display=front?.errors.length?'block':'none';warning.textContent=front?.errors.join(' ')||'';
+  if(!valid){
+    $('frontDeveloped').textContent='—';$('frontBlank').textContent='Enable front legs';
+    $('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';
+    $('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';
+    const msg=front?.errors.length?'Adjust front leg measurements':'Enable continuous front legs';
+    for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML=`<text x="300" y="170" text-anchor="middle" fill="#a4acb2" font-size="16">${msg}</text>`;
+    $('frontBendCsvDownload').disabled=true;$('frontSvgDownload').disabled=true;return;
+  }
+  $('frontBendCsvDownload').disabled=false;$('frontSvgDownload').disabled=false;
+  const v=g.v,l=front.left,r=front.right,h=front.header;
+  $('frontDeveloped').textContent=`${round(l.total,1)} mm`;
+  $('frontBlank').textContent=`Blank ${round(l.blank,1)} mm (each leg)`;
+  $('frontAngles').textContent=l.bends.map(b=>round(b.angle,1)+'°').join(' / ');
+  $('frontClock').textContent=`B1→B2 tube-axis clock: left ${round(l.clock,1)}° · right ${round(r.clock,1)}°`;
+  $('headerLength').textContent=h?`${round(h.length,1)} mm`:'Disabled or invalid';
+  $('headerDetail').textContent=h?`CHS ${round(h.OD,2)} × ${round(h.wall,2)} mm · ${round(h.height,0)} mm high`:'Toggle the header to include it';
+  $('frontBendsBody').innerHTML=['left','right'].map(side=>front[side].bends.map(b=>`<tr><td>${side.toUpperCase()}</td><td>${b.name}</td><td>${round(b.angle,2)}°</td><td class="mark-start">${round(b.start+v.frontTrim,1)}</td><td class="mark-mid">${round(b.mid+v.frontTrim,1)}</td><td class="mark-end">${round(b.end+v.frontTrim,1)}</td></tr>`).join('')).join('');
+  $('frontSectionsBody').innerHTML=['left','right'].map(side=>front[side].sections.map(x=>`<tr><td>${side.toUpperCase()}</td><td>${x.label}</td><td>${round(x.length,1)} mm</td></tr>`).join('')).join('');
+  const ss=Math.min(305/v.frontFootRun,220/Math.max(v.frontRoofTopHeight,g.Hc));
+  const side=p=>[474+p.z*ss,300-p.y*ss],marks=l.bends.map((b,i)=>{const p=side(b.midPoint);return `<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="#a9e3ff"/><text x="${p[0]-9}" y="${p[1]-14}" text-anchor="end" font-size="13" fill="#a9e3ff">B${i+1} ${round(b.angle,1)}°</text>`;}).join('');
+  const p0=side(l.points[0]),p3=side(l.points[3]),headerSide=h?(()=>{const p=side(h.left);return `<circle cx="${p[0]}" cy="${p[1]}" r="6" fill="#c4a0ff"/><text x="${p[0]+8}" y="${p[1]-8}" fill="#e0ceff" font-size="12">Header ${round(h.height,0)} high</text>`;})():'';
+  $('frontSideSvg').innerHTML=`<text x="300" y="24" fill="#afbbc6" text-anchor="middle" font-size="13">Main hoop at right · front of car at left</text><line x1="${p0[0]}" x2="${p0[0]}" y1="${300-g.Hc*ss}" y2="300" stroke="#8796a0" stroke-width="8"/><path d="${frontSVGPath(l,side)}" fill="none" stroke="#ffb46c" stroke-width="6" stroke-linejoin="round"/>${marks}${headerSide}<circle cx="${p0[0]}" cy="${p0[1]}" r="6" fill="#ffd399"/><circle cx="${p3[0]}" cy="${p3[1]}" r="6" fill="#ffd399"/><text x="${p0[0]+7}" y="${p0[1]-12}" fill="#f3debb" font-size="12">Roof joint</text><text x="${p3[0]-7}" y="${p3[1]-12}" text-anchor="end" fill="#f3debb" font-size="12">Foot</text><line x1="${p3[0]}" y1="319" x2="${p0[0]}" y2="319" stroke="#ed9949"/><text x="300" y="339" text-anchor="middle" fill="#ffbb79" font-size="13">Forward ${round(v.frontFootRun,0)} mm</text>`;
+  const ps=Math.min(470/Math.max(g.Wc,v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth),220/v.frontFootRun),plan=p=>[300+(p.x-g.Wc/2)*ps,75-p.z*ps];
+  const lines=['left','right'].map(k=>`<path d="${frontSVGPath(front[k],plan)}" fill="none" stroke="#ffb46c" stroke-width="5"/>`).join('');
+  const hp=h?(()=>{const a=plan(h.left),b=plan(h.right);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c4a0ff" stroke-width="5"/>`;})():'';
+  $('frontPlanSvg').innerHTML=`<text x="300" y="21" text-anchor="middle" fill="#adbbc7" font-size="13">Plan view · main hoop at top · front below</text><line x1="${plan(l.points[0])[0]}" y1="${plan(l.points[0])[1]}" x2="${plan(r.points[0])[0]}" y2="${plan(r.points[0])[1]}" stroke="#89969e" stroke-width="8"/>${lines}${hp}<text x="300" y="54" text-anchor="middle" fill="#dce5e9" font-size="12">Hoop joint spacing ${round(r.points[0].x-l.points[0].x,0)} mm</text><text x="300" y="${plan(l.points[3])[1]+24}" text-anchor="middle" fill="#ffc58c" font-size="13">Foot spacing ${round(v.frontFootWidth,0)} mm</text><text x="300" y="348" text-anchor="middle" fill="#cad1d8" font-size="12">Upper A-pillar spacing ${round(v.frontHeaderWidth,0)} mm</text>`;
+  const fs=Math.min(470/Math.max(g.Wc,v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth),230/v.frontRoofTopHeight),face=p=>[300+(p.x-g.Wc/2)*fs,300-p.y*fs];
+  const flines=['left','right'].map(k=>`<path d="${frontSVGPath(front[k],face)}" fill="none" stroke="#ffb46c" stroke-width="5"/>`).join('');
+  const hf=h?(()=>{const a=face(h.left),b=face(h.right);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c4a0ff" stroke-width="6"/><text x="300" y="${a[1]-12}" text-anchor="middle" font-size="13" fill="#dec8ff">Header ${round(h.length,0)} mm</text>`;})():'';
+  $('frontFaceSvg').innerHTML=`<text x="300" y="21" text-anchor="middle" fill="#adbbc7" font-size="12">Front elevation · longitudinal positions projected</text>${flines}${hf}<text x="300" y="344" text-anchor="middle" fill="#ffbb79" font-size="13">Mount spacing ${round(v.frontFootWidth,0)} mm</text>`;
+}
+
   function renderAddons(g){
     const a=g.addons;
     $('addonsWarning').style.display=a.errors.length?'block':'none';
@@ -896,6 +938,7 @@
     $('addonsBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${round(r[2],1)} mm</td><td><strong>${round(r[3],1)} mm</strong></td><td>${r[4]}</td></tr>`).join(''):'<tr><td colspan="5">Enable a component and enter valid dimensions to see the cut list.</td></tr>';
     renderStayViews(g);
     renderDoorViews(g);
+    renderFrontStructure(g);
     renderNotches(g);
   }
   function renderDrawing(g){
@@ -972,7 +1015,7 @@
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;return;}
+    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
