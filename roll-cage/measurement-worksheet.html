@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Print a blank A4 survey sheet to collect the measurements for the DCB ENG Roll Cage Generator.">
+<title>Roll cage measurement worksheet | DCB ENG</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #e9eef1; color: #172027; font: 15px/1.3 Arial, sans-serif; }
+  h1, h2, h3, p, figure { margin: 0; }
+  h1 { font-size: 24px; line-height: 1.15; }
+  h2 { font-size: 16px; margin: 14px 0 4px; }
+  h3 { font-size: 13px; margin: 0 0 5px; }
+  .toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px 16px; padding: 12px; background: #172027; color: white; }
+  .toolbar a { color: white; }
+  .toolbar button { border: 0; border-radius: 5px; background: #ffb361; color: #172027; font: bold 15px Arial, sans-serif; padding: 10px 14px; cursor: pointer; }
+  .sheet { display: flex; flex-direction: column; width: min(calc(100% - 24px), 210mm); min-height: 297mm; margin: 16px auto; padding: 10mm; background: white; }
+  .mast { display: flex; align-items: start; justify-content: space-between; gap: 12px; border-top: 3px solid; padding-top: 7px; margin-bottom: 9px; }
+  .brand { font-size: 12px; font-weight: bold; letter-spacing: .08em; white-space: nowrap; padding-top: 3px; }
+  .meta { display: grid; grid-template-columns: 1.2fr 1fr; gap: 2px 18px; }
+  .line { display: flex; gap: 6px; align-items: baseline; min-height: 24px; }
+  .line span { flex: 1; min-width: 20px; min-height: 18px; border-bottom: 1px solid #7a858b; }
+  .guide { border-left: 2px solid #394a54; padding: 0 0 0 8px; margin: 9px 0; }
+  .guide, .hint, .meta, .line, .footer, figcaption { font-size: 13px; }
+  .hint { margin: 4px 0 5px; }
+  .views { display: grid; grid-template-columns: 1fr 1.57fr; align-items: start; gap: 8px; }
+  figure { border: 1px solid #7a858b; padding: 5px 7px 3px; }
+  figcaption { font-weight: bold; }
+  svg { display: block; width: 100%; height: auto; }
+  svg text { fill: #172027; font: bold 12px Arial, sans-serif; }
+  svg .small { font-size: 11px; font-weight: normal; }
+  .tube, .dim, .datum, .member { fill: none; stroke: #172027; }
+  .tube { stroke-width: 2.8; stroke-linecap: round; stroke-linejoin: round; }
+  .dim { stroke-width: .9; }
+  .datum { stroke-width: .8; stroke-dasharray: 5 3; }
+  .member { stroke-width: 1.5; stroke-dasharray: 5 2; }
+  .point { stroke: #172027; stroke-width: 1.3; fill: #172027; }
+  .virtual { fill: white; }
+  .pair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 13px; }
+  th, td { border: 1px solid #849098; padding: 2px 5px; text-align: left; overflow-wrap: anywhere; }
+  thead th { border-bottom: 1.5px solid #394a54; }
+  tbody th { font-weight: normal; }
+  tbody td { height: 30px; }
+  .reading { width: 56%; }
+  .pair .reading { width: 63%; }
+  .tube-name { width: 39%; }
+  .ref { font-weight: bold; white-space: nowrap; }
+  .note-lines { margin-top: 8px; }
+  .note-lines div { height: 26px; border-bottom: 1px solid #849098; }
+  .footer { display: flex; justify-content: space-between; gap: 10px; border-top: 1px solid; padding-top: 4px; margin-top: auto; }
+  .footer-pad { height: 12px; }
+  @media screen and (max-width: 620px) {
+    .sheet { padding: 15px 10px; min-height: 0; }
+    .views, .pair, .meta { grid-template-columns: 1fr; }
+    .footer { flex-wrap: wrap; }
+  }
+  @page { size: A4 portrait; margin: 10mm; }
+  @media print {
+    body { background: white; color: black; }
+    .toolbar { display: none; }
+    .sheet { width: auto; min-height: 275mm; margin: 0; padding: 0; }
+    .sheet + .sheet { break-before: page; }
+    figure, tr, .mast, .meta, .footer { break-inside: avoid; }
+    h2, h3 { break-after: avoid; }
+  }
+</style>
+</head>
+<body>
+<nav class="toolbar" aria-label="Worksheet actions">
+  <a href="./">Return to Roll Cage Generator</a>
+  <button type="button" onclick="window.print()">Print worksheet</button>
+  <a href="measurement-worksheet.pdf" download>Download A4 PDF</a>
+  <span>A4 portrait · 3 pages · turn off browser headers and footers</span>
+</nav>
+<main>
+  <section class="sheet" aria-labelledby="page1">
+    <header class="mast"><h1 id="page1">Roll cage measurement worksheet</h1><span class="brand">DCB ENG</span></header>
+    <div class="meta">
+      <div class="line">Vehicle / model / year <span></span></div>
+      <div class="line" data-input="cageJobRef">Job / cage reference <span></span></div>
+      <div class="line">Measured by <span></span></div>
+      <div class="line">Date <span></span></div>
+    </div>
+    <p class="guide"><strong>Mark the main-hoop mounting plane as height zero and the hoop station as run zero.</strong> Record horizontal runs and vertical heights in mm. Left and right are as seated facing forward. Measure open space for hoop “available” rows. Use intended tube centres for joint positions and spacings.</p>
+    <div class="line">Datum marks in car <span></span></div>
+    <div class="views">
+      <figure>
+        <figcaption>Front elevation · main hoop</figcaption>
+        <svg viewBox="0 0 270 165" role="img" aria-label="Main hoop available width at legs, shoulders and roof, plus available and shoulder heights above the mounting plane">
+          <path class="tube" d="M61 139 67 87 87 43 Q93 30 108 30 H163 Q178 30 184 43 L204 87 210 139"/>
+          <path class="datum" d="M13 139H259 M93 23H178"/>
+          <path class="dim" d="M83 24V10 M188 24V10 M83 15H188 M83 15l5-3m-5 3 5 3m100-3-5-3m5 3-5 3 M64 77V94 M207 77V94 M64 87H207 M64 87l5-3m-5 3 5 3m138-3-5-3m5 3-5 3 M57 120V136 M214 120V136 M57 129H214 M57 129l5-3m-5 3 5 3m152-3-5-3m5 3-5 3 M21 23V139 M15 23h12 M21 23l-3 5m3-5 3 5m-3 111-3-5m3 5 3-5 M247 87V139 M241 87h12 M247 87l-3 5m3-5 3 5m-3 47-3-5m3 5 3-5"/>
+          <text x="135" y="12" text-anchor="middle">H3</text>
+          <text x="135" y="82" text-anchor="middle">H4</text>
+          <text x="135" y="124" text-anchor="middle">H1</text>
+          <text x="27" y="72">H2</text><text x="220" y="110">H5</text>
+          <text x="135" y="156" text-anchor="middle" class="small">Main-hoop mounting plane (0)</text>
+        </svg>
+      </figure>
+      <figure>
+        <figcaption>Side elevation · front leg and roof</figcaption>
+        <svg viewBox="0 0 430 165" role="img" aria-label="Front leg stations from FL1 floor foot to FL5 at the main hoop. Dimension arrows show FL3 and FL1 runs from the hoop. FL2 and FL3 are virtual corners, and FL4 is calculated.">
+          <path class="datum" d="M22 105H403 M337 12V150 M114 26V123 M57 105V150"/>
+          <path class="datum" d="M57 61 114 26 164 29"/>
+          <path class="tube" d="M57 105 V73 Q57 63 67 55 L103 33 Q113 25 128 27 L337 40"/>
+          <circle class="point" cx="57" cy="105" r="3"/><circle class="point virtual" cx="57" cy="61" r="3"/><circle class="point virtual" cx="114" cy="26" r="3"/><circle class="point" cx="164" cy="29" r="3"/><circle class="point" cx="337" cy="40" r="3"/>
+          <text x="18" y="98">FL1</text><text x="18" y="57">FL2</text><text x="98" y="17">FL3</text><text x="152" y="19">FL4</text><text x="344" y="33">FL5</text>
+          <text x="344" y="103" class="small">Hoop station</text>
+          <text x="175" y="100" text-anchor="middle" class="small">Mounting plane (0)</text>
+          <path class="dim" d="M10 61H53 M10 61V105 M10 61l-3 5m3-5 3 5m-3 39-3-5m3 5 3-5 M118 26H252 M247 26V105 M247 26l-3 5m3-5 3 5m-3 74-3-5m3 5 3-5 M340 40H415 M415 40V105 M415 40l-3 5m3-5 3 5m-3 60-3-5m3 5 3-5"/>
+          <text x="16" y="81" class="small">FL2 H</text><text x="253" y="72" class="small">FL3 H</text><text x="409" y="73" text-anchor="end" class="small">FL5 H</text>
+          <path class="dim" d="M114 120H337 M114 120l5-3m-5 3 5 3m218-3-5-3m5 3-5 3 M57 146H337 M57 146l5-3m-5 3 5 3m275-3-5-3m5 3-5 3"/>
+          <text x="225" y="117" text-anchor="middle">FL3 forward · roof run</text>
+          <text x="196" y="142" text-anchor="middle">FL1 forward · foot run</text>
+          <text x="15" y="161" class="small">Front</text>
+        </svg>
+      </figure>
+    </div>
+    <div class="pair">
+      <section aria-labelledby="hoop-fields">
+        <h2 id="hoop-fields">Hoop layout · vehicle measurements</h2>
+        <p class="line" data-input="mode2 mode4">2-bend U hoop / 4-bend tapered (circle)</p>
+        <table aria-labelledby="hoop-fields">
+          <thead><tr><th class="reading" scope="col">Generator field</th><th scope="col">mm</th></tr></thead>
+          <tbody>
+            <tr data-input="width"><th scope="row"><span class="ref">H1</span> Available width</th><td></td></tr>
+            <tr data-input="height"><th scope="row"><span class="ref">H2</span> Available height</th><td></td></tr>
+            <tr data-input="roofWidth"><th scope="row"><span class="ref">H3</span> Roof available width*</th><td></td></tr>
+            <tr data-input="shoulderWidth"><th scope="row"><span class="ref">H4</span> Shoulder available width*</th><td></td></tr>
+            <tr data-input="shoulder"><th scope="row"><span class="ref">H5</span> Shoulder corner height*</th><td></td></tr>
+            <tr data-input="sideGap"><th scope="row">Side clearance (each)</th><td></td></tr>
+            <tr data-input="topGap"><th scope="row">Roof clearance</th><td></td></tr>
+          </tbody>
+        </table>
+        <p class="hint">* 4-bend tapered hoop only. H5 is the projected corner where the lower leg meets the slope.</p>
+        <h2 id="door-opening">Cage rules &amp; class checks</h2>
+        <table aria-labelledby="door-opening">
+          <thead><tr><th class="reading" scope="col">Generator field</th><th scope="col">Left</th><th scope="col">Right</th></tr></thead>
+          <tbody>
+            <tr data-input="doorOpeningHeight"><th scope="row">Door opening H (mm)</th><td></td><td></td></tr>
+            <tr data-input="doorSillHeight"><th scope="row">Door sill height above datum (mm)</th><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p class="hint">The generator mostly uses one shared value for both sides. Keep both readings if they differ and confirm how to model the difference before entry.</p>
+      </section>
+      <section aria-labelledby="front-fields">
+        <h2 id="front-fields">Front legs · A-pillar / roof</h2>
+        <p class="line" data-input="useFrontLegs useHeader">Continuous legs / Windscreen header (circle if used)</p>
+        <table aria-labelledby="front-fields">
+          <thead><tr><th class="reading" scope="col">Generator field (mm)</th><th scope="col">Left</th><th scope="col">Right</th></tr></thead>
+          <tbody>
+            <tr data-input="frontTieHeight"><th scope="row"><span class="ref">FL5</span> Main-hoop attachment height</th><td></td><td></td></tr>
+            <tr data-input="frontRoofTopHeight"><th scope="row"><span class="ref">FL3</span> Upper A-pillar corner height</th><td></td><td></td></tr>
+            <tr data-input="frontWindBaseHeight"><th scope="row"><span class="ref">FL2</span> Windscreen base corner height</th><td></td><td></td></tr>
+            <tr data-input="frontRoofRun"><th scope="row"><span class="ref">FL3</span> Forward from main hoop</th><td></td><td></td></tr>
+            <tr data-input="frontFootRun"><th scope="row"><span class="ref">FL1</span> Forward to mounting feet</th><td></td><td></td></tr>
+            <tr data-input="frontHeaderWidth"><th scope="row"><span class="ref">FL3</span> Upper A-pillar spacing</th><td colspan="2" aria-label="Single width"></td></tr>
+            <tr data-input="frontBaseWidth"><th scope="row"><span class="ref">FL2</span> Windscreen base spacing</th><td colspan="2" aria-label="Single width"></td></tr>
+            <tr data-input="frontFootWidth"><th scope="row"><span class="ref">FL1</span> Floor mounting spacing</th><td colspan="2" aria-label="Single width"></td></tr>
+            <tr><th scope="row"><span class="ref">FL1</span> Actual foot height (survey only)</th><td></td><td></td></tr>
+            <tr data-input="headerHeight"><th scope="row"><span class="ref">WH1</span> Windscreen header height</th><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p class="hint">FL2 and FL3 are intersections of projected straights. FL4 is the roof bend start tangent, calculated by the generator. The model fixes FL1 at zero height and puts FL2 at the same forward station as FL1. Record departures in the notes.</p>
+      </section>
+    </div>
+    <div class="footer-pad"></div>
+    <footer class="footer"><span>Illustrative sketches · not to scale · not approval drawings</span><strong>1 / 3</strong></footer>
+  </section>
+
+  <section class="sheet" aria-labelledby="page2">
+    <header class="mast"><h1 id="page2">Stays, harness and door bars</h1><span class="brand">DCB ENG</span></header>
+    <div class="line">Job / cage reference <span></span></div>
+    <p class="guide">Keep the same hoop datum. Measure horizontally from the hoop station to each rear mount or front joint, and vertically from the mounting plane to each joint centre. Across-car spacings are centre to centre.</p>
+    <div class="views">
+      <figure>
+        <figcaption>Side elevation · stays and bars</figcaption>
+        <svg viewBox="0 0 270 158" role="img" aria-label="Side of hoop with rear stay, rear-stay crossbar, main-hoop harness bar and door bar. R1 through R3 and D1 through D3 match the table.">
+          <path class="datum" d="M7 119H259 M133 11V152 M224 96V152 M52 78V134"/>
+          <path class="tube" d="M32 119 49 83 79 31 133 34 V119 M133 34 224 96"/>
+          <path class="member" d="M52 78 133 91"/>
+          <circle class="point" cx="133" cy="34" r="3"/><circle class="point" cx="224" cy="96" r="3"/>
+          <circle class="point" cx="133" cy="65" r="3"/><circle class="point" cx="178" cy="65" r="3"/>
+          <circle class="point" cx="52" cy="78" r="3"/><circle class="point" cx="133" cy="91" r="3"/>
+          <text x="142" y="31">R1</text><text x="229" y="96">R3</text>
+          <text x="107" y="69">B4</text><text x="181" y="62">B3</text>
+          <text x="22" y="78">D2</text><text x="140" y="91">D1</text>
+          <path class="dim" d="M52 132H133 M52 132l5-3m-5 3 5 3m76-3-5-3m5 3-5 3 M133 148H224 M133 148l5-3m-5 3 5 3m86-3-5-3m5 3-5 3"/>
+          <text x="92" y="128" text-anchor="middle">D3</text><text x="178" y="144" text-anchor="middle">R2</text>
+          <text x="8" y="17" class="small">Front</text><text x="230" y="17" class="small">Rear</text>
+        </svg>
+      </figure>
+      <figure>
+        <figcaption>Plan · front and rear mount spacings</figcaption>
+        <svg viewBox="0 0 430 158" role="img" aria-label="Top view with front at left, FL1, FL2, FL3 and FL5 stations, windscreen header, front door joint spacing and rear mount spacing.">
+          <path class="datum" d="M18 79H405 M249 11V146"/>
+          <path class="tube" d="M49 27 89 28 154 45 249 37 372 49 M49 131 89 130 154 113 249 121 372 109 M249 37V121"/>
+          <path class="member" d="M119 36V122 M107 33 249 37 M107 125 249 121"/>
+          <path class="dim" d="M49 27V19 M49 131v8 M45 27H54 M45 131H54 M49 27V131 M89 28V130 M154 45V113 M107 33V125 M372 49H396 M372 109H396 M391 49V109"/>
+          <path class="dim" d="M49 27l-3 5m3-5 3 5m-3 99-3-5m3 5 3-5 M89 28l-3 5m3-5 3 5m-3 97-3-5m3 5 3-5 M154 45l-3 5m3-5 3 5m-3 63-3-5m3 5 3-5 M107 33l-3 5m3-5 3 5m-3 87-3-5m3 5 3-5 M391 49l-3 5m3-5 3 5m-3 55-3-5m3 5 3-5 M132 26l-13 10"/>
+          <text x="33" y="151">FL1</text><text x="74" y="151">FL2</text><text x="141" y="151">FL3</text><text x="235" y="151">FL5</text>
+          <text x="101" y="23">D4</text><text x="134" y="27" class="small">WH1</text><text x="397" y="73">R4</text>
+          <text x="17" y="68" class="small">Front</text><text x="328" y="69" class="small">Rear</text>
+          <text x="267" y="29" class="small">Vehicle right</text><text x="267" y="138" class="small">Vehicle left</text>
+        </svg>
+      </figure>
+    </div>
+    <p class="hint">The plan separates FL1 and FL2 for clarity. The generator aligns them at the same forward station.</p>
+    <div class="pair">
+      <section aria-labelledby="stay-fields">
+        <h2 id="stay-fields">Rear stays, diagonal and harness</h2>
+        <p class="hint" data-input="useStays useBrace useHarness useHoopHarness">Circle members used: Rear stays / Single diagonal / Rear-stay crossbar / Main-hoop harness bar</p>
+        <table aria-labelledby="stay-fields">
+          <thead><tr><th class="reading" scope="col">Generator field (mm)</th><th scope="col">Left</th><th scope="col">Right</th></tr></thead>
+          <tbody>
+            <tr data-input="stayTop"><th scope="row"><span class="ref">R1</span> Upper joint height (stay)</th><td></td><td></td></tr>
+            <tr data-input="rearRun"><th scope="row"><span class="ref">R2</span> Rearward distance</th><td></td><td></td></tr>
+            <tr data-input="rearFootHeight"><th scope="row"><span class="ref">R3</span> Rear mount height</th><td></td><td></td></tr>
+            <tr data-input="rearFootWidth"><th scope="row"><span class="ref">R4</span> Rear mount spacing</th><td colspan="2" aria-label="Single width"></td></tr>
+            <tr data-input="braceTop"><th scope="row">Upper joint height (diagonal)</th><td></td><td></td></tr>
+            <tr data-input="braceBottom"><th scope="row">Lower joint height (diagonal)</th><td></td><td></td></tr>
+            <tr data-input="harnessHeight"><th scope="row"><span class="ref">B3</span> Bar centre height (rear-stay crossbar)</th><td></td><td></td></tr>
+            <tr data-input="hoopHarnessHeight"><th scope="row"><span class="ref">B4</span> Harness bar height (main hoop)</th><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p class="line" data-input="braceUpperSide">Upper attachment side (circle): Left / Right</p>
+      </section>
+      <section aria-labelledby="door-fields">
+        <h2 id="door-fields">Side intrusion bars</h2>
+        <p class="hint" data-input="useDoor doorSides useDoor2">Circle arrangement: None / Both / Left / Right<br>Second door bar: Yes / No</p>
+        <table aria-labelledby="door-fields">
+          <thead><tr><th class="reading" scope="col">Generator field</th><th scope="col">Left</th><th scope="col">Right</th></tr></thead>
+          <tbody>
+            <tr data-input="doorRearHeight"><th scope="row"><span class="ref">D1</span> Rear joint height (mm)</th><td></td><td></td></tr>
+            <tr data-input="doorFrontHeight"><th scope="row"><span class="ref">D2</span> Front joint height (mm)</th><td></td><td></td></tr>
+            <tr data-input="doorRun"><th scope="row"><span class="ref">D3</span> Front-to-rear distance (mm)*</th><td></td><td></td></tr>
+            <tr data-input="doorFrontWidth"><th scope="row"><span class="ref">D4</span> Front joint spacing (mm)*</th><td colspan="2" aria-label="Single width"></td></tr>
+            <tr data-input="door2RearHeight"><th scope="row">Second door rear joint height (mm)</th><td></td><td></td></tr>
+            <tr data-input="door2FrontHeight"><th scope="row">Second door front joint height (mm)</th><td></td><td></td></tr>
+            <tr data-input="frontTubeOD"><th scope="row">Front/A-pillar parent CHS OD (mm)*</th><td></td><td></td></tr>
+            <tr data-input="frontTubeSideLean"><th scope="row">Front tube outward lean (°)*</th><td></td><td></td></tr>
+            <tr data-input="frontTubeRearLean"><th scope="row">Front tube rearward lean (°)*</th><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p class="hint" data-input="frontTubeConfirmed">* Enter only when continuous front legs are off. Record lean from vertical: positive outwards or rearwards at the roof. Confirm OD and both angles in the generator after measuring them.</p>
+      </section>
+    </div>
+    <h2>Mounts, offsets and obstructions</h2>
+    <p class="hint">Note any different left/right readings, floor steps, trim or obstacles. Include the reference point and side.</p>
+    <div class="note-lines" aria-label="Blank space for notes"><div></div><div></div><div></div></div>
+    <div class="footer-pad"></div>
+    <footer class="footer"><span>Illustrative sketches · not to scale · not approval drawings</span><strong>2 / 3</strong></footer>
+  </section>
+
+  <section class="sheet" aria-labelledby="page3">
+    <header class="mast"><h1 id="page3">Reinforcements and tube setup</h1><span class="brand">DCB ENG</span></header>
+    <div class="line">Job / cage reference <span></span></div>
+    <div class="pair">
+      <section aria-labelledby="reinforcement-fields">
+        <h2 id="reinforcement-fields">Optional reinforcements</h2>
+        <p class="hint" data-input="useMainCross useRoofX usePillarA usePillarB">Circle members used: Second main-hoop diagonal / Roof cross / A-pillar braces / B-pillar braces</p>
+        <table aria-labelledby="reinforcement-fields">
+          <thead><tr><th class="reading" scope="col">Generator field</th><th scope="col">Left</th><th scope="col">Right</th></tr></thead>
+          <tbody>
+            <tr data-input="pillarAUpperHeight"><th scope="row">A-pillar upper joint height (mm)</th><td></td><td></td></tr>
+            <tr data-input="pillarALowerHeight"><th scope="row">A-pillar lower joint height (mm)</th><td></td><td></td></tr>
+            <tr data-input="pillarBRearHeight"><th scope="row">B-pillar lower hoop joint height (mm)</th><td></td><td></td></tr>
+            <tr data-input="pillarBRoofFraction"><th scope="row">Roof attachment (% of roof run)*</th><td></td><td></td></tr>
+          </tbody>
+        </table>
+        <p class="hint">* The generator uses the straight roof section from FL5 to the calculated FL4 tangent.</p>
+      </section>
+      <section aria-labelledby="setup-fields">
+        <h2 id="setup-fields">Cage rules &amp; job setup</h2>
+        <div class="line" data-input="rulesBody">Governing body <span></span></div>
+        <div class="line" data-input="rulesClass">Structure class <span></span></div>
+        <div class="line" data-input="driverSide occupants">Driver position: LHD / RHD · Occupants: 1 / 2</div>
+        <div class="line" data-input="vehicleWeight">Start-line mass (kg) <span></span></div>
+        <div class="line" data-input="tubeSpec">Actual tube type (verify certificate) <span></span></div>
+        <div class="line" data-input="cageMaterial">Material / grade <span></span></div>
+      </section>
+    </div>
+    <h2 id="tube-fields">Pipe, CHS and bending die</h2>
+    <p class="hint">Record the tube outside diameter (OD), wall thickness and actual die centreline radius (CLR) in mm. A dash means there is no separate field.</p>
+    <table aria-labelledby="tube-fields">
+      <thead><tr><th class="tube-name" scope="col">Member</th><th scope="col">Outside dia.</th><th scope="col">Wall thickness</th><th scope="col">Bender CLR</th><th scope="col">Trim each end</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Main hoop</th><td data-input="od"></td><td data-input="wall"></td><td data-input="radius"></td><td data-input="extra"></td></tr>
+        <tr><th scope="row">Continuous front legs</th><td data-input="frontOD"></td><td data-input="frontWall"></td><td data-input="frontCLR"></td><td data-input="frontTrim"></td></tr>
+        <tr><th scope="row">Main-hoop diagonal brace</th><td data-input="braceOD"></td><td data-input="braceWall"></td><td colspan="2">—</td></tr>
+        <tr><th scope="row">Rear stays</th><td data-input="stayOD"></td><td data-input="stayWall"></td><td colspan="2">—</td></tr>
+        <tr><th scope="row">Rear-stay crossbar</th><td data-input="harnessOD"></td><td data-input="harnessWall"></td><td colspan="2">—</td></tr>
+        <tr><th scope="row">Main-hoop harness bar</th><td data-input="hoopHarnessOD"></td><td data-input="hoopHarnessWall"></td><td colspan="2">—</td></tr>
+        <tr><th scope="row">Windscreen header</th><td data-input="headerOD"></td><td data-input="headerWall"></td><td colspan="2">—</td></tr>
+        <tr><th scope="row">Side intrusion bars</th><td data-input="doorOD"></td><td data-input="doorWall"></td><td colspan="2">—</td></tr>
+        <tr><th scope="row">Second door bars</th><td data-input="door2OD"></td><td data-input="door2Wall"></td><td colspan="2">—</td></tr>
+        <tr><th scope="row">Roof cross braces</th><td data-input="roofOD"></td><td data-input="roofWall"></td><td colspan="2">—</td></tr>
+      </tbody>
+    </table>
+    <p class="line" data-input="fitExtra">Extra material for coping, at each end (mm) <span></span></p>
+    <h2>Datum and survey notes</h2>
+    <div class="note-lines" aria-label="Blank space for notes"><div></div><div></div><div></div><div></div></div>
+    <div class="footer-pad"></div>
+    <footer class="footer"><span>Workshop survey · transfer readings into the DCB ENG Roll Cage Generator</span><strong>3 / 3</strong></footer>
+  </section>
+</main>
+</body>
+</html>
