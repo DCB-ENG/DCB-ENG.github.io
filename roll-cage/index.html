@@ -1088,6 +1088,28 @@
     const out=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 1530" width="1220" height="1530"><rect width="1220" height="1530" fill="#14191c"/><style>text{font:14px system-ui,Arial,sans-serif;fill:#cbd3d8}.dimension{fill:#fb912f;font-weight:650}.note{font-size:11px;fill:#a3acb2}.bendlabel{font-size:13px;fill:#ffb65e;font-weight:700}</style><text x="40" y="40" fill="#fc912c" font-size="24" font-weight="700">MAIN HOOP + DIAGONAL + REAR STAYS + HARNESS + SIDE INTRUSION</text><svg x="10" y="55" width="900" height="675" viewBox="0 0 760 570">${front}</svg><text x="38" y="780" font-size="19">REAR STAY SIDE VIEW</text><svg x="0" y="800" width="600" height="320" viewBox="0 0 600 340">${side}</svg><text x="650" y="780" font-size="19">REAR STAY PLAN VIEW</text><svg x="610" y="800" width="600" height="320" viewBox="0 0 600 340">${plan}</svg><text x="38" y="1160" font-size="19">SIDE INTRUSION SIDE VIEW</text><svg x="0" y="1175" width="600" height="320" viewBox="0 0 600 340">${ds}</svg><text x="650" y="1160" font-size="19">SIDE INTRUSION PLAN VIEW</text><svg x="610" y="1175" width="600" height="320" viewBox="0 0 600 340">${dp}</svg></svg>`;
     download('roll-cage-bracing-views.svg',out,'image/svg+xml');
   });
+  function saveFrontMarks(){
+  const g=latest,front=g?.addons?.front;if(!front||front.errors.length)return;
+  const rows=[['Tube','Bend','Angle (deg)','Start from rear datum (mm)','Centre from rear datum (mm)','End from rear datum (mm)','Bend plane clock B1 to B2 (deg)']];
+  for(const side of ['left','right'])for(const b of front[side].bends)
+    rows.push([side.toUpperCase(),b.name,round(b.angle,3),round(b.start+g.v.frontTrim,1),round(b.mid+g.v.frontTrim,1),round(b.end+g.v.frontTrim,1),round(front[side].clock,2)]);
+  rows.push(['NOTE','All marks from main-hoop connection end of straight blank','','','','','Theoretical centreline positions, not machine feed marks']);
+  const csv=rows.map(row=>row.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  download('front-leg-bend-marks.csv','\ufeff'+csv,'text/csv;charset=utf-8');
+}
+  function saveFrontViews(){
+  if(!latest?.addons?.front||latest.addons.front.errors.length)return;
+  const a=$('frontSideSvg').innerHTML,b=$('frontPlanSvg').innerHTML,c=$('frontFaceSvg').innerHTML;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 940" width="1260" height="940"><rect width="1260" height="940" fill="#151a1e"/><style>text{font-family:Arial,sans-serif}</style>
+    <text x="40" y="43" fill="#ffb76b" font-size="25" font-weight="bold">CONTINUOUS FRONT LEGS &amp; WINDSCREEN HEADER</text>
+    <text x="40" y="69" fill="#a7b5bf" font-size="14">Layout projections only — NOT 1:1; see bend CSV for exact developed mark positions</text>
+    <svg x="5" y="90" width="625" height="410" viewBox="0 0 600 360">${a}</svg>
+    <svg x="632" y="90" width="625" height="410" viewBox="0 0 600 360">${b}</svg>
+    <svg x="317" y="515" width="625" height="410" viewBox="0 0 600 360">${c}</svg></svg>`;
+  download('roll-cage-front-legs-3-view-layout.svg',svg,'image/svg+xml');
+}
+  $('frontBendCsvDownload').addEventListener('click',saveFrontMarks);
+  $('frontSvgDownload').addEventListener('click',saveFrontViews);
   $('addonsCsvDownload').addEventListener('click',()=>{
     if(!latest)return;
     const a=latest.addons, v=latest.v;
