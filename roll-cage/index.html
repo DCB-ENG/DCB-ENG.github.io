@@ -574,63 +574,73 @@
       <text x="300" y="${PY(-door.run)+46}" text-anchor="middle" font-size="12" fill="#d8e0e6">Side offset ${round(Math.abs(door.members[0].lateral),1)} mm per bar</text>`;
   }
   function templateSVG(g,notch,paper){
-    const brace=g.addons.brace,ns=brace.notches;
-    const w=paper.w,h=paper.h,C=notch.circumference,left=20,y0=88;
-    const xs=x=>left+x;
-    const yy=x=>y0+x;
-    const path=notch.profile.map((p,i)=>`${i?'L':'M'} ${round(xs(p.s),4)} ${round(yy(p.cut),4)}`).join(' ');
-    const side=notch.label==='UPPER'?brace.upperSide.toUpperCase():brace.lowerSide.toUpperCase();
-    const htext=`${notch.label} END / ${side} MAIN HOOP`;
-    const step=[0,.25,.5,.75,1];
-    const alignLabels=['UP — 0°','FRONT — 90°','DOWN — 180°','REAR — 270°','UP — 360°'];
-    const ticks=step.map((f,i)=>{
-      const x=xs(C*f);
-      return `<path d="M ${round(x,3)} ${y0-4} V ${y0+2}" stroke="#777" stroke-width="0.3"/><text x="${round(x,3)}" y="${y0-9}" text-anchor="${i===0?'start':i===4?'end':'middle'}" font-size="3.4" fill="#222">${alignLabels[i]}</text>`;
-    }).join('');
-    const boxHeight=notch.cutDepth+5;
-    const widthLine=`<path d="M ${left} 51 H ${left+100} M ${left} 47 V 55 M ${left+100} 47 V 55" fill="none" stroke="#111" stroke-width="0.6"/><text x="${left+50}" y="45" text-anchor="middle" font-size="4.1" fill="#111" font-weight="bold">100 mm CALIBRATION — measure with ruler</text>`;
-    const overlap=9;
-    return `<svg class="paper-template" xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="0 0 ${w} ${h}" role="img" aria-label="${htext} full scale wraparound fishmouth pattern">
-      <rect width="${w}" height="${h}" fill="white"/>
-      <text x="${left}" y="14" font-family="Arial,sans-serif" font-size="7" font-weight="bold" fill="#111">${htext}</text>
-      <text x="${left}" y="22" font-family="Arial,sans-serif" font-size="4.3" fill="#111">Brace CHS ${round(g.v.braceOD,2)} × ${round(g.v.braceWall,2)} mm  →  Hoop CHS ${round(g.v.od,2)} mm</text>
-      <text x="${left}" y="29" font-family="Arial,sans-serif" font-size="4.3" fill="#111">Axes angle ${round(notch.angle,2)}°  |  Circumference ${round(C,2)} mm  |  Saddle max cut depth ${round(notch.cutDepth,2)} mm</text>
-      <text x="${left}" y="36" font-family="Arial,sans-serif" font-size="3.6" fill="#333">${paper.label} · print ACTUAL SIZE (100%) · disable fit-to-page / scaling</text>
-      ${widthLine}
-      <text x="${left}" y="66" font-family="Arial,sans-serif" font-size="4.5" font-weight="bold" fill="#111">REFERENCE: align zero-cut line with square end of tube</text>
-      <text x="${left}" y="73" font-family="Arial,sans-serif" font-size="3.8" fill="#333">Wrap FROM UP toward FRONT. Cut ON bold curved line; remove material toward this edge.</text>
-      <line x1="${left}" y1="${y0}" x2="${round(left+C,4)}" y2="${y0}" stroke="#555" stroke-width="0.28" stroke-dasharray="2,2"/>
-      <path d="${path}" stroke="#111" fill="none" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="round"/>
-      <line x1="${left}" x2="${left}" y1="${y0}" y2="${round(yy(boxHeight),4)}" stroke="#666" stroke-width="0.3" stroke-dasharray="2 1"/>
-      <line x1="${round(left+C,4)}" x2="${round(left+C,4)}" y1="${y0}" y2="${round(yy(boxHeight),4)}" stroke="#666" stroke-width="0.3" stroke-dasharray="2 1"/>
-      <path d="M ${round(left+C,4)} ${y0} H ${round(left+C+overlap,4)} V ${round(yy(boxHeight),4)} H ${round(left+C,4)}" stroke="#aaa" stroke-width="0.3" fill="none" stroke-dasharray="1.5 1.5"/>
-      <text x="${round(left+C+overlap/2,4)}" y="${round(y0+8,4)}" text-anchor="middle" transform="rotate(90 ${round(left+C+overlap/2,4)} ${round(y0+8,4)})" font-family="Arial,sans-serif" font-size="2.7" fill="#777">TAPE OVERLAP</text>
-      ${ticks}
-      <text x="${left}" y="${round(yy(boxHeight+12),4)}" font-family="Arial,sans-serif" font-size="4" font-weight="bold" fill="#111">${notch.label} — DO NOT SWAP ENDS</text>
-      <text x="${left}" y="${round(yy(boxHeight+19),4)}" font-family="Arial,sans-serif" font-size="3.5" fill="#333">Theoretical: no kerf, weld gap, or bend-zone correction. Test-fit before final cut.</text>
-      <text x="${left}" y="${h-11}" font-family="Arial,sans-serif" font-size="3.5" fill="#666">The reference line represents the longest tip plane of this saddle. Both ends use the same UP/FRONT orientation.</text>
-    </svg>`;
-  }
+  const w=paper.w,h=paper.h,C=notch.circumference,left=20,y0=88;
+  const xs=x=>left+x,yy=x=>y0+x;
+  const path=notch.profile.map((p,i)=>`${i?"L":"M"} ${round(xs(p.s),4)} ${round(yy(p.cut),4)}`).join(" ");
+  const zero=notch.referenceLabel||"UP",quarter=notch.quarterLabel||"FRONT";
+  const heading=notch.title.toUpperCase();
+  const tickNames=[`${zero} 0°`,`${quarter} 90°`,`OPPOSITE 180°`,`OPPOSITE 270°`,`${zero} 360°`];
+  const ticks=tickNames.map((name,i)=>{
+    const x=xs(C*i/4);
+    return `<path d="M ${round(x,3)} ${y0-4} V ${y0+2}" stroke="#555" stroke-width="0.3"/><text x="${round(x,3)}" y="${y0-9}" text-anchor="${i===0?"start":i===4?"end":"middle"}" font-family="Arial,sans-serif" font-size="3.2" fill="#222">${name}</text>`;
+  }).join("");
+  const overlap=9,boxHeight=notch.cutDepth+5;
+  return `<svg class="paper-template" xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="0 0 ${w} ${h}" role="img" aria-label="${heading} 1 to 1 fishmouth template">
+  <rect width="${w}" height="${h}" fill="white"/>
+  <text x="${left}" y="14" font-family="Arial,sans-serif" font-size="6.5" font-weight="bold" fill="#111">${heading}</text>
+  <text x="${left}" y="22" font-family="Arial,sans-serif" font-size="4.2" fill="#111">${notch.member.toUpperCase()} CHS ${round(notch.branchOD,2)} × ${round(notch.branchWall,2)} mm → ${notch.parentName} CHS ${round(notch.parentOD,2)} mm</text>
+  <text x="${left}" y="29" font-family="Arial,sans-serif" font-size="4" fill="#111">Axes ${round(notch.angle,2)}° · Circumference ${round(C,2)} mm · Max cope depth ${round(notch.cutDepth,2)} mm · ${notch.parentType}</text>
+  <text x="${left}" y="36" font-family="Arial,sans-serif" font-size="3.6" fill="#333">${paper.label} · print ACTUAL SIZE (100%) · no fit-to-page or scaling</text>
+  <path d="M ${left} 51 H ${left+100} M ${left} 47 V 55 M ${left+100} 47 V 55" fill="none" stroke="#111" stroke-width=".6"/>
+  <text x="${left+50}" y="45" text-anchor="middle" font-family="Arial,sans-serif" font-size="4" fill="#111" font-weight="bold">100 mm CALIBRATION — CHECK WITH RULER</text>
+  <text x="${left}" y="66" font-family="Arial,sans-serif" font-size="4.2" font-weight="bold" fill="#111">SQUARE-END DATUM: reference line marks shallowest cope tip</text>
+  <text x="${left}" y="73" font-family="Arial,sans-serif" font-size="3.6" fill="#333">Mark ${zero} zero-line on installed tube. Wrap toward ${quarter}. Remove material on far side of bold cut line.</text>
+  <line x1="${left}" y1="${y0}" x2="${round(left+C,4)}" y2="${y0}" stroke="#666" stroke-width=".3" stroke-dasharray="2,2"/>
+  <path d="${path}" stroke="#111" stroke-width=".65" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <line x1="${left}" x2="${left}" y1="${y0}" y2="${round(yy(boxHeight),4)}" stroke="#888" stroke-width=".3" stroke-dasharray="2 1"/>
+  <line x1="${round(left+C,4)}" x2="${round(left+C,4)}" y1="${y0}" y2="${round(yy(boxHeight),4)}" stroke="#888" stroke-width=".3" stroke-dasharray="2 1"/>
+  <path d="M ${round(left+C,4)} ${y0} H ${round(left+C+overlap,4)} V ${round(yy(boxHeight),4)} H ${round(left+C,4)}" stroke="#999" stroke-width=".3" fill="none" stroke-dasharray="1.5 1.5"/>
+  ${ticks}
+  <text x="${left}" y="${round(yy(boxHeight+12),4)}" font-family="Arial,sans-serif" font-size="4.2" font-weight="bold" fill="#111">${notch.end} — KEEP ORIENTATION / DO NOT SWAP ENDS</text>
+  <text x="${left}" y="${round(yy(boxHeight+20),4)}" font-family="Arial,sans-serif" font-size="3.6" fill="#333">Ideal CHS outside surfaces: no weld gap, saw kerf, parent-wall correction, or springback.</text>
+  <text x="${left}" y="${h-11}" font-family="Arial,sans-serif" font-size="3.5" fill="#666">Label the tube BEFORE cutting. Fit to a scrap tube and verify actual contact and size.</text>
+  </svg>`;
+}
+
   function renderNotches(g){
-    const b=g.addons.brace,n=b?.notches;
-    const valid=n&&!n.errors.length;
-    $('notchSize').textContent=b?`${round(g.v.braceOD,2)} × ${round(g.v.braceWall,2)} mm`:'—';
-    $('notchAngles').textContent=valid?`${round(n.upper.angle,1)}° / ${round(n.lower.angle,1)}°`:'—';
-    $('notchSquare').textContent=valid?`${round(n.nominalSquare,1)} mm`:'—';
-    $('notchStatus').classList.toggle('error',!valid);
-    $('notchStatus').textContent=!b?'Enable the diagonal brace to generate the two end templates.':!valid?n.errors.join(' '):`Templates ready: ${n.paper.label} · both ends are separately labelled. Upper setback ${round(n.upper.minDepth,1)} mm / lower ${round(n.lower.minDepth,1)} mm from parent centreline. Nominal tip-to-tip square length ${round(n.nominalSquare,1)} mm is theoretical; cut oversize and verify a test fit.`;
-    $('upperNotchPreview').innerHTML=valid?templateSVG(g,n.upper,n.paper):'<p style="color:#333;text-align:center;padding:30px">Upper template unavailable</p>';
-    $('lowerNotchPreview').innerHTML=valid?templateSVG(g,n.lower,n.paper):'<p style="color:#333;text-align:center;padding:30px">Lower template unavailable</p>';
-    for(const id of ['printNotches','upperNotchSVG','lowerNotchSVG'])$(id).disabled=!valid;
-  }
-  function getNotchPrintHTML(g){
-    const b=g.addons.brace,n=b.notches,p=n.paper;
-    return `<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><title>Diagonal brace — upper + lower fishmouth templates</title>
-    <style>body{margin:0;font:15px system-ui,Arial,sans-serif;background:#e6e8ea;color:#171717}.toolbar{position:sticky;top:0;padding:12px 16px;background:#21262b;color:white;text-align:center;z-index:1}.toolbar button{font:700 16px system-ui;padding:10px 18px;background:#fc912c;border:0;border-radius:8px;cursor:pointer}.toolbar span{margin-left:12px}.sheet{width:${p.w}mm;height:${p.h}mm;margin:15px auto;box-shadow:0 6px 28px #0005;background:#fff;overflow:hidden;break-after:page}.sheet svg{display:block;width:${p.w}mm;height:${p.h}mm}@page{size:${p.w}mm ${p.h}mm;margin:0}@media print{body{background:white}.toolbar{display:none}.sheet{margin:0;box-shadow:none;break-after:page}.sheet:last-child{break-after:auto}}</style></head><body>
-    <div class="toolbar"><button onclick="window.print()">PRINT BOTH ENDS — ACTUAL SIZE</button><span>${p.label} · two pages · disable fit to page · check 100mm line</span></div>
-    <div class="sheet">${templateSVG(g,n.upper,p)}</div><div class="sheet">${templateSVG(g,n.lower,p)}</div>
-    </body></html>`;
-  }
+  const joints=allTubeJoints(g);
+  g.tubeJoints=joints;
+  const available=joints.filter(j=>!j.error&&j.paper&&j.profile);
+  const unavailable=joints.length-available.length;
+  const status=$("notchStatus");
+  status.classList.toggle("error",!available.length);
+  const sentence=`${available.length} printable tube-to-tube end${available.length===1?"":"s"} available${unavailable?` · ${unavailable} need input changes or a different joint geometry`:""}. Each template is separately named and has a 100 mm scale check.`;
+  status.textContent=joints.length?sentence:"Enable the diagonal, rear stays, harness or side intrusion to generate joint wrap-arounds.";
+  $("notchCount").textContent=`${available.length} ready / ${joints.length} tube ends`;
+  $("jointNotchCards").innerHTML=joints.map((j,i)=>{
+    const heading=j.title||j.id;
+    return `<article class="joint-card">
+      <h3>${heading}</h3>
+      <p class="joint-meta">${j.member||"Tube end"} · ${j.end||"END"}${j.angle?` · axes ${round(j.angle,1)}°`:""}</p>
+      ${j.error?`<div class="joint-error">Template unavailable: ${j.error}</div>`:
+        `<p class="joint-meta">CHS ${round(j.branchOD,2)} × ${round(j.branchWall,2)} mm → ${j.parentName} ${round(j.parentOD,2)} mm · ${j.paper.label} · depth ${round(j.cutDepth,1)} mm</p>
+        <div class="template-preview">${templateSVG(g,j,j.paper)}</div>
+        <div class="row-actions"><button class="primary" type="button" data-joint-action="print" data-joint-index="${i}">Print this end · 1:1</button><button type="button" data-joint-action="svg" data-joint-index="${i}">Save labelled SVG</button></div>`}
+    </article>`;
+  }).join("");
+  $("printNotches").disabled=!available.length;
+}
+
+  function getNotchPrintHTML(joints){
+  if(!joints.length)return "";
+  const big=joints.some(j=>j.paper.w===420),paper=big?{w:420,h:297,label:"A3 landscape"}:{w:297,h:210,label:"A4 landscape"};
+  const sheets=joints.map(j=>`<div class="sheet">${templateSVG(null,j,paper)}</div>`).join("");
+  return `<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><title>Roll cage · ${joints.length} labelled tube-end templates</title>
+  <style>body{margin:0;font:15px system-ui,Arial,sans-serif;background:#e6e8ea;color:#171717}.toolbar{position:sticky;top:0;padding:12px 16px;background:#21262b;color:white;text-align:center;z-index:1}.toolbar button{font:700 16px system-ui;padding:10px 18px;background:#fc912c;border:0;border-radius:8px;cursor:pointer}.toolbar span{margin-left:12px}.sheet{width:${paper.w}mm;height:${paper.h}mm;margin:15px auto;box-shadow:0 6px 28px #0005;background:#fff;overflow:hidden;break-after:page}.sheet svg{display:block;width:${paper.w}mm;height:${paper.h}mm}@page{size:${paper.w}mm ${paper.h}mm;margin:0}@media print{body{background:white}.toolbar{display:none}.sheet{margin:0;box-shadow:none;break-after:page}.sheet:last-child{break-after:auto}}</style></head><body>
+  <div class="toolbar"><button onclick="window.print()">PRINT ${joints.length} END${joints.length!==1?"S":""} — ACTUAL SIZE</button><span>${paper.label} · each end on its own page · disable fit to page · measure 100 mm check</span></div>
+  ${sheets}</body></html>`;
+}
+
   function renderAddons(g){
     const a=g.addons;
     $('addonsWarning').style.display=a.errors.length?'block':'none';
@@ -809,17 +819,24 @@
     download('roll-cage-bracing-cut-list.csv','\ufeff'+csv,'text/csv;charset=utf-8');
   });
   $('csvDownload').addEventListener('click',()=>{if(!latest)return;const v=latest.v;const lines=['Bend,Turn angle (deg),Start of bend from datum end (mm),Centre of bend from datum end (mm),End of bend from datum end (mm)',...latest.bends.map(b=>[b.name,round(b.angle,2),round(b.start+v.extra,1),round(b.mid+v.extra,1),round(b.end+v.extra,1)].join(','))];download('main-hoop-bend-schedule.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8');});
-  function notchReady(){const b=latest?.addons?.brace,n=b?.notches;return latest&&b&&n&&!n.errors.length;}
-  $('printNotches').addEventListener('click',()=>{
-    if(!notchReady())return;
-    const win=window.open('','_blank');
-    if(!win){alert('Your browser blocked the print sheet. Allow pop-ups for this file, then retry.');return;}
-    win.document.open();win.document.write(getNotchPrintHTML(latest));win.document.close();
+
+  function printJointTemplates(list){
+    const available=list.filter(j=>!j.error&&j.paper&&j.profile);
+    if(!available.length)return;
+    const win=window.open("","_blank");
+    if(!win){alert("Your browser blocked the template print sheet. Allow pop-ups and retry.");return;}
+    win.document.open();win.document.write(getNotchPrintHTML(available));win.document.close();
+  }
+  $("printNotches").addEventListener("click",()=>{
+    if(latest?.tubeJoints)printJointTemplates(latest.tubeJoints);
   });
-  for(const [id,which] of [['upperNotchSVG','upper'],['lowerNotchSVG','lower']])$(id).addEventListener('click',()=>{
-    if(!notchReady())return;
-    const n=latest.addons.brace.notches;
-    download(`diagonal-brace-${which}-wraparound-1to1.svg`,templateSVG(latest,n[which],n.paper),'image/svg+xml');
+  $("jointNotchCards").addEventListener("click",event=>{
+    const button=event.target.closest("[data-joint-action]");
+    if(!button||!latest?.tubeJoints)return;
+    const j=latest.tubeJoints[Number(button.dataset.jointIndex)];
+    if(!j||j.error||!j.paper)return;
+    if(button.dataset.jointAction==="print")printJointTemplates([j]);
+    else if(button.dataset.jointAction==="svg")download(j.id+"-fishmouth-1to1.svg",templateSVG(latest,j,j.paper),"image/svg+xml");
   });
   $('modelJSON').addEventListener('click',()=>{
     if(!latest)return;
