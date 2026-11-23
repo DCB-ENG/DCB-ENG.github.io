@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Free pipe bend calculator for smooth mandrel bends and fabricated segmented / lobster-back elbows. Live diagram, centreline lengths, mitre angles and cut list.">
-<title>Pipe Bend Calculator | DCB ENG</title>
+<meta name="description" content="Calculate pipe bend allowance, bend marks, springback overbend and segmented elbow cuts with rotary draw, hydraulic ram and compression bending references.">
+<title>Pipe Bend Calculator: Springback &amp; Segmented Bends | DCB ENG</title>
 <link rel="canonical" href="https://dcb-eng.github.io/pipe-bend/">
-<meta property="og:title" content="Pipe Bend Calculator | DCB ENG">
-<meta property="og:description" content="Calculate smooth and segmented pipe bends, mitre angles and cutting lengths in your browser.">
+<meta property="og:title" content="Pipe Bend Calculator: Springback &amp; Segmented Bends | DCB ENG">
+<meta property="og:description" content="Calculate pipe bend allowance, bend marks, springback overbend and segmented elbow cuts with rotary draw, hydraulic ram and compression bending references.">
 <style>
 :root{color-scheme:dark;--bg:#101115;--surface:#1c1f24;--surface2:#24292f;--border:#41464d;--text:#f1f3f5;--muted:#b5bdc6;--accent:#ffa726;--danger:#ffadb0;--r:15px}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#202126 0%,var(--bg) 55%);color:var(--text);font:15px/1.52 system-ui,-apple-system,"Segoe UI",sans-serif;min-height:100vh}
@@ -58,6 +58,29 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
 @media(max-width:460px){.panel{padding:17px}.stats{gap:7px}.stat{padding:10px}.field-grid{gap:11px}.hero{font-size:2.3rem}.wrap{width:calc(100% - 24px)}}
 @media print{body{background:white;color:black}.dcb-nav,.actions,.mode-picker,.controls,.fine,details{display:none!important}.wrap{width:100%;padding:0}.layout{display:block}.panel{border:1px solid #bbb;box-shadow:none;background:white;color:#111;break-inside:avoid;margin:0 0 12px}.stack{display:block}.diagram-header p,.muted,.stat-label,.hero-caption,.table-help{color:#444!important}.stat{background:white;color:#111}.drawing{background:#fff}.result:before{display:none}.result{background:#fff}.hero small{color:#333}.callout{background:#fff;color:#111}.badge{color:#111}table th,table td{color:#111!important}}
 </style>
+
+<meta property="og:site_name" content="DCB ENG">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dcb-eng.github.io/pipe-bend/">
+<meta property="og:image" content="https://dcb-eng.github.io/dcb_eng_chrome_logo.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Pipe Bend Calculator — Springback & Segmented Bends",
+  "url": "https://dcb-eng.github.io/pipe-bend/",
+  "description": "Calculate pipe bend allowance, bend marks, springback overbend and segmented elbow cuts with rotary draw, hydraulic ram and compression bending references.",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any modern browser",
+  "isAccessibleForFree": true,
+  "publisher": {
+    "@type": "Organization",
+    "name": "DCB ENG",
+    "url": "https://dcb-eng.github.io/"
+  }
+}
+</script>
 </head>
 <body>
 <div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" aria-current="page" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" href="/pipe-branch/">Pipe Branch</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
