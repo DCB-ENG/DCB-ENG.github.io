@@ -276,55 +276,151 @@
     hits.sort((a,b)=>a.x-b.x);
     return side==='left'?hits[0]:hits[hits.length-1];
   }
-  // Branch CHS-to-straight-parent CHS external saddle. The branch axis points OUTWARD
-  // from the interior toward each joint. Theta=0 is the roof-facing surface of the
-  // installed diagonal; +90deg is the vehicle-front-facing surface on BOTH ends.
-  // The parent centreline is locally treated as an infinite straight cylinder.
-  // All computed depths are axial distance backward from the theoretical parent
-  // centreline intersection: no weld gap, material springback or kerf is assumed.
-  function createFishmouth(outer,other,braceLength,parentOD,branchOD,label){
-    const O={x:(outer.x-other.x)/braceLength,y:(outer.y-other.y)/braceLength};
-    // Perpendicular in front-view plane with a positive upward component.
-    const U={x:-O.y*(O.x<0?-1:1),y:Math.abs(O.x)};
-    const parent=outer.tangent;
-    const tx=parent.x*U.x+parent.y*U.y;
-    const tz=parent.x*O.x+parent.y*O.y;
-    const angle=Math.asin(clamp(Math.abs(tx),0,1))*180/Math.PI;
-    const result={label,angle,axis:O,upReference:U,parentTangent:parent,kind:outer.isBend?'bend':'straight',point:{x:outer.x,y:outer.y}};
-    if(outer.isBend){result.error=`${label} joint lies on hoop bend ${outer.bend||''}. The straight-cylinder wrap profile would be inaccurate. Move the joint to a straight section.`;return result;}
-    if(branchOD>parentOD+1e-7){result.error=`Brace OD ${round(branchOD,2)} mm exceeds hoop OD ${round(parentOD,2)} mm; a complete single-curve saddle profile is not available in this tool.`;return result;}
-    if(angle<12){result.error=`${label} tube axes intersect at only ${round(angle,1)}°. The fishmouth is too shallow for this template model (minimum 12°).`;return result;}
-    const R=parentOD/2,r=branchOD/2,C=Math.PI*branchOD;
-    const data=[];
-    for(let i=0;i<=720;i++){
-      const theta=2*Math.PI*i/720;
-      const cs=Math.cos(theta),sn=Math.sin(theta);
-      const radicand=R*R-r*r*sn*sn;
-      const depth=(Math.sqrt(Math.max(0,radicand))-r*cs*tz*Math.sign(tx))/Math.abs(tx);
-      data.push({s:C*i/720,theta,depth});
+  // Universal spatial tube-to-tube intersection engine. All measurements are mm.
+  function v3(p){return {x:p.x,y:p.y,z:p.z||0};}
+
+  function sub3(a,b){return {x:a.x-b.x,y:a.y-b.y,z:a.z-b.z};}
+
+  function dot3(a,b){return a.x*b.x+a.y*b.y+a.z*b.z;}
+
+  function cross3(a,b){return {x:a.y*b.z-a.z*b.y,y:a.z*b.x-a.x*b.z,z:a.x*b.y-a.y*b.x};}
+
+  function mag3(a){return Math.hypot(a.x,a.y,a.z);}
+
+  function norm3(a){const n=mag3(a);return n>1e-12?{x:a.x/n,y:a.y/n,z:a.z/n}:null;}
+
+  function centrelineDistance(p,g){
+  let best=Infinity,prev=g.points[0],r=g.v.radius;
+  const line=(a,b)=>{
+    const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;
+    const t=l2?Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/l2)):0;
+    return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy,p.z);
+  };
+  for(const b of g.bends){
+    best=Math.min(best,line(prev,b.entry),Math.hypot(p.x-b.entry.x,p.y-b.entry.y,p.z),Math.hypot(p.x-b.exit.x,p.y-b.exit.y,p.z));
+    const cx=b.entry.x+r*b.normal.x,cy=b.entry.y+r*b.normal.y;
+    const wx=p.x-cx,wy=p.y-cy;
+    const alpha=Math.atan2(wx*b.incoming.x+wy*b.incoming.y,-(wx*b.normal.x+wy*b.normal.y));
+    if(alpha>=0&&alpha<=b.angleRad){
+      const ax=b.entry.x+r*(Math.sin(alpha)*b.incoming.x+(1-Math.cos(alpha))*b.normal.x);
+      const ay=b.entry.y+r*(Math.sin(alpha)*b.incoming.y+(1-Math.cos(alpha))*b.normal.y);
+      best=Math.min(best,Math.hypot(p.x-ax,p.y-ay,p.z));
     }
-    const low=Math.min(...data.map(p=>p.depth));
-    const high=Math.max(...data.map(p=>p.depth));
-    return {...result,circumference:C,minDepth:low,maxDepth:high,cutDepth:high-low,
-      profile:data.map(p=>({...p,cut:p.depth-low}))};
+    prev=b.exit;
   }
+  best=Math.min(best,line(prev,g.points[g.points.length-1]));
+  return best;
+}
+
+  function paperForNotch(n){
+  if(n.error)return null;
+  const w=n.circumference+29,h=n.cutDepth+130;
+  if(w<=297&&h<=210)return {w:297,h:210,label:"A4 landscape"};
+  if(w<=420&&h<=297)return {w:420,h:297,label:"A3 landscape"};
+  return null;
+}
+
+  function generateTubeSaddle(spec){
+  const j={...spec};
+  const fail=message=>({...j,error:message});
+  if(![j.branchOD,j.branchWall,j.parentOD].every(Number.isFinite)||j.branchOD<=0||j.parentOD<=0||j.branchWall<=0||j.branchWall>=j.branchOD/2)
+    return fail("Enter a positive CHS OD and a wall thickness smaller than half the tube OD.");
+  if(j.branchOD>j.parentOD+1e-6)
+    return fail("Branch OD exceeds the parent OD; this tool does not support a complete single-curve saddle for this joint.");
+  const P=v3(j.outer),Q=v3(j.other),outward=norm3(sub3(P,Q)),tangent=norm3(v3(j.parentAxis));
+  if(!outward||!tangent)return fail("Tube axes are too short to define a joint.");
+  const cosine=Math.min(1,Math.abs(dot3(outward,tangent)));
+  const angle=Math.acos(cosine)*180/Math.PI;
+  j.angle=angle;
+  if(angle<12)return fail("The joint is nearly parallel ("+angle.toFixed(1)+"° between axes). A single-wrap fishmouth is not reliable below 12°.");
+  // The zero meridian is the world-UP projection on the actual tube cross-section.
+  // The quarter-turn direction is chosen to point toward the FRONT of the vehicle.
+  const upWorld={x:0,y:1,z:0},frontWorld={x:0,y:0,z:-1};
+  let up=norm3(sub3(upWorld,{x:outward.x*dot3(outward,upWorld),y:outward.y*dot3(outward,upWorld),z:outward.z*dot3(outward,upWorld)}));
+  let referenceLabel="UP";
+  if(!up){const side={x:1,y:0,z:0};up=norm3(sub3(side,{x:outward.x*dot3(outward,side),y:outward.y*dot3(outward,side),z:outward.z*dot3(outward,side)}));referenceLabel="VEHICLE RIGHT";}
+  if(!up)return fail("Unable to establish a rotational zero reference.");
+  let quarter=norm3(cross3(outward,up));
+  if(!quarter)return fail("Unable to establish circumference orientation.");
+  if(dot3(quarter,frontWorld)<0)quarter={x:-quarter.x,y:-quarter.y,z:-quarter.z};
+  const quarterLabel=Math.abs(dot3(quarter,frontWorld))>0.3?"FRONT":"SIDE";
+  const rad=j.branchOD/2,R=j.parentOD/2,C=Math.PI*j.branchOD;
+  const axisPoint=j.parentPoint?v3(j.parentPoint):P;
+  const sep=v=>sub3(v,axisPoint);
+  const distance=j.parentHoop?
+    point=>centrelineDistance(point,j.parentHoop):
+    point=>{const dv=sep(point),p=dot3(dv,tangent);return Math.hypot(dv.x-p*tangent.x,dv.y-p*tangent.y,dv.z-p*tangent.z);};
+  const profile=[];
+  const steps=720;
+  for(let i=0;i<=steps;i++){
+    const theta=2*Math.PI*i/steps,cs=Math.cos(theta),sn=Math.sin(theta);
+    const base={x:P.x+rad*(cs*up.x+sn*quarter.x),y:P.y+rad*(cs*up.y+sn*quarter.y),z:P.z+rad*(cs*up.z+sn*quarter.z)};
+    const f=t=>distance({x:base.x-t*outward.x,y:base.y-t*outward.y,z:base.z-t*outward.z})-R;
+    if(f(0)>1e-5)return fail("The branch circumference falls outside the parent tube near the joint. Reduce the branch OD or adjust the joint position.");
+    let hi=Math.max(R*2+rad*2,10),grow=0;
+    while(f(hi)<=0&&grow++<16)hi*=2;
+    if(grow>=16)return fail("No single saddle boundary could be found along this tube axis.");
+    let lo=0;
+    for(let n=0;n<38;n++){const m=(lo+hi)*0.5;if(f(m)>0)hi=m;else lo=m;}
+    const depth=(lo+hi)*.5;
+    if(!Number.isFinite(depth)||depth>10000)return fail("Joint intersection is outside the supported calculation range.");
+    profile.push({s:C*i/steps,theta,depth});
+  }
+  const low=Math.min(...profile.map(p=>p.depth)),high=Math.max(...profile.map(p=>p.depth));
+  if(high-low>2000)return fail("The cope is too deep for a single printable wrap-around.");
+  Object.assign(j,{circumference:C,minDepth:low,maxDepth:high,cutDepth:high-low,referenceLabel,quarterLabel,
+    profile:profile.map(p=>({...p,cut:p.depth-low})),parentType:j.parentHoop?"formed hoop":"straight CHS"});
+  j.paper=paperForNotch(j);
+  if(!j.paper)return fail("This wrap-around exceeds A3 landscape at 1:1. Use a tiled template or larger-format printing.");
+  return j;
+}
+
   function deriveBraceNotches(g,brace){
-    const OD=g.v.braceOD,wall=g.v.braceWall;
-    if(!Number.isFinite(OD)||OD<=0||!Number.isFinite(wall)||wall<=0||wall>=OD/2)
-      return {errors:['Brace CHS OD and wall must be positive, with wall less than half the OD.']};
-    const upper=createFishmouth(brace.upper,brace.lower,brace.length,g.v.od,OD,'UPPER');
-    const lower=createFishmouth(brace.lower,brace.upper,brace.length,g.v.od,OD,'LOWER');
-    const errors=[...new Set([upper.error,lower.error].filter(Boolean))];
-    if(errors.length)return {upper,lower,errors};
-    const nominalSquare=brace.length-upper.minDepth-lower.minDepth;
-    if(nominalSquare<=0)errors.push('Notch setback exceeds the available member length.');
-    // Each end is 1:1 on a separate landscape sheet, including 100mm scale check.
-    const C=Math.PI*OD;
-    const maxCut=Math.max(upper.cutDepth,lower.cutDepth);
-    const paper=(C<=247&&maxCut<=82)?{w:297,h:210,label:'A4 landscape'}:{w:420,h:297,label:'A3 landscape'};
-    if(C>paper.w-50||maxCut>paper.h-121)errors.push(`Template exceeds ${paper.label} paper dimensions. Reduce OD/adjust angles or use larger paper.`);
-    return {upper,lower,nominalSquare,paper,errors};
+  const OD=g.v.braceOD,wall=g.v.braceWall;
+  const upper=generateTubeSaddle({id:"diagonal-upper",member:"Diagonal brace",end:"UPPER END",title:"DIAGONAL BRACE — UPPER / "+brace.upperSide.toUpperCase()+" HOOP",branchOD:OD,branchWall:wall,parentOD:g.v.od,outer:brace.upper,other:brace.lower,parentAxis:brace.upper.tangent,parentHoop:g,parentName:"Main hoop"});
+  const lower=generateTubeSaddle({id:"diagonal-lower",member:"Diagonal brace",end:"LOWER END",title:"DIAGONAL BRACE — LOWER / "+brace.lowerSide.toUpperCase()+" HOOP",branchOD:OD,branchWall:wall,parentOD:g.v.od,outer:brace.lower,other:brace.upper,parentAxis:brace.lower.tangent,parentHoop:g,parentName:"Main hoop"});
+  const errors=[upper.error,lower.error].filter(Boolean);
+  const nominalSquare=!errors.length?brace.length-upper.minDepth-lower.minDepth:null;
+  if(nominalSquare!==null&&nominalSquare<=0)errors.push("Notch setback exceeds the available diagonal length.");
+  return {upper,lower,errors,nominalSquare,paper:upper.paper&&lower.paper?(upper.paper.w>=lower.paper.w?upper.paper:lower.paper):null};
+}
+
+  function allTubeJoints(g){
+  const v=g.v,a=g.addons,joins=[];
+  if(a.brace?.notches)joins.push(a.brace.notches.upper,a.brace.notches.lower);
+  if(a.stays){
+    for(const side of ["left","right"]){
+      const top=a.stays[side],foot=a.stays[side+"Foot"],out={x:top.x,y:top.y,z:0},other={x:foot.x,y:foot.y,z:a.stays.run};
+      joins.push(generateTubeSaddle({id:"stay-"+side+"-upper",title:side.toUpperCase()+" REAR STAY — UPPER / MAIN HOOP",member:side+" rear stay",end:"UPPER END",branchOD:v.stayOD,branchWall:v.stayWall,parentOD:v.od,outer:out,other,parentAxis:top.tangent,parentHoop:g,parentName:"Main hoop"}));
+    }
   }
+  if(a.harness&&a.stays){
+    for(const side of ["left","right"]){
+      const h=a.harness[side],other=a.harness[side==="left"?"right":"left"],t=a.stays[side],f=a.stays[side+"Foot"];
+      const dir={x:f.x-t.x,y:f.y-t.y,z:a.stays.run};
+      joins.push(generateTubeSaddle({id:"harness-"+side,title:"HARNESS BAR — "+side.toUpperCase()+" / REAR STAY",member:"Harness bar",end:side.toUpperCase()+" END",branchOD:v.harnessOD,branchWall:v.harnessWall,parentOD:v.stayOD,outer:h,other,parentAxis:dir,parentName:side+" rear stay"}));
+    }
+  }
+  if(a.door){
+    for(const member of a.door.members){
+      const side=member.name.toLowerCase(),rear=hoopAtHeight(g,v.doorRearHeight,side);
+      joins.push(generateTubeSaddle({id:"door-"+side+"-rear",title:member.name.toUpperCase()+" SIDE INTRUSION — REAR / MAIN HOOP",member:member.name+" side intrusion",end:"REAR END",branchOD:v.doorOD,branchWall:v.doorWall,parentOD:v.od,outer:member.rear,other:member.front,parentAxis:rear.tangent,parentHoop:g,parentName:"Main hoop"}));
+      if(!$("frontTubeConfirmed").checked){
+        joins.push({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / A-PILLAR",member:member.name+" side intrusion",end:"FRONT END",error:"Confirm the measured front parent tube OD and both lean angles before generating this wrap-around."});
+      }else{
+        const rad=Math.PI/180,lateral=v.frontTubeSideLean*rad,fore=v.frontTubeRearLean*rad,sgn=side==="left"?-1:1;
+        if(![v.frontTubeOD,lateral,fore].every(Number.isFinite)||v.frontTubeOD<=0||Math.abs(lateral)>=80*rad||Math.abs(fore)>=80*rad){
+          joins.push({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / A-PILLAR",error:"Enter valid measured front parent OD and lean angles between −80° and +80°."});
+        }else{
+          const axis={x:sgn*Math.sin(lateral),y:Math.cos(lateral)*Math.cos(fore),z:Math.cos(lateral)*Math.sin(fore)};
+          joins.push(generateTubeSaddle({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / A-PILLAR",member:member.name+" side intrusion",end:"FRONT END",branchOD:v.doorOD,branchWall:v.doorWall,parentOD:v.frontTubeOD,outer:member.front,other:member.rear,parentAxis:axis,parentName:"Measured front/A-pillar CHS"}));
+        }
+      }
+    }
+  }
+  return joins;
+}
+
   function addonsGeometry(g){
     const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null;
     const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked;
@@ -344,7 +440,8 @@
       }
     }
     if(useStays){
-      if(![v.stayTop,v.rearRun,v.rearFootHeight,v.rearFootWidth].every(Number.isFinite)||v.stayTop<=0||v.stayTop>=g.Hc-.01||v.rearRun<=0||v.rearFootHeight<0||v.rearFootHeight>=v.stayTop||v.rearFootWidth<=0){errors.push(`Rear stays: top joint must be below ${round(g.Hc,1)} mm; rearward distance and mount spacing must be positive; rear mounts must be below top joints.`);}
+      if(![v.stayOD,v.stayWall].every(Number.isFinite)||v.stayOD<=0||v.stayWall<=0||v.stayWall>=v.stayOD/2){errors.push('Rear stay CHS OD/wall values are invalid.');}
+      else if(![v.stayTop,v.rearRun,v.rearFootHeight,v.rearFootWidth].every(Number.isFinite)||v.stayTop<=0||v.stayTop>=g.Hc-.01||v.rearRun<=0||v.rearFootHeight<0||v.rearFootHeight>=v.stayTop||v.rearFootWidth<=0){errors.push(`Rear stays: top joint must be below ${round(g.Hc,1)} mm; rearward distance and mount spacing must be positive; rear mounts must be below top joints.`);}
       else{
         const left=hoopAtHeight(g,v.stayTop,'left'),right=hoopAtHeight(g,v.stayTop,'right');
         if(!left||!right)errors.push('Rear stays: unable to locate the upper joints on the hoop.');
