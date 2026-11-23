@@ -901,6 +901,7 @@
   return `<svg class="paper-template" xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="0 0 ${w} ${h}" role="img" aria-label="${heading} 1 to 1 fishmouth template">
   <rect width="${w}" height="${h}" fill="white"/>
   <text x="${left}" y="14" font-family="Arial,sans-serif" font-size="6.5" font-weight="bold" fill="#111">${heading}</text>
+  <text x="${w-12}" y="14" font-family="Arial,sans-serif" text-anchor="end" font-size="4.3" font-weight="bold" fill="#111">PART ${notch.partNumber}</text>
   <text x="${left}" y="22" font-family="Arial,sans-serif" font-size="4.2" fill="#111">${notch.member.toUpperCase()} CHS ${round(notch.branchOD,2)} × ${round(notch.branchWall,2)} mm → ${notch.parentName} CHS ${round(notch.parentOD,2)} mm</text>
   <text x="${left}" y="29" font-family="Arial,sans-serif" font-size="4" fill="#111">Axes ${round(notch.angle,2)}° · Circumference ${round(C,2)} mm · Max cope depth ${round(notch.cutDepth,2)} mm · ${notch.parentType}</text>
   <text x="${left}" y="36" font-family="Arial,sans-serif" font-size="3.6" fill="#333">${paper.label} · print ACTUAL SIZE (100%) · no fit-to-page or scaling</text>
@@ -920,9 +921,9 @@
   </svg>`;
 }
 
-  function renderNotches(g){
-  const joints=allTubeJoints(g);
-  g.tubeJoints=joints;
+  function renderNotchCards(g){
+  const joints=g.tubeJoints||[];
+  for(const j of joints){const id=cageMemberIdForJoint(j.id);j.partNumber=id?cagePartNumber(id):'UNASSIGNED';}
   const available=joints.filter(j=>!j.error&&j.paper&&j.profile);
   const unavailable=joints.length-available.length;
   const status=$("notchStatus");
@@ -933,7 +934,7 @@
   $("jointNotchCards").innerHTML=joints.map((j,i)=>{
     const heading=j.title||j.id;
     return `<article class="joint-card">
-      <h3>${heading}</h3>
+      <h3><span class="member-part-label">${j.partNumber}</span>${heading}</h3>
       <p class="joint-meta">${j.member||"Tube end"} · ${j.end||"END"}${j.angle?` · axes ${round(j.angle,1)}°`:""}</p>
       ${j.error?`<div class="joint-error">Template unavailable: ${j.error}</div>`:
         `<p class="joint-meta">CHS ${round(j.branchOD,2)} × ${round(j.branchWall,2)} mm → ${j.parentName} ${round(j.parentOD,2)} mm · ${j.paper.label} · depth ${round(j.cutDepth,1)} mm</p>
@@ -943,6 +944,7 @@
   }).join("");
   $("printNotches").disabled=!available.length;
 }
+  function renderNotches(g){g.tubeJoints=allTubeJoints(g);renderNotchCards(g);}
 
   function getNotchPrintHTML(joints){
   if(!joints.length)return "";
@@ -1172,6 +1174,19 @@
     const inner=`${boundary}${dimWidth}${dimHeight}${legendTop}${roofGuide}${shoulderDimension}${overlayLabels}${braceOverlay}${harnessOverlay}<path d="${path}" stroke="#d3dce1" stroke-width="${round(Math.max(d*s,3),3)}" stroke-linecap="butt" stroke-linejoin="round" fill="none"/><path d="${path}" stroke="#fc912c" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round" fill="none"/>${joints.map(dot).join('')}${stayOverlay}${doorOverlay}<text x="${round(xwall+10,1)}" y="${round(floorY+24,1)}" class="note">Tube start</text><text x="${round(dx-10,1)}" y="${round(floorY+24,1)}" class="note" text-anchor="end">Tube end</text><text x="380" y="549" class="note" text-anchor="middle">Finished front profile · dashed envelope connects measured widths</text>`;
     $('drawingSvg').innerHTML=inner;
   }
+  function cageMemberIdForJoint(id){
+  if(/^diagonal-(upper|lower)$/.test(id))return 'diagonal-brace';
+  if(/^stay-left-/.test(id))return 'rear-stay-left';
+  if(/^stay-right-/.test(id))return 'rear-stay-right';
+  if(/^harness-(left|right)$/.test(id))return 'harness-bar';
+  if(/^front-leg-left-/.test(id))return 'front-leg-left';
+  if(/^front-leg-right-/.test(id))return 'front-leg-right';
+  if(/^windscreen-header-(left|right)$/.test(id))return 'windscreen-header';
+  if(/^door-left-/.test(id))return 'side-intrusion-left';
+  if(/^door-right-/.test(id))return 'side-intrusion-right';
+  return null;
+}
+
   function cagePartNumber(id){
   const fixed={'main-hoop':'001','front-leg-left':'002','front-leg-right':'003','windscreen-header':'004',
     'diagonal-brace':'005','rear-stay-left':'006','rear-stay-right':'007','harness-bar':'008',
@@ -1524,6 +1539,7 @@
     if(!latest)return;
     renderMemberMarkouts(latest);
     renderCageCutList(latest);
+    renderNotchCards(latest);
   });
   $('csvDownload').addEventListener('click',()=>{if(!latest)return;const v=latest.v;const lines=['Bend,Turn angle (deg),Start of bend from datum end (mm),Centre of bend from datum end (mm),End of bend from datum end (mm)',...latest.bends.map(b=>[b.name,round(b.angle,2),round(b.start+v.extra,1),round(b.mid+v.extra,1),round(b.end+v.extra,1)].join(','))];download('main-hoop-bend-schedule.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8');});
 
@@ -1564,7 +1580,7 @@
   $('modelJSON').addEventListener('click',()=>{
     if(!latest)return;
     const g=latest,brace=g.addons.brace,stays=g.addons.stays,harness=g.addons.harness,door=g.addons.door,front=g.addons.front;
-    const payload={schema:'roll-cage-geometry-v3',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,frontStructure:front,cutList:g.cutList?{job:g.cutList.job,material:g.cutList.material,parts:g.cutList.rows,groups:g.cutList.groups,totalPrepLength:g.cutList.totalBlank}:null,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
+    const payload={schema:'roll-cage-geometry-v3',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,frontStructure:front,cutList:g.cutList?{job:g.cutList.job,material:g.cutList.material,parts:g.cutList.rows,groups:g.cutList.groups,totalPrepLength:g.cutList.totalBlank}:null,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,partNumber:j.partNumber,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
     download('roll-cage-geometry-for-future-step.json',JSON.stringify(payload,null,2),'application/json');
   });
   updateFrontControls();render();
