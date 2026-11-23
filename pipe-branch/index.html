@@ -77,7 +77,7 @@
 </section>
 <section class="panel">
 <h2>Branch marking stations</h2>
-<p class="muted">Measured from the deepest axial cut point towards the square back reference line, every 15° around the branch. Use the 0° seam / offset-side mark as your starting datum.</p>
+<p class="muted">Depth is measured from the shallowest (outermost) saddle point to each cut station, every 15° around the branch. The 0° seam is on the branch +Y side; positive offset moves the branch toward main-pipe +Y.</p>
 <div class="tablewrap"><table><thead><tr><th>Rotation</th><th>Wrap distance</th><th>Cut depth</th></tr></thead><tbody id="stations"></tbody></table></div>
 </section>
 </div>
@@ -134,7 +134,7 @@ function calculate(q){
     {pts:[[0,branchH-5],[branchW,branchH-5]],layer:"BACK_REFERENCE",color:[.6,.63,.67],dash:true},
     ...[0,.25,.5,.75,1].map(k=>({pts:[[k*branchW,15],[k*branchW,branchH-3]],layer:"WRAP_STATIONS",color:[.6,.63,.67],dash:true}))
   ],
-  labels:[{x:4,y:9,text:"BRANCH - CUT EDGE / 0 deg seam"},{x:Math.max(5,branchW-47),y:branchH-10,text:"SQUARE BACK"}]
+  labels:[{x:4,y:9,text:"BRANCH - CUT EDGE / 0 deg seam"},{x:Math.max(5,branchW-47),y:branchH-10,text:"PAPER BACK REFERENCE"}]
  };
  // Main hole: intersection of the main OD cylinder with a branch-bore
  // cylinder for set-on joints, or branch OD plus radial clearance for set-through.
@@ -277,7 +277,7 @@ function pdfDoc(c){
   const fy=H-13;
   out+="0 0 0 RG 1.1 w "+(10*mmToPt).toFixed(3)+" "+(fy*mmToPt).toFixed(3)+" m "+(110*mmToPt).toFixed(3)+" "+(fy*mmToPt).toFixed(3)+" l S\n";
   for(let j=0;j<=10;j++){let x=(10+j*10)*mmToPt;out+="0.7 w "+x.toFixed(3)+" "+((fy-1.8)*mmToPt).toFixed(3)+" m "+x.toFixed(3)+" "+((fy+1.8)*mmToPt).toFixed(3)+" l S\n";}
-  out+=pdfText(10,3.4,7,"100 mm CALIBRATION — Measure this before cutting. Print at ACTUAL SIZE / 100%.");
+  out+=pdfText(10,6,7,"100 mm CALIBRATION — Measure this before cutting. Print at ACTUAL SIZE / 100%.");
   contentStreams.push(out);
  }
  const pagesId=add("");let i=0;
