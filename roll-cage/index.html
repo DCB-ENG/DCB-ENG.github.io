@@ -398,7 +398,7 @@
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean','frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim','headerHeight','headerOD','headerWall'];
+  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean','frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim','headerHeight','headerOD','headerWall','hoopHarnessHeight','hoopHarnessOD','hoopHarnessWall','roofOD','roofWall','pillarAUpperHeight','pillarALowerHeight','pillarBRearHeight','pillarBRoofFraction','door2RearHeight','door2FrontHeight','door2OD','door2Wall'];
   let mode=2, latest=null;
   const round=(x,places=1)=>Number(x).toFixed(places);
   const dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
@@ -795,6 +795,89 @@
     return result;
   }
 
+  function extraMemberGeometry(g,base,errors){
+  const v=g.v,fit=Math.max(0,v.fitExtra),extra={members:[],hoopHarness:null,cross:null,roof:null,pillarA:null,pillarB:null,door2:null};
+  const enabled=id=>$(id).checked;
+  const validTube=(od,wall)=>Number.isFinite(od)&&Number.isFinite(wall)&&od>0&&wall>0&&wall<od/2;
+  const parentHoop=(point)=>({kind:'hoop',point});
+  const parentFront=(side,point)=>({kind:'front',side,point});
+  const add=(id,title,od,wall,p,q,near,far)=>{
+    if(!validTube(od,wall)){errors.push(title+': invalid CHS size/wall.');return null;}
+    if(!p||!q||!near||!far){errors.push(title+': unable to locate a parent tube joint.');return null;}
+    const length=mag3(sub3(q,p));
+    if(!Number.isFinite(length)||length<=od){errors.push(title+': member is too short for this CHS.');return null;}
+    const m={id,title,od,wall,near:p,far:q,nearParent:near,farParent:far,length,blank:length+2*fit};
+    extra.members.push(m);return m;
+  };
+  if(enabled('useHoopHarness')){
+    const h=v.hoopHarnessHeight, left=hoopAtHeight(g,h,'left'),right=hoopAtHeight(g,h,'right');
+    extra.hoopHarness=add('hoop-harness','Full-width main-hoop harness bar',v.hoopHarnessOD,v.hoopHarnessWall,
+      left,right,parentHoop(left),parentHoop(right));
+    if(!left||!right)errors.push('Main hoop harness bar: select a height within the existing hoop.');
+  }
+  if(enabled('useMainCross')){
+    if(!base.brace){errors.push('Main-hoop X needs the primary diagonal enabled and valid.');}
+    else{
+      const up=hoopAtHeight(g,v.braceTop,base.brace.lowerSide),low=hoopAtHeight(g,v.braceBottom,base.brace.upperSide);
+      extra.cross=add('main-cross','Main-hoop second diagonal / X',v.braceOD,v.braceWall,up,low,parentHoop(up),parentHoop(low));
+    }
+  }
+  const front=base.front&&base.front.errors.length===0?base.front:null;
+  const needsFront=enabled('useRoofX')||enabled('usePillarA')||enabled('usePillarB');
+  if(needsFront&&!front)errors.push('Roof and A/B-pillar reinforcing braces require valid continuous front legs.');
+  if(front){
+    if(enabled('useRoofX')){
+      const roof=[];
+      for(const side of ['left','right']){
+        const other=side==='left'?'right':'left';
+        const p=hoopAtHeight(g,v.frontTieHeight,side),q=front[other].bends[0].entry;
+        const m=add(`roof-${side}`,`${side.toUpperCase()} rear-to-opposite-front roof diagonal`,
+          v.roofOD,v.roofWall,p,q,parentHoop(p),parentFront(other,q));
+        if(m)roof.push(m);
+      }
+      extra.roof=roof.length?roof:null;
+    }
+    if(enabled('usePillarA')){
+      const arr=[];
+      for(const side of ['left','right']){
+        const leg=front[side];
+        const upper=frontLegAtHeight(leg,v.pillarAUpperHeight),lower=frontLegAtHeight(leg,v.pillarALowerHeight,false);
+        const m=add(`pillar-a-${side}`,`${side.toUpperCase()} A-pillar reinforcement`,v.frontOD,v.frontWall,
+          upper,lower,parentFront(side,upper),parentFront(side,lower));
+        if(m)arr.push(m);
+      }
+      extra.pillarA=arr.length?arr:null;
+    }
+    if(enabled('usePillarB')){
+      const arr=[],fract=v.pillarBRoofFraction/100;
+      if(!Number.isFinite(fract)||fract<=0||fract>=1){errors.push('B-pillar roof attachment percentage must be between 0 and 100.');}
+      else for(const side of ['left','right']){
+        const leg=front[side],low=hoopAtHeight(g,v.pillarBRearHeight,side),start=leg.points[0],end=leg.bends[0].entry;
+        const upper={x:start.x+(end.x-start.x)*fract,y:start.y+(end.y-start.y)*fract,z:start.z+(end.z-start.z)*fract};
+        const m=add(`pillar-b-${side}`,`${side.toUpperCase()} B-pillar reinforcement`,v.frontOD,v.frontWall,
+          low,upper,parentHoop(low),parentFront(side,upper));
+        if(m)arr.push(m);
+      }
+      extra.pillarB=arr.length?arr:null;
+    }
+  }
+  if(enabled('useDoor2')){
+    const arr=[],sides=$('doorSides').value==='both'?['left','right']:[$('doorSides').value];
+    if(!enabled('useDoor'))errors.push('Double door bars need the primary side-intrusion bars.');
+    else for(const side of sides){
+      const cx=g.Wc/2,sgn=side==='left'?-1:1;
+      const rear=hoopAtHeight(g,v.door2RearHeight,side);
+      const fr=front?frontLegAtHeight(front[side],v.door2FrontHeight):null;
+      const ahead=fr||(!front&&v.doorRun>0?{x:cx+sgn*v.doorFrontWidth/2,y:v.door2FrontHeight,z:-v.doorRun}:null);
+      const m=add(`door2-${side}`,`${side.toUpperCase()} second side-intrusion bar`,v.door2OD,v.door2Wall,
+        rear,ahead,parentHoop(rear),fr?parentFront(side,fr):{kind:'reference',side,point:ahead});
+      if(m)arr.push(m);
+    }
+    extra.door2=arr.length?arr:null;
+  }
+  return extra;
+}
+
   function addonsGeometry(g){
     const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null,front=null;
     const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked,useFrontLegs=$('useFrontLegs').checked;
@@ -881,7 +964,8 @@
         }
       }
     }
-    return {brace,stays,harness,door,front,errors};
+    const extras=extraMemberGeometry(g,{brace,stays,harness,door,front},errors);
+    return {brace,stays,harness,door,front,extras,errors};
   }
   function renderStayViews(g){
     const stay=g.addons.stays,harness=g.addons.harness;
@@ -1633,7 +1717,7 @@
   }
   $('useFrontLegs').addEventListener('change',()=>{updateFrontControls();render();});
   $('useHeader').addEventListener('change',()=>{updateFrontControls();render();});
-  for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields'],['useHarness','harnessFields'],['useDoor','doorFields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
+  for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields'],['useHarness','harnessFields'],['useDoor','doorFields'],['useHoopHarness','hoopHarnessFields'],['useMainCross','mainCrossFields'],['useRoofX','roofXFields'],['usePillarA','pillarAFields'],['usePillarB','pillarBFields'],['useDoor2','door2Fields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
   $('mode2').addEventListener('click',()=>setMode(2));$('mode4').addEventListener('click',()=>setMode(4));
   $('copy').addEventListener('click',copy);$('copyTop').addEventListener('click',copy);
   $('print').addEventListener('click',()=>window.print());$('printTop').addEventListener('click',()=>window.print());
