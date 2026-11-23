@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Steel CHS pipe branch calculator: accurate fishmouth developments, main-pipe hole templates, 3D previews and full-size A4/A3 PDF, SVG, DXF and CSV exports.">
-<title>Steel Pipe Branch &amp; Template Calculator | DCB ENG</title>
+<meta name="description" content="Calculate CHS pipe fishmouth joints and branch saddle templates. Set-on and set-through, angle and wall thickness, 3D preview and printable A4/A3 wrap templates.">
+<title>Pipe Branch &amp; Fishmouth Template Calculator | DCB ENG</title>
 <link rel="canonical" href="https://dcb-eng.github.io/pipe-branch/">
 <style>
 :root{color-scheme:dark;--bg:#101115;--panel:#1c1f24;--raised:#272b31;--line:#424953;--text:#f0f2f5;--muted:#b5bdc6;--orange:#ffa726;--red:#ffc0c0}
@@ -13,6 +13,29 @@
 .wrap{width:min(1260px,calc(100% - 32px));margin:auto;padding:33px 0 65px}.eyebrow{color:var(--orange);font-weight:800;letter-spacing:.14em;font-size:.73rem;text-transform:uppercase}h1{font-size:clamp(1.95rem,4vw,3rem);letter-spacing:-.04em;line-height:1.1;margin:8px 0 10px}.intro{max-width:950px;color:var(--muted);margin:0 0 25px}h2{font-size:1.05rem;margin:0 0 15px}.layout{display:grid;grid-template-columns:minmax(300px,390px) minmax(0,1fr);gap:18px;align-items:start}.stack{display:grid;gap:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:22px;min-width:0;box-shadow:0 13px 36px #0002}.fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{min-width:0}.wide{grid-column:1/-1}label{display:block;font-size:.8rem;color:#dce1e6;font-weight:700;margin-bottom:5px}input,select{min-height:43px;width:100%;background:#101317;color:var(--text);border:1px solid #535c68;border-radius:9px;padding:9px 10px;font:inherit;font-variant-numeric:tabular-nums}input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--orange);outline-offset:2px}button{font:inherit;font-weight:750;background:#2f3239;color:#f1f1f1;border:1px solid #646a72;border-radius:9px;padding:9px 12px;min-height:39px;cursor:pointer}button:hover{filter:brightness(1.12)}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--orange);color:#18120b;border-color:var(--orange)}.muted{color:var(--muted);font-size:.78rem}.hint{margin:4px 0 0;font-size:.73rem;color:var(--muted)}.divider{border:0;border-top:1px solid #3e444d;margin:18px 0}.angles,.actions,.tabs{display:flex;gap:7px;flex-wrap:wrap}.angles{margin-top:8px}.angles button{padding:5px 10px;min-height:30px;font-size:.77rem}.angles button.active{color:#ffce8c;border-color:#a87035;background:#51361f}.actions{margin-top:15px}.actions button{flex:1;min-width:95px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:15px}.stat{background:#15191e;border:1px solid #3d464f;border-radius:10px;padding:11px}.stat span{display:block;font-size:.72rem;color:var(--muted)}.stat strong{display:block;font-size:1.3rem;letter-spacing:-.03em;margin-top:2px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.stat strong small{font-size:.57em;color:#bec4ce;font-weight:500}.notice{padding:12px;background:#35291d;border-left:3px solid var(--orange);border-radius:7px;color:#ead8c3;font-size:.81rem;margin-top:13px}.error{background:#45252a;color:#ffdddd;border:1px solid #9b555b;border-radius:9px;padding:12px;font-weight:700;margin-bottom:15px}.preview{background:radial-gradient(ellipse at center,#29313a,#15191e);border:1px solid #474e58;border-radius:10px;overflow:hidden}.preview canvas{display:block;width:100%;height:320px;touch-action:none;cursor:grab}.preview canvas:active{cursor:grabbing}.viewtop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}.viewtop button{min-height:31px;font-size:.77rem}.diagram{width:100%;height:auto;display:block;max-height:350px;background:#11161b;border-radius:8px}.drawingcard{border:1px solid #3e464e;border-radius:10px;padding:10px;background:#15191e;margin-top:12px}.drawingcard h3{font-size:.85rem;margin:0 0 8px}.caption{color:var(--muted);font-size:.73rem;margin:8px 0 0}.tablewrap{overflow-x:auto;border:1px solid #424950;border-radius:10px;max-height:350px;overflow-y:auto}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{text-align:right;padding:8px 10px;border-bottom:1px solid #353d46;font-size:.8rem;white-space:nowrap}th{position:sticky;top:0;background:#292e35;color:#ced4dc;font-size:.73rem;text-transform:uppercase;letter-spacing:.04em}th:first-child,td:first-child{text-align:left}tr:last-child td{border:0}.footer{margin-top:24px;color:var(--muted);font-size:.82rem}.footer a{color:#ffbc69}[hidden]{display:none!important}
 @media(max-width:1020px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.dcb-nav__inner{flex-direction:column;align-items:flex-start}.dcb-nav__links{justify-content:flex-start}.dcb-nav__link{font-size:12px;padding:6px 8px}.wrap{width:calc(100% - 22px);padding-top:25px}.panel{padding:16px}.fieldgrid{gap:11px}.preview canvas{height:265px}.stat strong{font-size:1.13rem}}
 </style>
+
+<meta property="og:site_name" content="DCB ENG">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://dcb-eng.github.io/pipe-branch/">
+<meta property="og:image" content="https://dcb-eng.github.io/dcb_eng_chrome_logo.png">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Pipe Branch & Fishmouth Template Calculator",
+  "url": "https://dcb-eng.github.io/pipe-branch/",
+  "description": "Calculate CHS pipe fishmouth joints and branch saddle templates. Set-on and set-through, angle and wall thickness, 3D preview and printable A4/A3 wrap templates.",
+  "applicationCategory": "EngineeringApplication",
+  "operatingSystem": "Any modern browser",
+  "isAccessibleForFree": true,
+  "publisher": {
+    "@type": "Organization",
+    "name": "DCB ENG",
+    "url": "https://dcb-eng.github.io/"
+  }
+}
+</script>
 </head>
 <body>
 <div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" aria-current="page" href="/pipe-branch/">Pipe Branch</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
