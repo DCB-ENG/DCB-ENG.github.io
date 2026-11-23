@@ -613,8 +613,8 @@
   }
 
   function addonsGeometry(g){
-    const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null;
-    const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked;
+    const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null,front=null;
+    const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked,useFrontLegs=$('useFrontLegs').checked;
     const fit=v.fitExtra;
     if((useBrace||useStays||useHarness||useDoor)&&(!Number.isFinite(fit)||fit<0))errors.push('Fit-up allowance must be zero or greater.');
     if(useBrace){
@@ -667,24 +667,38 @@
     }
     // Side intrusion: rear point follows the hoop's actual centreline at the
     // chosen height. Front points are measured references, NOT a modelled A-pillar.
+
+    if(useFrontLegs){front=makeFrontStructure(g);if(front.errors.length)errors.push(...front.errors);}
     if(useDoor){
-      if(![v.doorRearHeight,v.doorFrontHeight,v.doorRun,v.doorFrontWidth,v.doorOD,v.doorWall].every(Number.isFinite)||v.doorRearHeight<0||v.doorRearHeight>=g.Hc||v.doorFrontHeight<0||v.doorFrontHeight>g.Hc||v.doorRun<=0||v.doorFrontWidth<=0)
-        errors.push('Side intrusion requires valid rear/front heights, positive forward run and front joint spacing.');
+      const autoFront=useFrontLegs;
+      if(![v.doorRearHeight,v.doorFrontHeight,v.doorOD,v.doorWall].every(Number.isFinite)||v.doorRearHeight<0||v.doorRearHeight>=g.Hc||v.doorFrontHeight<0||(!autoFront&&v.doorFrontHeight>g.Hc))
+        errors.push('Side intrusion requires valid rear and front heights.');
       else if(v.doorOD<=0||v.doorWall<=0||v.doorWall>=v.doorOD/2)
         errors.push('Side intrusion CHS OD and wall must be positive, wall less than half OD.');
+      else if(autoFront&&(!front||front.errors.length))
+        errors.push('Side intrusion: fix front-leg geometry before connecting its front end.');
+      else if(!autoFront&&(![v.doorRun,v.doorFrontWidth].every(Number.isFinite)||v.doorRun<=0||v.doorFrontWidth<=0))
+        errors.push('Side intrusion: enter a valid forward distance and front reference width.');
       else{
-        const rl=hoopAtHeight(g,v.doorRearHeight,'left'),rr=hoopAtHeight(g,v.doorRearHeight,'right');
-        if(!rl||!rr)errors.push('Side intrusion rear joints cannot be located on the hoop.');
+        const rl=hoopAtHeight(g,v.doorRearHeight,'left'),rr=hoopAtHeight(g,v.doorRearHeight,'right'),cx=g.Wc/2;
+        const fl=autoFront?frontLegAtHeight(front.left,v.doorFrontHeight):{x:cx-v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun};
+        const fr=autoFront?frontLegAtHeight(front.right,v.doorFrontHeight):{x:cx+v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun};
+        if(!rl||!rr||!fl||!fr)errors.push('Side intrusion: requested joint height does not cross the main hoop or the modelled front leg.');
         else{
-          const cx=g.Wc/2,frontLeft={x:cx-v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun},frontRight={x:cx+v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun};
-          const member=(name,rear,front)=>{const lateral=front.x-rear.x,vertical=front.y-rear.y,length=Math.hypot(v.doorRun,lateral,vertical);return {name,rear,front,lateral,vertical,length,blank:length+2*Math.max(0,fit),angle:Math.atan2(vertical,Math.hypot(v.doorRun,lateral))*180/Math.PI};};
-          const left=member('Left',{x:rl.x,y:rl.y,z:0},frontLeft),right=member('Right',{x:rr.x,y:rr.y,z:0},frontRight);
+          const member=(name,rear,frontPoint)=>{
+            const lateral=frontPoint.x-rear.x,vertical=frontPoint.y-rear.y,forward=rear.z-frontPoint.z;
+            const length=Math.hypot(lateral,vertical,forward);
+            return {name,rear,front:frontPoint,lateral,vertical,forward,length,blank:length+2*Math.max(0,fit),angle:Math.atan2(vertical,Math.hypot(forward,lateral))*180/Math.PI};
+          };
+          const left=member('Left',{x:rl.x,y:rl.y,z:0},fl),right=member('Right',{x:rr.x,y:rr.y,z:0},fr);
           const sides=$('doorSides').value;
-          door={left,right,sides,members:sides==='both'?[left,right]:sides==='left'?[left]:[right],frontSpacing:v.doorFrontWidth,rearSpacing:rr.x-rl.x,run:v.doorRun,OD:v.doorOD,wall:v.doorWall,sideAngle:Math.atan2(v.doorFrontHeight-v.doorRearHeight,v.doorRun)*180/Math.PI};
+          door={left,right,sides,members:sides==='both'?[left,right]:sides==='left'?[left]:[right],
+            frontSpacing:fr.x-fl.x,rearSpacing:rr.x-rl.x,run:left.forward,
+            OD:v.doorOD,wall:v.doorWall,sideAngle:Math.atan2(left.vertical,left.forward)*180/Math.PI,frontIsModelled:autoFront};
         }
       }
     }
-    return {brace,stays,harness,door,errors};
+    return {brace,stays,harness,door,front,errors};
   }
   function renderStayViews(g){
     const stay=g.addons.stays,harness=g.addons.harness;
