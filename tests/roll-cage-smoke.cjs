@@ -16,13 +16,43 @@ const document={
   querySelectorAll(){return [];}
 };
 const ctx=vm.createContext({document,window:{},navigator:{},console,Blob:class{},URL:{},XMLSerializer:class{},setTimeout(){},alert(){}});
-const injected=scripts[0].replace(/  updateFrontControls\(\);render\(\);\s*\}\)\(\);\s*$/, '  updateFrontControls();render(); window.__inspectRollCage=()=>latest;\n})();');
+const injected=scripts[0].replace(/  updateFrontControls\(\);render\(\);\s*\}\)\(\);\s*$/, '  updateFrontControls();render(); window.__inspectRollCage=()=>latest; window.__inspectCutCSV=()=>cageCutCSV(latest.cutList); window.__inspectCutPrint=()=>cageCutPrintHTML(latest.cutList);\n})();');
 assert.notEqual(injected,scripts[0],'Test probe injection must match script tail');
 vm.runInContext(injected,ctx,{timeout:12000,filename:'roll-cage/index.html'});
 function isSpan(id){assert.match(els.get(id).textContent,/^\d+[.]?\d* mm$/,'Missing computed span for '+id);}
 isSpan('developed');isSpan('braceSpan');isSpan('staySpan');isSpan('harnessSpan');isSpan('doorSpan');
 const initialMarkouts=ctx.window.__inspectRollCage().memberMarkouts;
 assert.equal(initialMarkouts.length,7,'Default enabled set: main hoop, diagonal, two rear stays, harness and two intrusion bars');
+
+const initialCut=ctx.window.__inspectRollCage().cutList;
+assert.equal(initialCut.count,7,'The original seven enabled pieces are all in the numbered cut list');
+assert.deepEqual(Array.from(initialCut.rows,p=>p.partNumber),['RC-001','RC-005','RC-006','RC-007','RC-008','RC-009','RC-010'],'Stable part numbers do not depend on optional parts');
+assert.equal(initialCut.groups.length,2,'Default CHS sizes are grouped');
+assert(Math.abs(initialCut.totalBlank-initialCut.rows.reduce((n,p)=>n+p.blank,0))<.000001,'Prep blank total matches member sum');
+assert(initialCut.totalBlank>initialCut.totalSpan,'Prep blank total includes tube preparation allowance');
+assert.match(els.get('cageCutCount').textContent,/7 tubes/);
+assert.match(els.get('cageCutBody').innerHTML,/RC-001/);
+assert.match(els.get('cageCutBody').innerHTML,/RC-010/);
+assert.match(els.get('cageCutSummary').innerHTML,/combined prep-blank lengths/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/RC-005/,'Individual marking cards include stable part numbers');
+assert.match(ctx.window.__inspectCutCSV(),/Part number/);
+assert.match(ctx.window.__inspectCutCSV(),/RC-010/);
+assert.match(ctx.window.__inspectCutPrint(),/RC-001/);
+assert.match(ctx.window.__inspectCutPrint(),/Totals by CHS size/);
+assert.match(ctx.window.__inspectCutPrint(),/A4 landscape/);
+assert.match(ctx.window.__inspectCutPrint(),/NOT the finished tip-to-tip cut length/);
+els.get('cageJobRef').value='45186';els.get('cageJobRef').events.input();
+assert.equal(ctx.window.__inspectRollCage().cutList.rows[0].partNumber,'45186-RC-001');
+assert.match(els.get('memberMarkoutCards').innerHTML,/45186-RC-005/);
+assert.match(ctx.window.__inspectCutCSV(),/45186-RC-005/);
+els.get('cageMaterial').value='CDS & <Grade>';els.get('cageMaterial').events.input();
+assert.match(els.get('cageCutSummary').innerHTML,/CDS &amp; &lt;Grade&gt;/,'User-entered material escaped in webpage');
+assert.match(ctx.window.__inspectCutCSV(),/CDS & <Grade>/,'Raw material description retained in quoted CSV');
+assert.match(ctx.window.__inspectCutPrint(),/CDS &amp; &lt;Grade&gt;/,'Print sheet escapes user-provided material');
+els.get('cageJobRef').value='';els.get('cageJobRef').events.input();
+els.get('cageMaterial').value='';els.get('cageMaterial').events.input();
+assert.equal(ctx.window.__inspectRollCage().cutList.rows[0].partNumber,'RC-001');
+
 assert.deepEqual(Array.from(initialMarkouts,m=>m.id),[
   'main-hoop','diagonal-brace','rear-stay-left','rear-stay-right','harness-bar','side-intrusion-left','side-intrusion-right'
 ]);
@@ -56,6 +86,8 @@ els.get('doorSides').value='left';els.get('doorSides').events.change();
 assert.match(els.get('addonsBody').innerHTML,/Left side intrusion/);
 assert.doesNotMatch(els.get('addonsBody').innerHTML,/Right side intrusion/);
 assert.equal(ctx.window.__inspectRollCage().memberMarkouts.length,6,'Left-only intrusion produces one tube sheet');
+assert.equal(ctx.window.__inspectRollCage().cutList.count,6);
+assert(!ctx.window.__inspectRollCage().cutList.rows.some(p=>p.partNumber==='RC-010'),'Right side part removed without renumbering left');
 
 els.get('harnessHeight').value='1600';els.get('harnessHeight').events.input();
 assert.match(els.get('addonsWarning').textContent,/Harness bar height/);
@@ -106,6 +138,8 @@ els.get('width').value='10';els.get('width').events.input();
 assert.match(els.get('validation').innerHTML,/Not enough space/);
 assert.equal(els.get('jointNotchCards').innerHTML,'','Invalid hoop clears output without referencing legacy DOM IDs');
 assert.equal(els.get('memberMarkoutCards').innerHTML,'','Invalid hoop also clears all per-member diagrams');
+assert.equal(els.get('cageCutBody').innerHTML,'','Invalid hoop clears cut list');
+assert.equal(els.get('cageCutTotals').innerHTML,'','Invalid hoop clears material totals');
 
 
 // Front leg and windscreen header regression tests. Preserve manual mode separately.
@@ -122,6 +156,16 @@ assert(Math.abs(g.addons.front.left.clock+g.addons.front.right.clock)<.01,'Clock
 assert(g.addons.front.left.total>0&&g.addons.front.left.blank>0,'Positive centreline and stock length');
 assert(g.addons.front.header?.length>0,'Header between modelled front legs');
 assert.equal(g.memberMarkouts.length,10,'Whole cage includes ten physical individual member mark-outs');
+assert.equal(g.cutList.count,10,'Full cage cut list includes all ten pieces');
+assert.deepEqual(Array.from(g.cutList.rows,p=>p.partNumber).sort(),[
+  'RC-001','RC-002','RC-003','RC-004','RC-005','RC-006','RC-007','RC-008','RC-009','RC-010'
+],'All ten stable IDs are included when the full cage is enabled');
+assert(g.cutList.rows.some(p=>p.partNumber==='RC-004'&&p.member==='Windscreen header'));
+assert(g.cutList.rows.every(p=>p.qty===1),'Left/right mirrored parts remain separate one-piece rows');
+assert.match(els.get('cageCutCount').textContent,/10 tubes/);
+assert.match(els.get('cageCutBody').innerHTML,/RC-004/);
+assert.match(ctx.window.__inspectCutCSV(),/RC-003/);
+
 for(const id of ['front-leg-left','front-leg-right','windscreen-header']){
   assert(g.memberMarkouts.some(m=>m.id===id),'Whole cage includes '+id);
 }
@@ -201,5 +245,7 @@ g=ctx.window.__inspectRollCage();
 assert.equal(g.addons.front,null,'Manual front mode preserved when front legs disabled');
 assert.equal(g.tubeJoints.length,10,'Original ten joint inventory restored');
 assert.equal(g.memberMarkouts.length,7,'Disabling front legs also removes both leg sheets and header sheet');
+assert.equal(g.cutList.count,7);
+assert(!g.cutList.rows.some(p=>p.partNumber==='RC-004'),'Disabled windscreen header is not silently counted');
 
 console.log('Roll cage geometry, views, controls and invalid-input smoke tests passed');
