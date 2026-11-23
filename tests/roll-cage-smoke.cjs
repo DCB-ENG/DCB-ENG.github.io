@@ -101,6 +101,32 @@ assert.match(els.get('frontPlanSvg').innerHTML,/Upper A-pillar spacing/);
 assert.match(els.get('frontFaceSvg').innerHTML,/Header/);
 assert.match(els.get('frontBendsBody').innerHTML,/LEFT/);
 assert.match(els.get('frontBendsBody').innerHTML,/RIGHT/);
+
+const pointTable=els.get('frontStationsBody').innerHTML;
+for(const code of ['FL1','FL2','FL3','FL4','FL5']){
+  assert.match(pointTable,new RegExp(code),'Point reference schedule includes '+code);
+  assert.match(els.get('frontSideSvg').innerHTML,new RegExp('>'+code+'</text>'),'Side view annotates '+code);
+  assert.match(els.get('frontPlanSvg').innerHTML,new RegExp('L-'+code),'Plan left view annotates '+code);
+  assert.match(els.get('frontPlanSvg').innerHTML,new RegExp('R-'+code),'Plan right view annotates '+code);
+  assert.match(els.get('frontFaceSvg').innerHTML,new RegExp('L-'+code),'Front left view annotates '+code);
+  assert.match(els.get('frontFaceSvg').innerHTML,new RegExp('R-'+code),'Front right view annotates '+code);
+}
+assert.match(pointTable,/Virtual geometry corner/,'Virtual bend vertices must be distinguished');
+assert.match(pointTable,/On tube centreline/,'Actual formed tube stations must be distinguished');
+assert.match(pointTable,/Roof bend start tangent \(B1\)/,'FL4 must resolve bend 1 tangent');
+assert.match(els.get('frontSideSvg').innerHTML,/FL3 forward 820 mm/,'Roof forward dimension is drawn');
+assert.match(els.get('frontSideSvg').innerHTML,/FL1 forward 1080 mm/,'Mount forward dimension is drawn');
+assert.match(els.get('frontSideSvg').innerHTML,/FL5 H 1150 mm/,'Hoop connection height shown');
+assert.match(els.get('frontPlanSvg').innerHTML,/FL2 width 1190/,'Plan base spacing shown');
+assert.match(els.get('frontFaceSvg').innerHTML,/FL3 top 1040 mm/,'Front upper width shown');
+assert.match(pointTable,/1080.0 mm/,'Station values reflect current measurements');
+const inputWidthId='frontFootWidth',initialWidth=els.get(inputWidthId).value;
+els.get(inputWidthId).value='1160';els.get(inputWidthId).events.input();
+assert.match(els.get('frontFaceSvg').innerHTML,/FL1 feet 1160 mm/,'Changing foot spacing changes dimensions in front view');
+assert.match(els.get('frontPlanSvg').innerHTML,/FL1 width 1160/,'Changing foot spacing changes dimensions in plan');
+assert.match(els.get('frontStationsBody').innerHTML,/1160.0 mm/,'Station schedule follows width updates');
+els.get(inputWidthId).value=initialWidth;els.get(inputWidthId).events.input();
+
 assert.equal(g.tubeJoints.length,14,'10 original joints + 2 front leg rear + 2 header ends');
 assert(g.tubeJoints.some(j=>j.id==='front-leg-left-rear'));
 assert(g.tubeJoints.some(j=>j.id==='windscreen-header-right'));
