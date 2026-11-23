@@ -16,7 +16,7 @@ const document={
   querySelectorAll(){return [];}
 };
 const ctx=vm.createContext({document,window:{},navigator:{},console,Blob:class{},URL:{},XMLSerializer:class{},setTimeout(){},alert(){}});
-const injected=scripts[0].replace(/  render\(\);\s*\}\)\(\);\s*$/, '  render(); window.__inspectRollCage=()=>latest;\n})();');
+const injected=scripts[0].replace(/  updateFrontControls\(\);render\(\);\s*\}\)\(\);\s*$/, '  updateFrontControls();render(); window.__inspectRollCage=()=>latest;\n})();');
 assert.notEqual(injected,scripts[0],'Test probe injection must match script tail');
 vm.runInContext(injected,ctx,{timeout:12000,filename:'roll-cage/index.html'});
 function isSpan(id){assert.match(els.get(id).textContent,/^\d+[.]?\d* mm$/,'Missing computed span for '+id);}
@@ -79,5 +79,54 @@ assert(!g.tubeJoints.find(j=>j.id==='diagonal-upper').error,'Actual bent-hoop ce
 els.get('width').value='10';els.get('width').events.input();
 assert.match(els.get('validation').innerHTML,/Not enough space/);
 assert.equal(els.get('jointNotchCards').innerHTML,'','Invalid hoop clears output without referencing legacy DOM IDs');
+
+
+// Front leg and windscreen header regression tests. Preserve manual mode separately.
+els.get('width').value='1250';els.get('width').events.input();
+els.get('braceTop').value='1050';els.get('braceTop').events.input();
+els.get('useFrontLegs').checked=true;els.get('useFrontLegs').events.change();
+g=ctx.window.__inspectRollCage();
+assert(g.addons.front,'Front leg model generated');
+assert.equal(g.addons.front.errors.length,0,'Default front geometry must be buildable');
+assert.equal(g.addons.front.left.bends.length,2,'Left front leg must have two circular bends');
+assert.equal(g.addons.front.right.bends.length,2,'Right front leg must have two circular bends');
+assert(Number.isFinite(g.addons.front.left.clock),'Left bend plane clock must be finite');
+assert(Math.abs(g.addons.front.left.clock+g.addons.front.right.clock)<.01,'Clocking is mirrored for symmetric front legs');
+assert(g.addons.front.left.total>0&&g.addons.front.left.blank>0,'Positive centreline and stock length');
+assert(g.addons.front.header?.length>0,'Header between modelled front legs');
+assert(g.addons.door.frontIsModelled,'Door ends reference modelled front leg, not manual input');
+assert(Math.abs(g.addons.door.left.front.z+Number(els.get('frontFootRun').value))<1,'Door front joint follows front leg foot line');
+assert.match(els.get('frontSideSvg').innerHTML,/Roof joint/);
+assert.match(els.get('frontPlanSvg').innerHTML,/Upper A-pillar spacing/);
+assert.match(els.get('frontFaceSvg').innerHTML,/Header/);
+assert.match(els.get('frontBendsBody').innerHTML,/LEFT/);
+assert.match(els.get('frontBendsBody').innerHTML,/RIGHT/);
+assert.equal(g.tubeJoints.length,14,'10 original joints + 2 front leg rear + 2 header ends');
+assert(g.tubeJoints.some(j=>j.id==='front-leg-left-rear'));
+assert(g.tubeJoints.some(j=>j.id==='windscreen-header-right'));
+const frontEnds=g.tubeJoints.filter(j=>j.id.startsWith('front-leg-')||j.id.startsWith('windscreen-header-'));
+assert.equal(frontEnds.length,4);
+assert(frontEnds.every(j=>!j.error),`Every modelled front leg/header joint must produce a template: ${frontEnds.map(j=>j.id+': '+(j.error||'OK')).join(' | ')}`);
+assert(['left','right'].every(side=>!g.tubeJoints.find(j=>j.id==='door-'+side+'-front').error),'Side intrusion front joints must use actual front-leg tube');
+
+const originalRun=g.addons.door.left.forward;
+els.get('doorRun').value='720';els.get('doorRun').events.input();
+g=ctx.window.__inspectRollCage();
+assert.equal(g.addons.door.left.forward,originalRun,'Manual forward distance ignored while actual front legs enabled');
+els.get('frontFootRun').value='1130';els.get('frontFootRun').events.input();
+g=ctx.window.__inspectRollCage();
+assert(g.addons.door.left.forward>originalRun,'Door front follows the front leg when mounting run changes');
+els.get('frontFootRun').value='1080';els.get('frontFootRun').events.input();
+els.get('frontCLR').value='3000';els.get('frontCLR').events.input();
+g=ctx.window.__inspectRollCage();
+assert(g.addons.front.errors.length>0,'Impossible front CLR flagged');
+assert.match(els.get('frontWarning').textContent,/too short/);
+els.get('frontCLR').value='140';els.get('frontCLR').events.input();
+g=ctx.window.__inspectRollCage();
+assert.equal(g.addons.front.errors.length,0,'Front leg recovers after fix');
+els.get('useFrontLegs').checked=false;els.get('useFrontLegs').events.change();
+g=ctx.window.__inspectRollCage();
+assert.equal(g.addons.front,null,'Manual front mode preserved when front legs disabled');
+assert.equal(g.tubeJoints.length,10,'Original ten joint inventory restored');
 
 console.log('Roll cage geometry, views, controls and invalid-input smoke tests passed');

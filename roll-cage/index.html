@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Roll Cage Generator: 3D Fishmouth Wrap-Arounds, Hoops &amp; Bracing | DCB ENG</title>
-<meta name="description" content="Calculate roll cage hoops, harness bars, stays and side intrusion members. Print labelled 1:1 CHS wrap-around fishmouth templates for valid tube joints with true 3D angles.">
+<title>Roll Cage Generator: Front Legs, A-Pillar Bends, Main Hoop &amp; Fishmouths | DCB ENG</title>
+<meta name="description" content="Layout continuous front legs, A-pillar bends, windscreen headers, main hoops, harness and intrusion bars with developed bend marks, 3D tube joints and 1:1 CHS wrap-arounds.">
 <link rel="canonical" href="https://dcb-eng.github.io/roll-cage/">
 <meta property="og:title" content="Roll Cage Generator: 3D Fishmouth Wrap-Arounds | DCB ENG">
-<meta property="og:description" content="Calculate roll cage hoops, harness bars, stays and side intrusion members. Print labelled 1:1 CHS wrap-around fishmouth templates for valid tube joints with true 3D angles.">
+<meta property="og:description" content="Layout continuous front legs, A-pillar bends, windscreen headers, main hoops, harness and intrusion bars with developed bend marks, 3D tube joints and 1:1 CHS wrap-arounds.">
 <meta property="og:url" content="https://dcb-eng.github.io/roll-cage/">
 <style>
 :root{color-scheme:dark;--bg:#101215;--panel:#1a1e22;--panel2:#21262b;--rule:#394046;--text:#edf0f2;--muted:#a4acb2;--orange:#fc912c;--silver:#d3dce1;--bad:#ff796e}
@@ -93,8 +93,8 @@
 </head>
 <body>
 <div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/bolt-torque/">Bolt Torque</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" href="/pipe-branch/">Pipe Branch</a><a class="dcb-nav__link" aria-current="page" href="/roll-cage/">Roll Cage</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
-<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Diagonal · Rear stays · Harness · Side intrusion · 3D tube joints · v1.6</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><a class="link-button" href="#notchPanel">Wrap-around templates</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
-<main class="wrap-main"><p class="intro">Measure the <strong>available inside width and height</strong>, then enter your tube size and the <strong>centreline radius (CLR)</strong> of your actual bending die. The live drawing and three-mark layout update as you change the measurements. Optional diagonal brace and paired rear stays have their own straight-tube cut list and rear/plan views. Each member has its own CHS sizing. Harness bars connect the rear stays, side intrusion bars use measured front reference points, and every supported tube-to-tube end can generate an individually labelled 1:1 fishmouth wrap-around. All dimensions are in millimetres. Marks are geometric positions, independent of bender brand.</p>
+<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Front legs · Windscreen header · Stays · Intrusion · 3D fishmouths · v1.7</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><a class="link-button" href="#frontPanel">Front legs</a><a class="link-button" href="#notchPanel">Wrap-around templates</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
+<main class="wrap-main"><p class="intro">Measure the <strong>available inside width and height</strong>, then enter your tube size and the <strong>centreline radius (CLR)</strong> of your actual bending die. The live drawing and three-mark layout update as you change the measurements. Optional diagonal brace and paired rear stays have their own straight-tube cut list and rear/plan views. Each member has its own CHS sizing. Harness bars connect the rear stays, optional continuous front legs follow the roof and A-pillars, and a windscreen header joins their upper sections. With front legs enabled, side intrusion bars connect to their actual 3D centreline rather than an approximate front reference. Supported tube-to-tube ends generate individually labelled 1:1 fishmouth wrap-arounds. All dimensions are in millimetres. Marks are geometric positions, independent of bender brand.</p>
 <div class="layout"><aside class="panel controls"><h2>Hoop layout</h2><div class="choose"><button type="button" id="mode2" class="active" aria-pressed="true">2-bend U hoop</button><button type="button" id="mode4" aria-pressed="false">4-bend tapered</button></div>
 <h3>Vehicle measurements</h3><div class="fields"><div class="field"><label for="width">Available width (mm)</label><input type="number" min="1" step="1" id="width" value="1250"><span class="hint">Between side obstacles</span></div><div class="field"><label for="height">Available height (mm)</label><input type="number" min="1" step="1" id="height" value="1300"><span class="hint">Floor / mounting cut to roof</span></div><div class="field field-hidden tapered"><label for="roofWidth">Roof available width (mm)</label><input type="number" min="1" step="1" id="roofWidth" value="1020"><span class="hint">Available width near roof</span></div><div class="field field-hidden tapered"><label for="shoulderWidth">Shoulder available width (mm)</label><input type="number" min="1" step="1" id="shoulderWidth" value="1250"><span class="hint">Between obstacles at shoulder height</span></div><div class="field field-hidden tapered"><label for="shoulder">Shoulder corner height (mm)</label><input type="number" min="0" step="1" id="shoulder" value="750"><span class="hint">Virtual vertical-to-slope corner</span></div><div class="field"><label for="sideGap">Side clearance (each, mm)</label><input type="number" min="0" step="1" id="sideGap" value="12"></div><div class="field"><label for="topGap">Roof clearance (mm)</label><input type="number" min="0" step="1" id="topGap" value="12"></div></div>
 <h3>Pipe + bending die</h3><div class="fields"><div class="field"><label for="od">Tube outside diameter (mm)</label><input type="number" min="1" step="0.01" id="od" value="44.45"></div><div class="field"><label for="wall">Wall thickness (mm)</label><input type="number" min=".1" step=".1" id="wall" value="2.6"></div><div class="field"><label for="radius">Bender CLR (mm)</label><input type="number" min="1" step="1" id="radius" value="150"><span class="hint">Centre of tube to die centre</span></div><div class="field"><label for="extra">Trim stock at each end (mm)</label><input type="number" min="0" step="1" id="extra" value="0"><span class="hint">Optional extra straight stock</span></div></div><div class="definition"><strong>How to measure:</strong> Width is the maximum space at the legs. Height is from the intended tube end/mounting plane to the roof obstacle. For 4 bends, enter the available width at the shoulders and roof, plus the shoulder transition height. Different shoulder and base widths produce angled lower legs. All dimensions describe the <strong>finished centreline geometry</strong>, not an estimated springback amount.</div>
@@ -128,7 +128,7 @@
 <div class="field"><label for="harnessWall">Harness wall (mm)</label><input type="number" id="harnessWall" value="2.6" min=".1" step=".1"></div>
 </div></div>
 <label class="addon-heading"><input type="checkbox" id="useDoor" checked> Side intrusion bars <span class="comp-pill">door side + plan</span></label>
-<div class="addon-fields" id="doorFields"><p class="addon-hint">Rear joint on the main hoop, front joint at your independently measured reference position. Enter the measured front-to-rear run and joint spacing to include sideways offset in tube length.</p><div class="fields">
+<div class="addon-fields" id="doorFields"><p class="addon-hint">Rear joint on the main hoop. With Front Legs enabled, the front joint follows the actual A-pillar; otherwise enter the independent front reference positions below.</p><div class="fields">
 <div class="field"><label for="doorRearHeight">Rear joint height (mm)</label><input type="number" id="doorRearHeight" value="300" min="0" step="1"></div>
 <div class="field"><label for="doorFrontHeight">Front joint height (mm)</label><input type="number" id="doorFrontHeight" value="420" min="0" step="1"></div>
 <div class="field"><label for="doorRun">Front-to-rear distance (mm)</label><input type="number" id="doorRun" value="900" min="1" step="1"></div>
@@ -139,8 +139,39 @@
 <div class="field full"><label for="frontTubeOD">Front/A-pillar parent CHS OD (mm)</label><input type="number" id="frontTubeOD" list="braceODPresets" value="44.45" min="1" step=".01"><span class="hint">Tube receiving the FRONT end of each side intrusion bar</span></div>
 <div class="field"><label for="frontTubeSideLean">Front tube outward lean (degrees)</label><input type="number" id="frontTubeSideLean" value="0" min="-80" max="80" step=".5"><span class="hint">+ outward at the roof; mirror left/right</span></div>
 <div class="field"><label for="frontTubeRearLean">Front tube rearward lean (degrees)</label><input type="number" id="frontTubeRearLean" value="0" min="-80" max="80" step=".5"><span class="hint">+ rearward at roof, − forward</span></div>
-<div class="field full"><label class="inline-toggle"><input type="checkbox" id="frontTubeConfirmed"> I measured the front parent tube OD and lean angles</label><span class="hint">Required before generating front-end fishmouth templates. The front hoop is not yet modelled, so these are local reference-cylinder measurements.</span></div>
+<div class="field full"><label class="inline-toggle"><input type="checkbox" id="frontTubeConfirmed"> I measured the front parent tube OD and lean angles</label><span class="hint">Required before generating front-end fishmouth templates. Only used if continuous front legs are disabled; otherwise the calculated front leg is the parent tube.</span></div>
 </div></div>
+
+  <div class="addon-group" id="frontStructure">
+    <h3>Front legs · A-pillar / roof</h3>
+    <label class="addon-heading"><input type="checkbox" id="useFrontLegs"> Add continuous front legs <span class="comp-pill">3D roof + windscreen + floor</span></label>
+    <div class="addon-fields off" id="frontLegFields">
+      <p class="addon-hint">Two separate continuous tubes, from the <strong>main hoop at roof level</strong> forwards to the A-pillar and down to the floor. Values are <strong>finished tube centreline positions</strong>, measured from the main hoop mounting plane and the main hoop's fore-aft plane (0 mm). Each leg has two calculated bends, with a separate start/centre/end mark schedule.</p>
+      <div class="fields">
+        <div class="field"><label for="frontTieHeight">Main-hoop attachment height (mm)</label><input type="number" id="frontTieHeight" value="1150" min="1" step="1"><span class="hint">Front leg starts on the existing hoop centreline</span></div>
+        <div class="field"><label for="frontRoofTopHeight">Front top / A-pillar height (mm)</label><input type="number" id="frontRoofTopHeight" value="1220" min="1" step="1"><span class="hint">Virtual roof-to-A-pillar corner, from hoop floor datum</span></div>
+        <div class="field"><label for="frontWindBaseHeight">Base-of-windscreen height (mm)</label><input type="number" id="frontWindBaseHeight" value="520" min="1" step="1"><span class="hint">Virtual A-pillar-to-lower-leg corner</span></div>
+        <div class="field"><label for="frontRoofRun">Forward to top of A-pillar (mm)</label><input type="number" id="frontRoofRun" value="820" min="1" step="1"><span class="hint">Distance forward from main hoop plane</span></div>
+        <div class="field"><label for="frontFootRun">Forward to front mounting feet (mm)</label><input type="number" id="frontFootRun" value="1080" min="1" step="1"><span class="hint">From main hoop plane (must exceed roof run)</span></div>
+        <div class="field"><label for="frontHeaderWidth">Top-of-windscreen tube spacing (mm)</label><input type="number" id="frontHeaderWidth" value="1040" min="1" step="1"><span class="hint">Centre-to-centre width at upper A-pillars</span></div>
+        <div class="field"><label for="frontBaseWidth">Base-of-windscreen spacing (mm)</label><input type="number" id="frontBaseWidth" value="1190" min="1" step="1"><span class="hint">Centre-to-centre width at lower A-pillars</span></div>
+        <div class="field"><label for="frontFootWidth">Front mounting feet spacing (mm)</label><input type="number" id="frontFootWidth" value="1190" min="1" step="1"><span class="hint">Centre-to-centre width on floor</span></div>
+        <div class="field"><label for="frontOD">Front legs CHS outside diameter (mm)</label><input type="number" id="frontOD" list="braceODPresets" value="44.45" min="1" step=".01"></div>
+        <div class="field"><label for="frontWall">Front legs wall thickness (mm)</label><input type="number" id="frontWall" value="2.6" min=".1" step=".1"></div>
+        <div class="field"><label for="frontCLR">Front leg bending die CLR (mm)</label><input type="number" id="frontCLR" value="140" min="1" step="1"></div>
+        <div class="field"><label for="frontTrim">Front leg trim at EACH end (mm)</label><input type="number" id="frontTrim" value="0" min="0" step="1"></div>
+      </div>
+    </div>
+    <label class="addon-heading"><input type="checkbox" id="useHeader" checked> Add windscreen header <span class="comp-pill">single straight cross-tube</span></label>
+    <div class="addon-fields" id="headerFields"><p class="addon-hint">One continuous straight transverse CHS tube joining the two front legs at the height selected. The join points automatically follow the true 3D A-pillar centreline, including local bend geometry.</p>
+      <div class="fields">
+        <div class="field"><label for="headerHeight">Windscreen header centre height (mm)</label><input type="number" id="headerHeight" value="1060" min="1" step="1"><span class="hint">Must fall on both A-pillar segments</span></div>
+        <div class="field"><label for="headerOD">Header CHS OD (mm)</label><input type="number" id="headerOD" list="braceODPresets" value="38.1" min="1" step=".01"></div>
+        <div class="field"><label for="headerWall">Header wall thickness (mm)</label><input type="number" id="headerWall" value="2.6" min=".1" step=".1"></div>
+      </div>
+    </div>
+    <div class="definition"><strong>Layout only:</strong> Front-leg geometry is a measured centreline fit, not a cage approval. Confirm the front leg follows the A-pillar, leaves occupant clearances and meets the permitted bend and mounting requirements. The AASA SC-1 illustration shows separate front legs and a windscreen header; it does not establish safe dimensions for a particular vehicle. Check your cage class and the <a href="https://www.aasa.com.au/ncr-appendices" target="_blank" rel="noopener noreferrer">current AASA safety cage requirements</a>, including header location, mounting, occupant clearance and tube specifications.</div>
+  </div>
   <h3>Tube preparation</h3>
   <div class="fields"><div class="field full"><label for="fitExtra">Extra material for coping, at each end (mm)</label><input type="number" id="fitExtra" value="20" min="0" step="1"><span class="hint">Added to each straight brace/stay span as a rough prep blank allowance. Trim/cope to fit.</span></div></div>
   <div class="definition"><strong>Important:</strong> Member lengths are measured between the <strong>intersection of member centrelines</strong>, not from the finished fishmouth tips. The prep length is a suggested oversized straight blank, <em>not</em> a calculated cope contour or an engineered cage joint.</div>
@@ -165,6 +196,27 @@
   <p class="notes" id="addonsNote">* Prep length = joint-centre span plus allowance at both ends. Actual cut length at a coped tube end depends on fishmouth geometry, joint orientation and weld gap. These new members are straight. Side views are projections and true lengths include any lateral offset in plan. Wrap-arounds are available for supported tube-to-tube ends, including the harness bar, rear stays and side intrusion. Confirm front tube geometry before printing side-bar FRONT ends.</p>
   <div class="row-actions"><button id="addonsSvgDownload">Save views SVG</button><button id="addonsCsvDownload">Save cut list CSV</button></div>
 </section>
+<section class="panel" id="frontPanel">
+  <div class="drawing-header"><h2 style="margin:0">Front legs &amp; windscreen header</h2><span class="unit">Side · plan · front views · finished centreline positions</span></div>
+  <div id="frontWarning" class="comp-warning" role="status"></div>
+  <div class="comp-metrics">
+    <div class="comp-metric"><small>Each front leg · developed centreline</small><b id="frontDeveloped">—</b><em id="frontBlank">Cut blank —</em></div>
+    <div class="comp-metric"><small>Two bends per leg</small><b id="frontAngles">—</b><em id="frontClock">Geometric bend-plane rotation —</em></div>
+    <div class="comp-metric"><small>Windscreen header · straight span</small><b id="headerLength">—</b><em id="headerDetail">Between front legs</em></div>
+  </div>
+  <div class="subviews">
+    <div class="subview"><h3>Front legs · side elevation</h3><svg id="frontSideSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front leg side elevation and two bends"></svg></div>
+    <div class="subview"><h3>Front legs · plan</h3><svg id="frontPlanSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front legs plan view showing width and forward offsets"></svg></div>
+    <div class="subview"><h3>Front legs · A-pillar / header front view</h3><svg id="frontFaceSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front legs and windscreen header front view"></svg></div>
+  </div>
+  <h3>Front-leg bend marks</h3>
+  <p class="marking-info">All marks are measured from the <strong>main-hoop connection end</strong> of each unbent front leg. Bend centre means the <strong>midpoint of the developed bend arc</strong>. A left/right clocking sign is shown when the two bends lie in different planes; verify rotation on a test tube.</p>
+  <div class="table-scroll"><table><thead><tr><th>Leg</th><th>Bend</th><th>Turn</th><th>Start (mm)</th><th>Centre (mm)</th><th>End (mm)</th></tr></thead><tbody id="frontBendsBody"></tbody></table></div>
+  <h3>Front-leg straight sections</h3>
+  <div class="table-scroll"><table><thead><tr><th>Member</th><th>Section</th><th>Finished length (mm)</th></tr></thead><tbody id="frontSectionsBody"></tbody></table></div>
+  <p class="notes">Sections and bend marks are theoretical centreline dimensions; they are not bender clamp/feed reference marks or production-ready compensated machine instructions. The front-leg rear end joins the main hoop; floor mounting feet are not tube-to-tube joints. The front legs are each one continuous tube, not assembled from individual straight sections. Validate bend-plane rotation against your bender and test tube.</p>
+  <div class="row-actions"><button id="frontSvgDownload">Save front-structure views SVG</button><button id="frontBendCsvDownload">Save front-leg bend CSV</button></div>
+</section>
 <section class="panel" id="notchPanel">
   <div class="drawing-header" style="padding:0 0 10px"><h2 style="margin:0">All tube-to-tube joints · printable wrap-arounds</h2><span class="unit">1:1 CHS developed OD · individual end labels</span></div>
   <p class="notch-explain">Each separate tube end is calculated against its actual <strong>3D parent tube axis</strong> or the finished main-hoop centreline, including bends where a single cope contour is valid. Upper and lower ends, left and right sides, and harness ends are individually labelled. Rear stay footplates are <strong>not</strong> tube-to-tube joints.</p>
@@ -187,7 +239,7 @@
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean'];
+  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean','frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim','headerHeight','headerOD','headerWall'];
   let mode=2, latest=null;
   const round=(x,places=1)=>Number(x).toFixed(places);
   const dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
@@ -349,6 +401,7 @@
   const sep=v=>sub3(v,axisPoint);
   const distance=j.parentHoop?
     point=>centrelineDistance(point,j.parentHoop):
+    j.parentPath?point=>centrelineDistance3D(point,j.parentPath):
     point=>{const dv=sep(point),p=dot3(dv,tangent);return Math.hypot(dv.x-p*tangent.x,dv.y-p*tangent.y,dv.z-p*tangent.z);};
   const profile=[];
   const steps=720;
@@ -361,7 +414,7 @@
     while(f(hi)<=0&&grow++<16)hi*=2;
     if(grow>=16)return fail("No single saddle boundary could be found along this tube axis.");
     let lo=0;
-    for(let n=0;n<38;n++){const m=(lo+hi)*0.5;if(f(m)>0)hi=m;else lo=m;}
+    for(let n=0;n<24;n++){const m=(lo+hi)*0.5;if(f(m)>0)hi=m;else lo=m;}
     const depth=(lo+hi)*.5;
     if(!Number.isFinite(depth)||depth>10000)return fail("Joint intersection is outside the supported calculation range.");
     profile.push({s:C*i/steps,theta,depth});
@@ -401,11 +454,34 @@
       joins.push(generateTubeSaddle({id:"harness-"+side,title:"HARNESS BAR — "+side.toUpperCase()+" / REAR STAY",member:"Harness bar",end:side.toUpperCase()+" END",branchOD:v.harnessOD,branchWall:v.harnessWall,parentOD:v.stayOD,outer:h,other,parentAxis:dir,parentName:side+" rear stay"}));
     }
   }
+  if(a.front&&!a.front.errors.length){
+    for(const side of ['left','right']){
+      const leg=a.front[side],attach=leg.points[0],next=leg.points[1],hoop=leg.hoopAttach;
+      joins.push(generateTubeSaddle({id:'front-leg-'+side+'-rear',title:side.toUpperCase()+' FRONT LEG — REAR / MAIN HOOP',
+        member:side+' continuous front leg',end:'REAR END',
+        branchOD:v.frontOD,branchWall:v.frontWall,parentOD:v.od,outer:attach,other:next,
+        parentAxis:hoop.tangent,parentHoop:g,parentName:'Main hoop'}));
+    }
+    if(a.front.header)for(const side of ['left','right']){
+      const joint=a.front.header[side],other=a.front.header[side==='left'?'right':'left'];
+      joins.push(generateTubeSaddle({id:'windscreen-header-'+side,title:'WINDSCREEN HEADER — '+side.toUpperCase()+' / FRONT LEG',
+        member:'Windscreen header',end:side.toUpperCase()+' END',
+        branchOD:v.headerOD,branchWall:v.headerWall,parentOD:v.frontOD,outer:joint,other,
+        parentAxis:joint.tangent,parentPath:a.front[side],parentName:side+' front leg'}));
+    }
+  }
   if(a.door){
     for(const member of a.door.members){
       const side=member.name.toLowerCase(),rear=hoopAtHeight(g,v.doorRearHeight,side);
       joins.push(generateTubeSaddle({id:"door-"+side+"-rear",title:member.name.toUpperCase()+" SIDE INTRUSION — REAR / MAIN HOOP",member:member.name+" side intrusion",end:"REAR END",branchOD:v.doorOD,branchWall:v.doorWall,parentOD:v.od,outer:member.rear,other:member.front,parentAxis:rear.tangent,parentHoop:g,parentName:"Main hoop"}));
-      if(!$("frontTubeConfirmed").checked){
+      if(a.front&&!a.front.errors.length){
+        const parent=a.front[side],hit=frontLegAtHeight(parent,member.front.y);
+        if(!hit)joins.push({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / MODELLED LEG",error:"Selected height does not intersect this front leg."});
+        else joins.push(generateTubeSaddle({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / FRONT LEG",
+          member:member.name+" side intrusion",end:"FRONT END",
+          branchOD:v.doorOD,branchWall:v.doorWall,parentOD:v.frontOD,outer:member.front,other:member.rear,
+          parentAxis:hit.tangent,parentPath:parent,parentName:member.name+" continuous front leg"}));
+      }else if(!$("frontTubeConfirmed").checked){
         joins.push({id:"door-"+side+"-front",title:member.name.toUpperCase()+" SIDE INTRUSION — FRONT / A-PILLAR",member:member.name+" side intrusion",end:"FRONT END",error:"Confirm the measured front parent tube OD and both lean angles before generating this wrap-around."});
       }else{
         const rad=Math.PI/180,lateral=v.frontTubeSideLean*rad,fore=v.frontTubeRearLean*rad,sgn=side==="left"?-1:1;
@@ -421,9 +497,147 @@
   return joins;
 }
 
+
+  // A continuous formed tube through four measured 3D centreline stations:
+  // rear main-hoop joint -> top A-pillar -> lower windscreen -> mounting foot.
+  // Each bend is an exact circular fillet in the local 3D bending plane.
+  function makeFrontLeg(points,radius,endTrim,side){
+    const errors=[],R=radius,vertices=points.map(v3);
+    if(!Number.isFinite(R)||R<=0||!Number.isFinite(endTrim)||endTrim<0)
+      return {errors:['Front-leg CLR must be positive and end trim non-negative.']};
+    const fillets=[];
+    for(let i=1;i<vertices.length-1;i++){
+      const before=vertices[i-1],vertex=vertices[i],after=vertices[i+1];
+      const incoming=norm3(sub3(vertex,before)),outgoing=norm3(sub3(after,vertex));
+      if(!incoming||!outgoing){errors.push('Front-leg stations are coincident.');continue;}
+      const c=clamp(dot3(incoming,outgoing),-1,1),theta=Math.acos(c);
+      if(theta<Math.PI/180||theta>=170*Math.PI/180){errors.push('Front-leg bend '+i+' is outside the supported 1–170° range.');continue;}
+      const trim=R*Math.tan(theta/2),normal=norm3(sub3(outgoing,{x:incoming.x*c,y:incoming.y*c,z:incoming.z*c}));
+      if(!normal){errors.push('Front leg cannot resolve a bend plane.');continue;}
+      const entry={x:vertex.x-incoming.x*trim,y:vertex.y-incoming.y*trim,z:vertex.z-incoming.z*trim};
+      const exit={x:vertex.x+outgoing.x*trim,y:vertex.y+outgoing.y*trim,z:vertex.z+outgoing.z*trim};
+      const unitAxis=norm3(cross3(incoming,outgoing));
+      const midpoint=(angle)=>({x:entry.x+R*(Math.sin(angle)*incoming.x+(1-Math.cos(angle))*normal.x),y:entry.y+R*(Math.sin(angle)*incoming.y+(1-Math.cos(angle))*normal.y),z:entry.z+R*(Math.sin(angle)*incoming.z+(1-Math.cos(angle))*normal.z)});
+      fillets.push({entry,exit,midPoint:midpoint(theta/2),incoming,outgoing,normal,axis:unitAxis,angleRad:theta,angle:theta*180/Math.PI,trim,vertex,name:'B'+i,arc:R*theta});
+    }
+    if(errors.length)return {errors};
+    const sections=[];
+    for(let i=0;i<vertices.length-1;i++){
+      const previous=i?fillets[i-1].trim:0,next=i<fillets.length?fillets[i].trim:0;
+      const length=mag3(sub3(vertices[i+1],vertices[i]))-previous-next;
+      if(length<=1e-5)errors.push(side+' front leg section '+(i+1)+' is too short for the chosen CLR.');
+      sections.push({label:['Roof/side rail','A-pillar slope','Lower leg'][i],length});
+    }
+    if(errors.length)return {errors};
+    let running=0;
+    for(let i=0;i<fillets.length;i++){
+      running+=sections[i].length;
+      fillets[i].start=running;fillets[i].mid=running+fillets[i].arc/2;fillets[i].end=running+fillets[i].arc;
+      running=fillets[i].end;
+    }
+    running+=sections.at(-1).length;
+    const axis=norm3(sub3(fillets[1].entry,fillets[0].exit));
+    const n1=fillets[0].axis,n2=fillets[1].axis;
+    const signedClock=Math.atan2(dot3(axis,cross3(n1,n2)),dot3(n1,n2))*180/Math.PI;
+    return {side,points:vertices,bends:fillets,sections,radius:R,total:running,blank:running+2*endTrim,trimExtra:endTrim,clock:signedClock,errors};
+  }
+  function frontLegPieces(leg){
+    if(!leg||leg.errors.length)return [];
+    const result=[],radius=leg.radius;let prev=leg.points[0];
+    const line=(start,end)=>({start,end,point:t=>({x:start.x+(end.x-start.x)*t,y:start.y+(end.y-start.y)*t,z:start.z+(end.z-start.z)*t}),tangent:()=>norm3(sub3(end,start)),isBend:false});
+    for(const b of leg.bends){
+      if(mag3(sub3(b.entry,prev))>1e-6)result.push(line(prev,b.entry));
+      result.push({start:b.entry,end:b.exit,isBend:true,bend:b.name,point:t=>{
+        const angle=t*b.angleRad;
+        return {x:b.entry.x+radius*(Math.sin(angle)*b.incoming.x+(1-Math.cos(angle))*b.normal.x),y:b.entry.y+radius*(Math.sin(angle)*b.incoming.y+(1-Math.cos(angle))*b.normal.y),z:b.entry.z+radius*(Math.sin(angle)*b.incoming.z+(1-Math.cos(angle))*b.normal.z)};
+      },tangent:t=>{const angle=t*b.angleRad;return {x:Math.cos(angle)*b.incoming.x+Math.sin(angle)*b.normal.x,y:Math.cos(angle)*b.incoming.y+Math.sin(angle)*b.normal.y,z:Math.cos(angle)*b.incoming.z+Math.sin(angle)*b.normal.z}}});
+      prev=b.exit;
+    }
+    if(mag3(sub3(leg.points.at(-1),prev))>1e-6)result.push(line(prev,leg.points.at(-1)));
+    return result;
+  }
+  // At a specified height find the *frontmost* intersection with the bent
+  // front leg. On an arc there can be two crossings, so sample + bisect.
+  function frontLegAtHeight(leg,height,requireAPillar=true){
+    const hits=[];
+    for(const seg of frontLegPieces(leg)){
+      let last=seg.point(0);
+      for(let i=1;i<=60;i++){
+        const t=i/60,p=seg.point(t),a=last.y-height,b=p.y-height;
+        if(a*b<=0 && (Math.abs(a)>1e-7||Math.abs(b)>1e-7)){
+          let lo=(i-1)/60,hi=t,v=seg.point(lo).y-height;
+          for(let j=0;j<36;j++){let m=(lo+hi)/2,w=seg.point(m).y-height;if(v*w>0){lo=m;v=w;}else hi=m;}
+          const tt=(lo+hi)/2,hit={...seg.point(tt),tangent:seg.tangent(tt),isBend:seg.isBend,bend:seg.bend||null};
+          if(!requireAPillar||hit.z<-0.5*Math.abs(leg.points[1].z))hits.push(hit);
+        }
+        last=p;
+      }
+    }
+    hits.sort((a,b)=>a.z-b.z);
+    return hits[0]||null;
+  }
+  function centrelineDistance3D(point,leg){
+    let best=Infinity,prev=leg.points[0],radius=leg.radius;
+    const lineDist=(a,b)=>{
+      const v=sub3(b,a),w=sub3(point,a),d=dot3(v,v),t=d?clamp(dot3(w,v)/d,0,1):0;
+      return mag3(sub3(point,{x:a.x+v.x*t,y:a.y+v.y*t,z:a.z+v.z*t}));
+    };
+    for(const b of leg.bends){
+      best=Math.min(best,lineDist(prev,b.entry),mag3(sub3(point,b.entry)),mag3(sub3(point,b.exit)));
+      const center={x:b.entry.x+radius*b.normal.x,y:b.entry.y+radius*b.normal.y,z:b.entry.z+radius*b.normal.z};
+      const w=sub3(point,center),theta=Math.atan2(dot3(w,b.incoming),-dot3(w,b.normal));
+      if(theta>=0&&theta<=b.angleRad){
+        const q={x:b.entry.x+radius*(Math.sin(theta)*b.incoming.x+(1-Math.cos(theta))*b.normal.x),y:b.entry.y+radius*(Math.sin(theta)*b.incoming.y+(1-Math.cos(theta))*b.normal.y),z:b.entry.z+radius*(Math.sin(theta)*b.incoming.z+(1-Math.cos(theta))*b.normal.z)};
+        best=Math.min(best,mag3(sub3(point,q)));
+      }
+      prev=b.exit;
+    }
+    return Math.min(best,lineDist(prev,leg.points.at(-1)));
+  }
+  function makeFrontStructure(g){
+    const v=g.v,errors=[];
+    const numeric=['frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim'];
+    if(!numeric.every(k=>Number.isFinite(v[k]))||v.frontOD<=0||v.frontWall<=0||v.frontWall>=v.frontOD/2||v.frontCLR<=0||v.frontTrim<0)
+      return {errors:['Enter valid front-leg CHS, wall, CLR, trim and measured positions.']};
+    if(v.frontTieHeight<=0||v.frontTieHeight>=g.Hc||v.frontWindBaseHeight<=0||v.frontRoofTopHeight<=v.frontWindBaseHeight||v.frontRoofRun<=0||v.frontFootRun<=v.frontRoofRun)
+      return {errors:['Front legs: attachment, A-pillar roof and windscreen base heights or forward distances are invalid. Measure roof clearance at both hoops.']};
+    if([v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth].some(x=>x<=v.frontOD))
+      return {errors:['Front legs: spacing must be larger than the selected CHS OD.']};
+    const cx=g.Wc/2,result={errors,OD:v.frontOD,wall:v.frontWall,CLR:v.frontCLR,frontRun:v.frontFootRun,roofRun:v.frontRoofRun};
+    for(const side of ['left','right']){
+      const attach=hoopAtHeight(g,v.frontTieHeight,side);
+      if(!attach){errors.push('Front leg '+side+': cannot find main-hoop attachment point.');continue;}
+      const sign=side==='left'?-1:1;
+      const points=[
+        {x:attach.x,y:attach.y,z:0},
+        {x:cx+sign*v.frontHeaderWidth/2,y:v.frontRoofTopHeight,z:-v.frontRoofRun},
+        {x:cx+sign*v.frontBaseWidth/2,y:v.frontWindBaseHeight,z:-v.frontFootRun},
+        {x:cx+sign*v.frontFootWidth/2,y:0,z:-v.frontFootRun}
+      ];
+      result[side]=makeFrontLeg(points,v.frontCLR,v.frontTrim,side);
+      errors.push(...result[side].errors);
+      result[side].hoopAttach=attach;
+    }
+    if(errors.length)return result;
+    if($('useHeader').checked){
+      if(![v.headerHeight,v.headerOD,v.headerWall].every(Number.isFinite)||v.headerHeight<=v.frontWindBaseHeight||v.headerHeight>=v.frontRoofTopHeight||v.headerOD<=0||v.headerWall<=0||v.headerWall>=v.headerOD/2){
+        errors.push('Windscreen header height must lie on the A-pillars, with valid CHS OD/wall.');
+      }else{
+        const left=frontLegAtHeight(result.left,v.headerHeight),right=frontLegAtHeight(result.right,v.headerHeight);
+        if(!left||!right||Math.abs(left.z-right.z)>.5)errors.push('Windscreen header cannot locate both matching A-pillar joints at this height.');
+        else{
+          const length=mag3(sub3(right,left));
+          if(length<=v.headerOD)errors.push('Windscreen header has insufficient span.');
+          else result.header={left,right,height:v.headerHeight,length,blank:length+2*Math.max(0,v.fitExtra),OD:v.headerOD,wall:v.headerWall};
+        }
+      }
+    }
+    return result;
+  }
+
   function addonsGeometry(g){
-    const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null;
-    const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked;
+    const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null,front=null;
+    const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked,useFrontLegs=$('useFrontLegs').checked;
     const fit=v.fitExtra;
     if((useBrace||useStays||useHarness||useDoor)&&(!Number.isFinite(fit)||fit<0))errors.push('Fit-up allowance must be zero or greater.');
     if(useBrace){
@@ -476,24 +690,38 @@
     }
     // Side intrusion: rear point follows the hoop's actual centreline at the
     // chosen height. Front points are measured references, NOT a modelled A-pillar.
+
+    if(useFrontLegs){front=makeFrontStructure(g);if(front.errors.length)errors.push(...front.errors);}
     if(useDoor){
-      if(![v.doorRearHeight,v.doorFrontHeight,v.doorRun,v.doorFrontWidth,v.doorOD,v.doorWall].every(Number.isFinite)||v.doorRearHeight<0||v.doorRearHeight>=g.Hc||v.doorFrontHeight<0||v.doorFrontHeight>g.Hc||v.doorRun<=0||v.doorFrontWidth<=0)
-        errors.push('Side intrusion requires valid rear/front heights, positive forward run and front joint spacing.');
+      const autoFront=useFrontLegs;
+      if(![v.doorRearHeight,v.doorFrontHeight,v.doorOD,v.doorWall].every(Number.isFinite)||v.doorRearHeight<0||v.doorRearHeight>=g.Hc||v.doorFrontHeight<0||(!autoFront&&v.doorFrontHeight>g.Hc))
+        errors.push('Side intrusion requires valid rear and front heights.');
       else if(v.doorOD<=0||v.doorWall<=0||v.doorWall>=v.doorOD/2)
         errors.push('Side intrusion CHS OD and wall must be positive, wall less than half OD.');
+      else if(autoFront&&(!front||front.errors.length))
+        errors.push('Side intrusion: fix front-leg geometry before connecting its front end.');
+      else if(!autoFront&&(![v.doorRun,v.doorFrontWidth].every(Number.isFinite)||v.doorRun<=0||v.doorFrontWidth<=0))
+        errors.push('Side intrusion: enter a valid forward distance and front reference width.');
       else{
-        const rl=hoopAtHeight(g,v.doorRearHeight,'left'),rr=hoopAtHeight(g,v.doorRearHeight,'right');
-        if(!rl||!rr)errors.push('Side intrusion rear joints cannot be located on the hoop.');
+        const rl=hoopAtHeight(g,v.doorRearHeight,'left'),rr=hoopAtHeight(g,v.doorRearHeight,'right'),cx=g.Wc/2;
+        const fl=autoFront?frontLegAtHeight(front.left,v.doorFrontHeight):{x:cx-v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun};
+        const fr=autoFront?frontLegAtHeight(front.right,v.doorFrontHeight):{x:cx+v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun};
+        if(!rl||!rr||!fl||!fr)errors.push('Side intrusion: requested joint height does not cross the main hoop or the modelled front leg.');
         else{
-          const cx=g.Wc/2,frontLeft={x:cx-v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun},frontRight={x:cx+v.doorFrontWidth/2,y:v.doorFrontHeight,z:-v.doorRun};
-          const member=(name,rear,front)=>{const lateral=front.x-rear.x,vertical=front.y-rear.y,length=Math.hypot(v.doorRun,lateral,vertical);return {name,rear,front,lateral,vertical,length,blank:length+2*Math.max(0,fit),angle:Math.atan2(vertical,Math.hypot(v.doorRun,lateral))*180/Math.PI};};
-          const left=member('Left',{x:rl.x,y:rl.y,z:0},frontLeft),right=member('Right',{x:rr.x,y:rr.y,z:0},frontRight);
+          const member=(name,rear,frontPoint)=>{
+            const lateral=frontPoint.x-rear.x,vertical=frontPoint.y-rear.y,forward=rear.z-frontPoint.z;
+            const length=Math.hypot(lateral,vertical,forward);
+            return {name,rear,front:frontPoint,lateral,vertical,forward,length,blank:length+2*Math.max(0,fit),angle:Math.atan2(vertical,Math.hypot(forward,lateral))*180/Math.PI};
+          };
+          const left=member('Left',{x:rl.x,y:rl.y,z:0},fl),right=member('Right',{x:rr.x,y:rr.y,z:0},fr);
           const sides=$('doorSides').value;
-          door={left,right,sides,members:sides==='both'?[left,right]:sides==='left'?[left]:[right],frontSpacing:v.doorFrontWidth,rearSpacing:rr.x-rl.x,run:v.doorRun,OD:v.doorOD,wall:v.doorWall,sideAngle:Math.atan2(v.doorFrontHeight-v.doorRearHeight,v.doorRun)*180/Math.PI};
+          door={left,right,sides,members:sides==='both'?[left,right]:sides==='left'?[left]:[right],
+            frontSpacing:fr.x-fl.x,rearSpacing:rr.x-rl.x,run:left.forward,
+            OD:v.doorOD,wall:v.doorWall,sideAngle:Math.atan2(left.vertical,left.forward)*180/Math.PI,frontIsModelled:autoFront};
         }
       }
     }
-    return {brace,stays,harness,door,errors};
+    return {brace,stays,harness,door,front,errors};
   }
   function renderStayViews(g){
     const stay=g.addons.stays,harness=g.addons.harness;
@@ -554,7 +782,7 @@
       <line x1="${xr}" y1="${yr}" x2="${xf}" y2="${yf}" stroke="#ffb76b" stroke-width="6"/>
       <circle cx="${xr}" cy="${yr}" r="6" fill="#ffd39e" stroke="#14191c" stroke-width="2"/>
       <circle cx="${xf}" cy="${yf}" r="6" fill="#ffd39e" stroke="#14191c" stroke-width="2"/>
-      <text x="300" y="23" text-anchor="middle" font-size="12" fill="#aab8c2">Front reference at left · main hoop at right · ${chosen}</text>
+      <text x="300" y="23" text-anchor="middle" font-size="12" fill="#aab8c2">${door.frontIsModelled?'Modelled front leg':'Front reference'} at left · main hoop at right · ${chosen}</text>
       <text x="300" y="67" text-anchor="middle" font-size="13" fill="#ffc992">Side elevation ${round(door.sideAngle,1)}°</text>
       <text x="300" y="91" text-anchor="middle" font-size="13" fill="#d8e0e6">True length ${round(door.members[0].length,1)} mm</text>
       <line x1="${xf}" y1="306" x2="${xr}" y2="306" stroke="#ed9949" stroke-width="1.5"/>
@@ -641,6 +869,48 @@
   ${sheets}</body></html>`;
 }
 
+  function frontSVGPath(leg,project){
+  const pcs=frontLegPieces(leg);if(!pcs.length)return '';
+  const q=project(leg.points[0]);let d=`M ${round(q[0],2)} ${round(q[1],2)}`;
+  for(const seg of pcs){const n=seg.isBend?28:1;for(let i=1;i<=n;i++){const p=project(seg.point(i/n));d+=` L ${round(p[0],2)} ${round(p[1],2)}`;}}
+  return d;
+}
+
+  function renderFrontStructure(g){
+  const front=g.addons.front,valid=front&&!front.errors.length,warning=$('frontWarning');
+  warning.style.display=front?.errors.length?'block':'none';warning.textContent=front?.errors.join(' ')||'';
+  if(!valid){
+    $('frontDeveloped').textContent='—';$('frontBlank').textContent='Enable front legs';
+    $('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';
+    $('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';
+    const msg=front?.errors.length?'Adjust front leg measurements':'Enable continuous front legs';
+    for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML=`<text x="300" y="170" text-anchor="middle" fill="#a4acb2" font-size="16">${msg}</text>`;
+    $('frontBendCsvDownload').disabled=true;$('frontSvgDownload').disabled=true;return;
+  }
+  $('frontBendCsvDownload').disabled=false;$('frontSvgDownload').disabled=false;
+  const v=g.v,l=front.left,r=front.right,h=front.header;
+  $('frontDeveloped').textContent=`${round(l.total,1)} mm`;
+  $('frontBlank').textContent=`Blank ${round(l.blank,1)} mm (each leg)`;
+  $('frontAngles').textContent=l.bends.map(b=>round(b.angle,1)+'°').join(' / ');
+  $('frontClock').textContent=`B1→B2 tube-axis clock: left ${round(l.clock,1)}° · right ${round(r.clock,1)}°`;
+  $('headerLength').textContent=h?`${round(h.length,1)} mm`:'Disabled or invalid';
+  $('headerDetail').textContent=h?`CHS ${round(h.OD,2)} × ${round(h.wall,2)} mm · ${round(h.height,0)} mm high`:'Toggle the header to include it';
+  $('frontBendsBody').innerHTML=['left','right'].map(side=>front[side].bends.map(b=>`<tr><td>${side.toUpperCase()}</td><td>${b.name}</td><td>${round(b.angle,2)}°</td><td class="mark-start">${round(b.start+v.frontTrim,1)}</td><td class="mark-mid">${round(b.mid+v.frontTrim,1)}</td><td class="mark-end">${round(b.end+v.frontTrim,1)}</td></tr>`).join('')).join('');
+  $('frontSectionsBody').innerHTML=['left','right'].map(side=>front[side].sections.map(x=>`<tr><td>${side.toUpperCase()}</td><td>${x.label}</td><td>${round(x.length,1)} mm</td></tr>`).join('')).join('');
+  const ss=Math.min(305/v.frontFootRun,220/Math.max(v.frontRoofTopHeight,g.Hc));
+  const side=p=>[474+p.z*ss,300-p.y*ss],marks=l.bends.map((b,i)=>{const p=side(b.midPoint);return `<circle cx="${p[0]}" cy="${p[1]}" r="5" fill="#a9e3ff"/><text x="${p[0]-9}" y="${p[1]-14}" text-anchor="end" font-size="13" fill="#a9e3ff">B${i+1} ${round(b.angle,1)}°</text>`;}).join('');
+  const p0=side(l.points[0]),p3=side(l.points[3]),headerSide=h?(()=>{const p=side(h.left);return `<circle cx="${p[0]}" cy="${p[1]}" r="6" fill="#c4a0ff"/><text x="${p[0]+8}" y="${p[1]-8}" fill="#e0ceff" font-size="12">Header ${round(h.height,0)} high</text>`;})():'';
+  $('frontSideSvg').innerHTML=`<text x="300" y="24" fill="#afbbc6" text-anchor="middle" font-size="13">Main hoop at right · front of car at left</text><line x1="${p0[0]}" x2="${p0[0]}" y1="${300-g.Hc*ss}" y2="300" stroke="#8796a0" stroke-width="8"/><path d="${frontSVGPath(l,side)}" fill="none" stroke="#ffb46c" stroke-width="6" stroke-linejoin="round"/>${marks}${headerSide}<circle cx="${p0[0]}" cy="${p0[1]}" r="6" fill="#ffd399"/><circle cx="${p3[0]}" cy="${p3[1]}" r="6" fill="#ffd399"/><text x="${p0[0]+7}" y="${p0[1]-12}" fill="#f3debb" font-size="12">Roof joint</text><text x="${p3[0]-7}" y="${p3[1]-12}" text-anchor="end" fill="#f3debb" font-size="12">Foot</text><line x1="${p3[0]}" y1="319" x2="${p0[0]}" y2="319" stroke="#ed9949"/><text x="300" y="339" text-anchor="middle" fill="#ffbb79" font-size="13">Forward ${round(v.frontFootRun,0)} mm</text>`;
+  const ps=Math.min(470/Math.max(g.Wc,v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth),220/v.frontFootRun),plan=p=>[300+(p.x-g.Wc/2)*ps,75-p.z*ps];
+  const lines=['left','right'].map(k=>`<path d="${frontSVGPath(front[k],plan)}" fill="none" stroke="#ffb46c" stroke-width="5"/>`).join('');
+  const hp=h?(()=>{const a=plan(h.left),b=plan(h.right);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c4a0ff" stroke-width="5"/>`;})():'';
+  $('frontPlanSvg').innerHTML=`<text x="300" y="21" text-anchor="middle" fill="#adbbc7" font-size="13">Plan view · main hoop at top · front below</text><line x1="${plan(l.points[0])[0]}" y1="${plan(l.points[0])[1]}" x2="${plan(r.points[0])[0]}" y2="${plan(r.points[0])[1]}" stroke="#89969e" stroke-width="8"/>${lines}${hp}<text x="300" y="54" text-anchor="middle" fill="#dce5e9" font-size="12">Hoop joint spacing ${round(r.points[0].x-l.points[0].x,0)} mm</text><text x="300" y="${plan(l.points[3])[1]+24}" text-anchor="middle" fill="#ffc58c" font-size="13">Foot spacing ${round(v.frontFootWidth,0)} mm</text><text x="300" y="348" text-anchor="middle" fill="#cad1d8" font-size="12">Upper A-pillar spacing ${round(v.frontHeaderWidth,0)} mm</text>`;
+  const fs=Math.min(470/Math.max(g.Wc,v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth),230/v.frontRoofTopHeight),face=p=>[300+(p.x-g.Wc/2)*fs,300-p.y*fs];
+  const flines=['left','right'].map(k=>`<path d="${frontSVGPath(front[k],face)}" fill="none" stroke="#ffb46c" stroke-width="5"/>`).join('');
+  const hf=h?(()=>{const a=face(h.left),b=face(h.right);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c4a0ff" stroke-width="6"/><text x="300" y="${a[1]-12}" text-anchor="middle" font-size="13" fill="#dec8ff">Header ${round(h.length,0)} mm</text>`;})():'';
+  $('frontFaceSvg').innerHTML=`<text x="300" y="21" text-anchor="middle" fill="#adbbc7" font-size="12">Front elevation · longitudinal positions projected</text>${flines}${hf}<text x="300" y="344" text-anchor="middle" fill="#ffbb79" font-size="13">Mount spacing ${round(v.frontFootWidth,0)} mm</text>`;
+}
+
   function renderAddons(g){
     const a=g.addons;
     $('addonsWarning').style.display=a.errors.length?'block':'none';
@@ -665,9 +935,11 @@
     if(a.stays){rows.push([1,'Left rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);rows.push([1,'Right rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);}
     if(a.harness)rows.push([1,'Harness crossbar',a.harness.length,a.harness.blank,`CHS ${round(a.harness.OD,2)} × ${round(a.harness.wall,2)} · both ends to rear stays`]);
     if(a.door)for(const m of a.door.members)rows.push([1,`${m.name} side intrusion bar`,m.length,m.blank,`CHS ${round(a.door.OD,2)} × ${round(a.door.wall,2)} · ${round(m.angle,1)}° elevation`]);
+    if(a.front&&!a.front.errors.length){for(const side of ['left','right'])rows.push([1,`${side.toUpperCase()} continuous front leg`,a.front[side].total,a.front[side].blank,`CHS ${round(a.front.OD,2)} × ${round(a.front.wall,2)} · ${a.front[side].bends.length} bends`]);if(a.front.header)rows.push([1,'Windscreen header',a.front.header.length,a.front.header.blank,`CHS ${round(a.front.header.OD,2)} × ${round(a.front.header.wall,2)} · single straight tube`]);}
     $('addonsBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${round(r[2],1)} mm</td><td><strong>${round(r[3],1)} mm</strong></td><td>${r[4]}</td></tr>`).join(''):'<tr><td colspan="5">Enable a component and enter valid dimensions to see the cut list.</td></tr>';
     renderStayViews(g);
     renderDoorViews(g);
+    renderFrontStructure(g);
     renderNotches(g);
   }
   function renderDrawing(g){
@@ -744,7 +1016,7 @@
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;return;}
+    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
@@ -763,8 +1035,9 @@
     if(a.stays){text.push('TWO REAR STAYS:',`Top joint height ${round(v.stayTop,1)} mm, upper joint spacing ${round(a.stays.upperWidth,1)} mm`,`Rearward run ${round(v.rearRun,1)} mm, rear mount height ${round(v.rearFootHeight,1)} mm, rear mount spacing ${round(v.rearFootWidth,1)} mm`,`Each true 3D joint-to-joint ${round(a.stays.length,1)} mm | prep blank ${round(a.stays.blank,1)} mm (includes ${round(v.fitExtra,1)} mm each end)`,`Inclination ${round(a.stays.angle,1)}° below horizontal, side-view projection ${round(a.stays.sideAngle,1)}°, plan-view splay ${round(a.stays.splayAngle,1)}°`);}
     if(a.harness)text.push('HARNESS CROSSBAR BETWEEN REAR STAYS:',`CHS ${round(v.harnessOD,2)} × ${round(v.harnessWall,2)} mm · centre height ${round(a.harness.height,1)} mm · behind hoop ${round(a.harness.z,1)} mm`,`Joint-centre length ${round(a.harness.length,1)} mm · prep blank ${round(a.harness.blank,1)} mm`);
     if(a.door)text.push('SIDE INTRUSION BAR(S):',`CHS ${round(v.doorOD,2)} × ${round(v.doorWall,2)} mm · front/rear heights ${round(v.doorFrontHeight,1)} / ${round(v.doorRearHeight,1)} mm · forward run ${round(v.doorRun,1)} mm · front spacing ${round(v.doorFrontWidth,1)} mm`,...a.door.members.map(m=>`${m.name} joint-centre 3D length ${round(m.length,1)} mm · prep blank ${round(m.blank,1)} mm · lateral offset ${round(m.lateral,1)} mm · elevation ${round(m.angle,1)}°`));
+    if(a.front&&!a.front.errors.length){text.push('CONTINUOUS FRONT LEGS (single tube each):',`CHS ${round(v.frontOD,2)} × ${round(v.frontWall,2)} mm · CLR ${round(v.frontCLR,1)} mm · trim ${round(v.frontTrim,1)} mm each end`);for(const side of ['left','right']){const leg=a.front[side];text.push(`${side.toUpperCase()}: developed ${round(leg.total,1)} mm · blank ${round(leg.blank,1)} mm · B1→B2 signed clock ${round(leg.clock,1)}°`,...leg.bends.map(b=>`${b.name} ${round(b.angle,2)}°: START ${round(b.start+v.frontTrim,1)} / CENTRE ${round(b.mid+v.frontTrim,1)} / END ${round(b.end+v.frontTrim,1)} mm from rear end`));}if(a.front.header)text.push(`WINDSCREEN HEADER: CHS ${round(v.headerOD,2)} × ${round(v.headerWall,2)} mm, span ${round(a.front.header.length,1)} mm, prep blank ${round(a.front.header.blank,1)} mm.`);}
     if(g.tubeJoints?.length){text.push('TUBE-TO-TUBE FISHMOUTH WRAP-AROUNDS:');for(const j of g.tubeJoints){text.push(j.error?`${j.title}: NOT READY — ${j.error}`:`${j.title} | branch CHS ${round(j.branchOD,2)}×${round(j.branchWall,2)} to parent OD ${round(j.parentOD,2)} | axes ${round(j.angle,1)}° | cope depth ${round(j.cutDepth,1)} mm | print labelled 1:1 SVG`);}}
-    text.push('All members are centreline intersection spans, NOT exact coped tip-to-tip cut lengths. Front side-bar joint is a measured reference, not generated front-hoop geometry. Print 1:1 wrap-arounds for supported member ends; the front side intrusion joint requires a verified parent CHS OD and local lean angles. Verify belt mounts and roll cage design against applicable motorsport rules.');
+    text.push('All members are ideal centreline spans, NOT exact coped tip-to-tip cut lengths. Side bars reference the modelled front legs when enabled, otherwise an independently measured front tube. Print 1:1 wrap-arounds for supported member ends; the front side intrusion joint requires a verified parent CHS OD and local lean angles. Verify belt mounts and roll cage design against applicable motorsport rules.');
     return text.join('\n');}
   function download(filename,data,mime){const blob=new Blob([data],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function copy(){const s=getSheet();if(!s)return;const done=()=>{for(const id of ['copy','copyTop']){const b=$(id),old=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=old,1600);}};if(navigator.clipboard?.writeText){navigator.clipboard.writeText(s).then(done).catch(()=>download('main-hoop-bending-sheet.txt',s,'text/plain'));}else download('main-hoop-bending-sheet.txt',s,'text/plain');}
@@ -772,6 +1045,14 @@
   $('braceUpperSide').addEventListener('change',render);
    $('doorSides').addEventListener('change',render);
    $('frontTubeConfirmed').addEventListener('change',render);
+  function updateFrontControls(){
+    const enabled=$('useFrontLegs').checked;
+    $('frontLegFields').classList.toggle('off',!enabled);
+    $('headerFields').classList.toggle('off',!enabled||!$('useHeader').checked);
+    for(const id of ['doorRun','doorFrontWidth','frontTubeOD','frontTubeSideLean','frontTubeRearLean','frontTubeConfirmed'])$(id).disabled=enabled;
+  }
+  $('useFrontLegs').addEventListener('change',()=>{updateFrontControls();render();});
+  $('useHeader').addEventListener('change',()=>{updateFrontControls();render();});
   for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields'],['useHarness','harnessFields'],['useDoor','doorFields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
   $('mode2').addEventListener('click',()=>setMode(2));$('mode4').addEventListener('click',()=>setMode(4));
   $('copy').addEventListener('click',copy);$('copyTop').addEventListener('click',copy);
@@ -807,6 +1088,28 @@
     const out=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 1530" width="1220" height="1530"><rect width="1220" height="1530" fill="#14191c"/><style>text{font:14px system-ui,Arial,sans-serif;fill:#cbd3d8}.dimension{fill:#fb912f;font-weight:650}.note{font-size:11px;fill:#a3acb2}.bendlabel{font-size:13px;fill:#ffb65e;font-weight:700}</style><text x="40" y="40" fill="#fc912c" font-size="24" font-weight="700">MAIN HOOP + DIAGONAL + REAR STAYS + HARNESS + SIDE INTRUSION</text><svg x="10" y="55" width="900" height="675" viewBox="0 0 760 570">${front}</svg><text x="38" y="780" font-size="19">REAR STAY SIDE VIEW</text><svg x="0" y="800" width="600" height="320" viewBox="0 0 600 340">${side}</svg><text x="650" y="780" font-size="19">REAR STAY PLAN VIEW</text><svg x="610" y="800" width="600" height="320" viewBox="0 0 600 340">${plan}</svg><text x="38" y="1160" font-size="19">SIDE INTRUSION SIDE VIEW</text><svg x="0" y="1175" width="600" height="320" viewBox="0 0 600 340">${ds}</svg><text x="650" y="1160" font-size="19">SIDE INTRUSION PLAN VIEW</text><svg x="610" y="1175" width="600" height="320" viewBox="0 0 600 340">${dp}</svg></svg>`;
     download('roll-cage-bracing-views.svg',out,'image/svg+xml');
   });
+  function saveFrontMarks(){
+  const g=latest,front=g?.addons?.front;if(!front||front.errors.length)return;
+  const rows=[['Tube','Bend','Angle (deg)','Start from rear datum (mm)','Centre from rear datum (mm)','End from rear datum (mm)','Bend plane clock B1 to B2 (deg)']];
+  for(const side of ['left','right'])for(const b of front[side].bends)
+    rows.push([side.toUpperCase(),b.name,round(b.angle,3),round(b.start+g.v.frontTrim,1),round(b.mid+g.v.frontTrim,1),round(b.end+g.v.frontTrim,1),round(front[side].clock,2)]);
+  rows.push(['NOTE','All marks from main-hoop connection end of straight blank','','','','','Theoretical centreline positions, not machine feed marks']);
+  const csv=rows.map(row=>row.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+  download('front-leg-bend-marks.csv','\ufeff'+csv,'text/csv;charset=utf-8');
+}
+  function saveFrontViews(){
+  if(!latest?.addons?.front||latest.addons.front.errors.length)return;
+  const a=$('frontSideSvg').innerHTML,b=$('frontPlanSvg').innerHTML,c=$('frontFaceSvg').innerHTML;
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1260 940" width="1260" height="940"><rect width="1260" height="940" fill="#151a1e"/><style>text{font-family:Arial,sans-serif}</style>
+    <text x="40" y="43" fill="#ffb76b" font-size="25" font-weight="bold">CONTINUOUS FRONT LEGS &amp; WINDSCREEN HEADER</text>
+    <text x="40" y="69" fill="#a7b5bf" font-size="14">Layout projections only — NOT 1:1; see bend CSV for exact developed mark positions</text>
+    <svg x="5" y="90" width="625" height="410" viewBox="0 0 600 360">${a}</svg>
+    <svg x="632" y="90" width="625" height="410" viewBox="0 0 600 360">${b}</svg>
+    <svg x="317" y="515" width="625" height="410" viewBox="0 0 600 360">${c}</svg></svg>`;
+  download('roll-cage-front-legs-3-view-layout.svg',svg,'image/svg+xml');
+}
+  $('frontBendCsvDownload').addEventListener('click',saveFrontMarks);
+  $('frontSvgDownload').addEventListener('click',saveFrontViews);
   $('addonsCsvDownload').addEventListener('click',()=>{
     if(!latest)return;
     const a=latest.addons, v=latest.v;
@@ -815,6 +1118,7 @@
     if(a.stays){rows.push([1,'Left rear stay',round(a.stays.length,1),round(a.stays.blank,1),`${round(a.stays.angle,1)} deg below horizontal`]);rows.push([1,'Right rear stay',round(a.stays.length,1),round(a.stays.blank,1),`${round(a.stays.angle,1)} deg below horizontal`]);}
     if(a.harness)rows.push([1,`Harness crossbar CHS ${round(a.harness.OD,2)}x${round(a.harness.wall,2)}`,round(a.harness.length,1),round(a.harness.blank,1),`Between rear stays | height ${round(a.harness.height,1)} mm | back from hoop ${round(a.harness.z,1)} mm`]);
     if(a.door)for(const m of a.door.members)rows.push([1,`${m.name} side intrusion CHS ${round(a.door.OD,2)}x${round(a.door.wall,2)}`,round(m.length,1),round(m.blank,1),`True 3D length | forward ${round(a.door.run,1)} mm | lateral ${round(m.lateral,1)} mm | elevation ${round(m.angle,1)} deg`]);
+    if(a.front&&!a.front.errors.length){for(const side of ['left','right'])rows.push([1,`${side.toUpperCase()} continuous front leg CHS ${round(v.frontOD,2)}x${round(v.frontWall,2)}`,round(a.front[side].total,1),round(a.front[side].blank,1),`2 bends | CLR ${round(v.frontCLR,1)} mm | signed plane clock ${round(a.front[side].clock,1)} deg`]);if(a.front.header)rows.push([1,`Windscreen header CHS ${round(v.headerOD,2)}x${round(v.headerWall,2)}`,round(a.front.header.length,1),round(a.front.header.blank,1),`Straight single piece | height ${round(v.headerHeight,1)} mm`]);}
     if(latest.tubeJoints?.length)for(const j of latest.tubeJoints)rows.push(['',`FISHMOUTH — ${j.title}`,'','',j.error?`Not ready: ${j.error}`:`1:1 ${j.paper.label}; axes ${round(j.angle,2)} deg; branch ${round(j.branchOD,2)}×${round(j.branchWall,2)} mm; parent OD ${round(j.parentOD,2)} mm; cope depth ${round(j.cutDepth,2)} mm`]);
     rows.push(['','Notes','','',`Centreline spans only; cope to fit; extra stock ${round(v.fitExtra,1)} mm per end; 1:1 tube-to-tube wrap-arounds available in the templates section, subject to joint validation`]);
     if(a.brace?.notches&&!a.brace.notches.errors.length)rows.push(['','Theoretical square tip-to-tip before coping',round(a.brace.notches.nominalSquare,1),'',`Verify with test fit; upper setback ${round(a.brace.notches.upper.minDepth,2)} lower ${round(a.brace.notches.lower.minDepth,2)}`]);
@@ -843,11 +1147,11 @@
   });
   $('modelJSON').addEventListener('click',()=>{
     if(!latest)return;
-    const g=latest,brace=g.addons.brace,stays=g.addons.stays,harness=g.addons.harness,door=g.addons.door;
-    const payload={schema:'roll-cage-geometry-v2',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
+    const g=latest,brace=g.addons.brace,stays=g.addons.stays,harness=g.addons.harness,door=g.addons.door,front=g.addons.front;
+    const payload={schema:'roll-cage-geometry-v2',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,frontStructure:front,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
     download('roll-cage-geometry-for-future-step.json',JSON.stringify(payload,null,2),'application/json');
   });
-  render();
+  updateFrontControls();render();
 })();
 </script>
 </body></html>
