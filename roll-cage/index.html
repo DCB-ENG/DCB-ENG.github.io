@@ -597,6 +597,31 @@
   return {upper,lower,errors,nominalSquare,paper:upper.paper&&lower.paper?(upper.paper.w>=lower.paper.w?upper.paper:lower.paper):null};
 }
 
+  function extraMemberJoints(g){
+  const xs=g.addons.extras?.members||[],out=[];
+  for(const m of xs){
+    const endpoints=[{end:'NEAR',point:m.near,other:m.far,parent:m.nearParent},{end:'FAR',point:m.far,other:m.near,parent:m.farParent}];
+    for(const e of endpoints){
+      const q=e.parent,side=q?.side||'left',front=g.addons.front?.errors.length?null:g.addons.front;
+      const parentIsFront=q?.kind==='front'&&front&&front[side];
+      const axis=q?.kind==='hoop'?q.point?.tangent:parentIsFront?
+        q.point?.tangent||front[side].bends[0]?.incoming:null;
+      const parentOD=q?.kind==='hoop'?g.v.od:parentIsFront?g.v.frontOD:g.v.frontTubeOD;
+      const name=q?.kind==='hoop'?'Main hoop':parentIsFront?`${side} front leg`:'Measured front reference tube';
+      const id=m.id+'-'+e.end.toLowerCase(),title=`${m.title.toUpperCase()} — ${e.end} / ${name.toUpperCase()}`;
+      if(!axis||!Number.isFinite(parentOD)||q?.kind==='reference'&&!$('frontTubeConfirmed').checked){
+        out.push({id,title,member:m.title,end:e.end+' END',error:q?.kind==='reference'?'Confirm the front receiving tube OD and lean angles.':'No local parent tube tangent could be established.'});
+        continue;
+      }
+      const j=generateTubeSaddle({id,title,member:m.title,end:e.end+' END',branchOD:m.od,branchWall:m.wall,parentOD,
+        outer:e.point,other:e.other,parentAxis:axis,parentHoop:q?.kind==='hoop'?g:undefined,
+        parentPath:parentIsFront?front[side]:undefined,parentName:name});
+      out.push(j);
+    }
+  }
+  return out;
+}
+
   function allTubeJoints(g){
   const v=g.v,a=g.addons,joins=[];
   if(a.brace?.notches)joins.push(a.brace.notches.upper,a.brace.notches.lower);
@@ -653,6 +678,7 @@
       }
     }
   }
+  joins.push(...extraMemberJoints(g));
   return joins;
 }
 
@@ -1343,13 +1369,23 @@
   if(/^windscreen-header-(left|right)$/.test(id))return 'windscreen-header';
   if(/^door-left-/.test(id))return 'side-intrusion-left';
   if(/^door-right-/.test(id))return 'side-intrusion-right';
+  if(/^hoop-harness-/.test(id))return 'hoop-harness';
+  if(/^main-cross-/.test(id))return 'main-cross';
+  if(/^roof-left-/.test(id))return 'roof-left';
+  if(/^roof-right-/.test(id))return 'roof-right';
+  if(/^pillar-a-left-/.test(id))return 'pillar-a-left';
+  if(/^pillar-a-right-/.test(id))return 'pillar-a-right';
+  if(/^door2-left-/.test(id))return 'door2-left';
+  if(/^door2-right-/.test(id))return 'door2-right';
+  if(/^pillar-b-left-/.test(id))return 'pillar-b-left';
+  if(/^pillar-b-right-/.test(id))return 'pillar-b-right';
   return null;
 }
 
   function cagePartNumber(id){
   const fixed={'main-hoop':'001','front-leg-left':'002','front-leg-right':'003','windscreen-header':'004',
     'diagonal-brace':'005','rear-stay-left':'006','rear-stay-right':'007','harness-bar':'008',
-    'side-intrusion-left':'009','side-intrusion-right':'010'};
+    'side-intrusion-left':'009','side-intrusion-right':'010','hoop-harness':'011','main-cross':'012','roof-left':'013','roof-right':'014','pillar-a-left':'015','pillar-a-right':'016','door2-left':'017','door2-right':'018','pillar-b-left':'019','pillar-b-right':'020'};
   const suffix=fixed[id];
   if(!suffix)throw Error('Unknown roll-cage member ID: '+id);
   const job=String($('cageJobRef').value||'').toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,20);
@@ -1570,6 +1606,14 @@
         bends:[],notes:`True 3D length incl. lateral offset ${round(Math.abs(m.lateral),1)} mm · no bends`,
         jointStart:`door-${side}-rear`,jointEnd:`door-${side}-front`});
     }
+  }
+  if(a.extras?.members?.length)for(const em of a.extras.members){
+    const nearID=em.id+'-near',farID=em.id+'-far';
+    push({id:em.id,title:em.title,kind:'straight',od:em.od,wall:em.wall,span:em.length,blank:em.blank,extra:fit,
+      datum:'NEAR / FIRST JOINT',farEnd:'FAR / SECOND JOINT',
+      startDescription:em.nearParent.kind==='hoop'?'Main hoop':em.nearParent.kind==='front'?'Front leg':'Measured front reference',
+      endDescription:em.farParent.kind==='hoop'?'Main hoop':em.farParent.kind==='front'?'Front leg':'Measured front reference',
+      bends:[],notes:'Additional reinforcement · confirm joint/gusset configuration and rules',jointStart:nearID,jointEnd:farID});
   }
   return list;
 }
