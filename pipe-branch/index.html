@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Steel CHS pipe branch calculator: accurate fishmouth developments, main-pipe hole templates, 3D previews and full-size A4/A3 PDF, SVG, DXF and CSV exports.">
+<title>Steel Pipe Branch &amp; Template Calculator | DCB ENG</title>
+<link rel="canonical" href="https://dcb-eng.github.io/pipe-branch/">
+<style>
+:root{color-scheme:dark;--bg:#101115;--panel:#1c1f24;--raised:#272b31;--line:#424953;--text:#f0f2f5;--muted:#b5bdc6;--orange:#ffa726;--red:#ffc0c0}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 75% 0%,#20232a,var(--bg) 55%);color:var(--text);font:15px/1.52 system-ui,-apple-system,"Segoe UI",Arial,sans-serif;min-height:100vh}a{color:#ffbc69}
+.dcb-nav{background:#181b20;border-bottom:1px solid #393e46;font:14px/1.45 system-ui,"Segoe UI",Arial,sans-serif}.dcb-nav__inner{max-width:1250px;margin:auto;padding:11px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}.dcb-nav__brand{color:#fff!important;text-decoration:none!important;font-size:18px;font-weight:800;white-space:nowrap}.dcb-nav__brand span{color:var(--orange)}.dcb-nav__links{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-end;gap:5px}.dcb-nav__link{color:#ccd1d8!important;text-decoration:none!important;padding:8px 11px;border:1px solid transparent;border-radius:7px;font-size:13px;font-weight:650;white-space:nowrap}.dcb-nav__link:hover{background:#30343b}.dcb-nav__link[aria-current="page"]{background:#3c2d20;border-color:#8d5d2c;color:#ffbe6e!important}
+.wrap{width:min(1260px,calc(100% - 32px));margin:auto;padding:33px 0 65px}.eyebrow{color:var(--orange);font-weight:800;letter-spacing:.14em;font-size:.73rem;text-transform:uppercase}h1{font-size:clamp(1.95rem,4vw,3rem);letter-spacing:-.04em;line-height:1.1;margin:8px 0 10px}.intro{max-width:950px;color:var(--muted);margin:0 0 25px}h2{font-size:1.05rem;margin:0 0 15px}.layout{display:grid;grid-template-columns:minmax(300px,390px) minmax(0,1fr);gap:18px;align-items:start}.stack{display:grid;gap:18px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:15px;padding:22px;min-width:0;box-shadow:0 13px 36px #0002}.fieldgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px}.field{min-width:0}.wide{grid-column:1/-1}label{display:block;font-size:.8rem;color:#dce1e6;font-weight:700;margin-bottom:5px}input,select{min-height:43px;width:100%;background:#101317;color:var(--text);border:1px solid #535c68;border-radius:9px;padding:9px 10px;font:inherit;font-variant-numeric:tabular-nums}input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--orange);outline-offset:2px}button{font:inherit;font-weight:750;background:#2f3239;color:#f1f1f1;border:1px solid #646a72;border-radius:9px;padding:9px 12px;min-height:39px;cursor:pointer}button:hover{filter:brightness(1.12)}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:var(--orange);color:#18120b;border-color:var(--orange)}.muted{color:var(--muted);font-size:.78rem}.hint{margin:4px 0 0;font-size:.73rem;color:var(--muted)}.divider{border:0;border-top:1px solid #3e444d;margin:18px 0}.angles,.actions,.tabs{display:flex;gap:7px;flex-wrap:wrap}.angles{margin-top:8px}.angles button{padding:5px 10px;min-height:30px;font-size:.77rem}.angles button.active{color:#ffce8c;border-color:#a87035;background:#51361f}.actions{margin-top:15px}.actions button{flex:1;min-width:95px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:15px}.stat{background:#15191e;border:1px solid #3d464f;border-radius:10px;padding:11px}.stat span{display:block;font-size:.72rem;color:var(--muted)}.stat strong{display:block;font-size:1.3rem;letter-spacing:-.03em;margin-top:2px;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}.stat strong small{font-size:.57em;color:#bec4ce;font-weight:500}.notice{padding:12px;background:#35291d;border-left:3px solid var(--orange);border-radius:7px;color:#ead8c3;font-size:.81rem;margin-top:13px}.error{background:#45252a;color:#ffdddd;border:1px solid #9b555b;border-radius:9px;padding:12px;font-weight:700;margin-bottom:15px}.preview{background:radial-gradient(ellipse at center,#29313a,#15191e);border:1px solid #474e58;border-radius:10px;overflow:hidden}.preview canvas{display:block;width:100%;height:320px;touch-action:none;cursor:grab}.preview canvas:active{cursor:grabbing}.viewtop{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}.viewtop button{min-height:31px;font-size:.77rem}.diagram{width:100%;height:auto;display:block;max-height:350px;background:#11161b;border-radius:8px}.drawingcard{border:1px solid #3e464e;border-radius:10px;padding:10px;background:#15191e;margin-top:12px}.drawingcard h3{font-size:.85rem;margin:0 0 8px}.caption{color:var(--muted);font-size:.73rem;margin:8px 0 0}.tablewrap{overflow-x:auto;border:1px solid #424950;border-radius:10px;max-height:350px;overflow-y:auto}table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}th,td{text-align:right;padding:8px 10px;border-bottom:1px solid #353d46;font-size:.8rem;white-space:nowrap}th{position:sticky;top:0;background:#292e35;color:#ced4dc;font-size:.73rem;text-transform:uppercase;letter-spacing:.04em}th:first-child,td:first-child{text-align:left}tr:last-child td{border:0}.footer{margin-top:24px;color:var(--muted);font-size:.82rem}.footer a{color:#ffbc69}[hidden]{display:none!important}
+@media(max-width:1020px){.layout{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:680px){.dcb-nav__inner{flex-direction:column;align-items:flex-start}.dcb-nav__links{justify-content:flex-start}.dcb-nav__link{font-size:12px;padding:6px 8px}.wrap{width:calc(100% - 22px);padding-top:25px}.panel{padding:16px}.fieldgrid{gap:11px}.preview canvas{height:265px}.stat strong{font-size:1.13rem}}
+</style>
+</head>
+<body>
+<div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" aria-current="page" href="/pipe-branch/">Pipe Branch</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
+<main class="wrap">
+<div class="eyebrow">DCB ENG / Steel fabrication tools</div>
+<h1>Pipe Branch &amp; Template Calculator</h1>
+<p class="intro">Develop CHS saddle (fishmouth) cuts and matching main-pipe openings. Drag the 3D model, check the unwrapped profiles, then export full-size templates as tiled A4/A3 PDF, SVG or DXF. All dimensions are in millimetres.</p>
+<div class="layout">
+<section class="panel" aria-label="Pipe branch parameters">
+<h2>Pipe selection</h2>
+<div class="fieldgrid">
+<div class="field"><label for="mainPreset">Main pipe CHS OD</label><select id="mainPreset"></select></div>
+<div class="field"><label for="mainOd">Main outside diameter (mm)</label><input type="number" min="1" max="1000" step=".1" id="mainOd" value="168.3"></div>
+<div class="field"><label for="mainWall">Main wall thickness (mm)</label><input type="number" min=".1" step=".1" id="mainWall" value="5"></div>
+<div class="field"><label for="branchPreset">Branch CHS OD</label><select id="branchPreset"></select></div>
+<div class="field"><label for="branchOd">Branch outside diameter (mm)</label><input type="number" min="1" max="1000" step=".1" id="branchOd" value="88.9"></div>
+<div class="field"><label for="branchWall">Branch wall thickness (mm)</label><input type="number" min=".1" step=".1" id="branchWall" value="5"></div>
+</div>
+<hr class="divider">
+<h2>Branch geometry</h2>
+<div class="fieldgrid">
+<div class="field"><label for="angle">Angle to main axis (°)</label><input type="number" id="angle" min="10" max="90" step="1" value="90"><div class="angles" id="angles"><button type="button" data-angle="90">90°</button><button type="button" data-angle="60">60°</button><button type="button" data-angle="45">45°</button><button type="button" data-angle="30">30°</button></div></div>
+<div class="field"><label for="offset">Lateral centreline offset (mm)</label><input type="number" id="offset" step=".1" value="0"><p class="hint">Sideways across the main pipe, not along its length.</p></div>
+<div class="field wide"><label for="mode">Connection style</label><select id="mode"><option value="on">Set-on — branch seats on outside wall</option><option value="through">Set-through — branch trimmed at inside wall</option></select><p class="hint" id="modeHelp">The branch saddle follows the main pipe outside surface.</p></div>
+</div>
+<hr class="divider">
+<h2>Weld and cutting allowances</h2>
+<div class="fieldgrid">
+<div class="field"><label for="gap">Radial fit-up gap (mm)</label><input type="number" min="0" max="10" step=".1" id="gap" value="0"><p class="hint">Set-on only: develop against an expanded main OD surface.</p></div>
+<div class="field"><label for="holeGap">Main opening radial clearance (mm)</label><input type="number" min="0" max="10" step=".1" id="holeGap" value=".5"><p class="hint">Added to branch OD radius for set-through openings.</p></div>
+<div class="field"><label for="bevel">Branch bevel reference (°)</label><input type="number" min="0" max="45" step="1" id="bevel" value="0"><p class="hint">Adds an axial setback guide, not a 5-axis toolpath.</p></div>
+<div class="field"><label for="selectShape">Export template</label><select id="selectShape"><option value="both">Branch + main opening</option><option value="branch">Branch saddle only</option><option value="main">Main-pipe opening only</option></select></div>
+</div>
+<hr class="divider">
+<h2>Full-size printing</h2>
+<div class="fieldgrid">
+<div class="field"><label for="paper">Paper size</label><select id="paper"><option value="auto">Auto — fewest sheets</option><option value="a4">A4 (210 × 297 mm)</option><option value="a3">A3 (297 × 420 mm)</option></select></div>
+<div class="field"><label for="orient">Page orientation</label><select id="orient"><option value="auto">Auto</option><option value="portrait">Portrait</option><option value="landscape">Landscape</option></select></div>
+</div>
+<p class="hint">True 1:1 vector PDF with 10 mm overlap, alignment marks and a 100 mm scale check. In the print dialog use <strong>Actual size / 100%</strong>, never “Fit to page”.</p>
+<div class="actions"><button id="reset" type="button">Reset</button><button id="link" type="button">Copy setup link</button></div>
+</section>
+<div class="stack">
+<section class="panel">
+<h2>Results &amp; live previews</h2>
+<div id="error" role="alert" class="error" hidden></div>
+<div id="output">
+<div class="stats">
+<div class="stat"><span>Branch wrap</span><strong id="wrap">—</strong></div>
+<div class="stat"><span>Notch depth</span><strong id="depth">—</strong></div>
+<div class="stat"><span>Main wrap</span><strong id="mainWrap">—</strong></div>
+<div class="stat"><span>PDF sheets</span><strong id="sheets">—</strong></div>
+</div>
+<div class="viewtop"><strong>Rotatable 3D intersection</strong><button type="button" id="resetView">Reset view</button></div>
+<div class="preview"><canvas id="model" aria-label="3D pipe intersection; drag to rotate"></canvas></div>
+<p class="caption">Drag to rotate. Shaded cylinders show the branch cut profile and main-pipe location. The main wall is displayed whole for visual context, not as a Boolean-subtracted solid.</p>
+<div class="drawingcard"><h3>Branch saddle — unwrapped outer surface</h3><svg id="branchSvg" class="diagram" viewBox="0 0 600 140" role="img" aria-label="Developed branch fishmouth cut"></svg><p class="caption">Orange = cut edge. Grey lines = quarter-turn stations and wrap seam. Preview scales to fit; PDF/DXF use actual millimetres.</p></div>
+<div class="drawingcard"><h3>Main pipe — full wrap hole marking</h3><svg id="mainSvg" class="diagram" viewBox="0 0 600 140" role="img" aria-label="Developed main pipe opening"></svg><p class="caption">Opening shown developed on the outside of the main pipe. The top and bottom reference edges join around the underside seam.</p></div>
+<div class="notice" id="note">Fit and cut information is theoretical. Verify on a short test piece and check the weld procedure before production.</div>
+<div class="actions"><button id="pdf" class="primary" type="button">Download PDF 1:1</button><button id="print" type="button">Open for printing</button><button id="svg" type="button">SVG</button><button id="dxf" type="button">DXF</button><button id="csv" type="button">CSV</button></div>
+</div>
+</section>
+<section class="panel">
+<h2>Branch marking stations</h2>
+<p class="muted">Measured from the deepest axial cut point towards the square back reference line, every 15° around the branch. Use the 0° seam / offset-side mark as your starting datum.</p>
+<div class="tablewrap"><table><thead><tr><th>Rotation</th><th>Wrap distance</th><th>Cut depth</th></tr></thead><tbody id="stations"></tbody></table></div>
+</section>
+</div>
+</div>
+<p class="footer">All processing occurs in your browser; no pipe dimensions are uploaded. Developed DXF is a <strong>2D marking template</strong>, not a programmed 3D tube cutting toolpath. <a href="/pipe-bend/">Pipe Bend Calculator</a> · <a href="/steel-weight/">Steel Weight Calculator</a></p>
+</main>
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const ids=["mainOd","branchOd","mainWall","branchWall","angle","offset","mode","gap","holeGap","bevel","selectShape","paper","orient"];
+const odList=[21.3,26.9,33.7,42.4,48.3,60.3,76.1,88.9,101.6,114.3,127,139.7,141.3,165.1,168.3,193.7,219.1,273,323.9,355.6,406.4];
+const TAU=2*Math.PI, DEG=Math.PI/180, mmToPt=72/25.4;
+let current=null,yaw=-.66,pitch=.31,dragging=false,lastX=0,lastY=0;
+const fmt=n=>Number.isFinite(n)?n.toFixed(1):"—";
+const escapeText=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function addPreset(selectId,inputId,initial){
+ const el=$(selectId);el.innerHTML=odList.map(d=>'<option value="'+d+'">'+d.toFixed(1)+' mm</option>').join("")+'<option value="custom">Custom OD</option>';
+ el.value=String(initial);el.addEventListener("change",()=>{if(el.value!=="custom")$(inputId).value=el.value;update();});
+ $(inputId).addEventListener("input",()=>{el.value=odList.some(d=>Math.abs(d-Number($(inputId).value))<.0001)?String(Number($(inputId).value)):"custom";update();});
+}
+addPreset("mainPreset","mainOd",168.3);
+addPreset("branchPreset","branchOd",88.9);
+ids.filter(k=>k!=="mainOd"&&k!=="branchOd").forEach(id=>$(id).addEventListener("input",update));
+$("angles").addEventListener("click",ev=>{if(ev.target.dataset.angle){$("angle").value=ev.target.dataset.angle;update();}});
+function inputs(){
+ const n=id=>Number($(id).value);
+ return {D:n("mainOd"),d:n("branchOd"),T:n("mainWall"),t:n("branchWall"),a:n("angle"),e:n("offset"),gap:n("gap"),holeGap:n("holeGap"),bevel:n("bevel"),mode:$("mode").value,select:$("selectShape").value,paper:$("paper").value,orient:$("orient").value};
+}
+function calculate(q){
+ if([q.D,q.d,q.T,q.t,q.a,q.e,q.gap,q.holeGap,q.bevel].some(v=>!Number.isFinite(v)))throw Error("Enter valid numbers in every dimension field.");
+ if(q.D<=0||q.d<=0||q.D>1000||q.d>1000)throw Error("Outside diameters must be between 0 and 1000 mm.");
+ if(q.T<=0||q.t<=0||2*q.T>=q.D||2*q.t>=q.d)throw Error("Wall thickness must be positive and less than half the pipe OD.");
+ if(q.a<10||q.a>90)throw Error("The angle must be between 10° and 90° to the main pipe axis.");
+ if(q.gap<0||q.gap>10||q.holeGap<0||q.holeGap>10||q.bevel<0||q.bevel>45)throw Error("Check fit-up gap, opening clearance and bevel ranges.");
+ const R=q.D/2,r=q.d/2,rad=q.a*DEG,sa=Math.sin(rad),ca=Math.cos(rad);
+ const targetR=q.mode==="through"?R-q.T:R+q.gap;
+ if(Math.abs(q.e)+r>targetR+1e-8)throw Error("The branch falls outside the supported main-pipe surface for this joint. Reduce the offset or branch diameter (set-through also needs main ID clearance).");
+ const tAt=theta=>{
+  const yy=q.e+r*Math.cos(theta);
+  return (Math.sqrt(Math.max(0,targetR*targetR-yy*yy))-r*Math.sin(theta)*ca)/sa;
+ };
+ const branchRaw=Array.from({length:721},(_,i)=>({theta:i*TAU/720,x:i*TAU*r/720,s:tAt(i*TAU/720)}));
+ const top=Math.max(...branchRaw.map(p=>p.s)),bottom=Math.min(...branchRaw.map(p=>p.s)),depth=top-bottom;
+ const bevelAxial=q.t*Math.tan(q.bevel*DEG);
+ const branchPoints=branchRaw.map(p=>[p.x,20+top-p.s]);
+ const bevelPoints=q.bevel?branchRaw.map(p=>[p.x,20+top-p.s+bevelAxial]):[];
+ const branchH=20+depth+bevelAxial+23,branchW=TAU*r;
+ const branchShape={
+  name:"BRANCH",width:branchW,height:branchH,
+  paths:[
+    {pts:branchPoints,layer:"BRANCH_CUT",color:[1,.52,.07],closed:false},
+    ...(q.bevel?[{pts:bevelPoints,layer:"BEVEL_GUIDE",color:[.1,.6,.8],closed:false,dash:true}]:[]),
+    {pts:[[0,branchH-5],[branchW,branchH-5]],layer:"BACK_REFERENCE",color:[.6,.63,.67],dash:true},
+    ...[0,.25,.5,.75,1].map(k=>({pts:[[k*branchW,15],[k*branchW,branchH-3]],layer:"WRAP_STATIONS",color:[.6,.63,.67],dash:true}))
+  ],
+  labels:[{x:4,y:9,text:"BRANCH - CUT EDGE / 0 deg seam"},{x:Math.max(5,branchW-47),y:branchH-10,text:"SQUARE BACK"}]
+ };
+ // Main hole: intersection of the main OD cylinder with a branch-bore
+ // cylinder for set-on joints, or branch OD plus radial clearance for set-through.
+ const holeR=q.mode==="through"?r+q.holeGap:r-q.t;
+ if(holeR<=0)throw Error("Branch internal radius must be positive.");
+ if(Math.abs(q.e)+holeR>=R-1e-7)throw Error("Main opening touches or wraps beyond the upper main-pipe hemisphere. Reduce branch OD, offset or opening clearance.");
+ const phiMin=Math.asin((q.e-holeR)/R),phiMax=Math.asin((q.e+holeR)/R);
+ const side=(phi,sign)=>{
+  const y=R*Math.sin(phi),z=R*Math.cos(phi);
+  return (z*ca+sign*Math.sqrt(Math.max(0,holeR*holeR-(y-q.e)*(y-q.e))))/sa;
+ };
+ const plus=[],minus=[];
+ for(let i=0;i<=360;i++){const phi=phiMin+(phiMax-phiMin)*i/360;plus.push({phi,x:side(phi,1)});minus.push({phi,x:side(phi,-1)});}
+ const xMin=Math.min(...minus.map(p=>p.x)),xMax=Math.max(...plus.map(p=>p.x));
+ const centerShift=25-xMin;
+ const mainPoints=plus.map(p=>[p.x+centerShift,16+R*(p.phi+Math.PI)]).concat(minus.slice().reverse().map(p=>[p.x+centerShift,16+R*(p.phi+Math.PI)]));
+ const mainW=xMax-xMin+50,mainH=TAU*R+32;
+ const mainShape={name:"MAIN_HOLE",width:mainW,height:mainH,
+  paths:[
+   {pts:mainPoints,layer:"MAIN_HOLE",color:[1,.52,.07],closed:true},
+   {pts:[[5,16],[mainW-5,16]],layer:"SEAM",color:[.6,.63,.67],dash:true},
+   {pts:[[5,mainH-16],[mainW-5,mainH-16]],layer:"SEAM",color:[.6,.63,.67],dash:true},
+   {pts:[[5,16+TAU*R/2],[mainW-5,16+TAU*R/2]],layer:"CROWN",color:[.3,.7,.85],dash:true},
+   {pts:[[25-xMin,16],[25-xMin,mainH-16]],layer:"AXIAL_DATUM",color:[.55,.55,.62],dash:true}
+  ],
+  labels:[{x:5,y:10,text:"MAIN - FULL CIRCUMFERENCE WRAP"},{x:5,y:mainH-4,text:"UNDERSIDE SEAM / ALIGN"}]
+ };
+ const states=Array.from({length:25},(_,i)=>{let theta=i*15*DEG;return {angle:i*15,wrap:r*theta,depth:top-tAt(theta),axial:tAt(theta)};});
+ return {q,R,r,rad,sa,ca,targetR,holeR,tAt,top,bottom,depth,branchRaw,branchShape,mainShape,states,bevelAxial};
+}
+function selectedShapes(c){return c.q.select==="branch"?[c.branchShape]:c.q.select==="main"?[c.mainShape]:[c.branchShape,c.mainShape];}
+function tileOffsets(full,view,overlap=10){
+ if(full<=view)return [0];
+ const n=Math.ceil((full-view)/(view-overlap))+1;
+ return Array.from({length:n},(_,i)=>i*(full-view)/(n-1));
+}
+function layoutFor(c){
+ const shapes=selectedShapes(c),paperChoices=c.q.paper==="auto"?["a4","a3"]:[c.q.paper],orientationChoices=c.q.orient==="auto"?["portrait","landscape"]:[c.q.orient];
+ const all=[];
+ for(const paper of paperChoices)for(const orientation of orientationChoices){
+  const dims=paper==="a3"?[297,420]:[210,297],W=orientation==="portrait"?dims[0]:dims[1],H=orientation==="portrait"?dims[1]:dims[0],viewW=W-20,viewH=H-57;
+  const sheets=shapes.flatMap(shape=>{let ox=tileOffsets(shape.width,viewW),oy=tileOffsets(shape.height,viewH);return oy.flatMap((y,yi)=>ox.map((x,xi)=>({shape,x,y,xi,yi,nx:ox.length,ny:oy.length})));});
+  all.push({paper,orientation,W,H,viewW,viewH,sheets});
+ }
+ all.sort((a,b)=>a.sheets.length-b.sheets.length||(a.paper==="a4"?-1:1)-(b.paper==="a4"?-1:1)||(a.orientation==="portrait"?-1:1)-(b.orientation==="portrait"?-1:1));
+ return all[0];
+}
+function svgFor(shape){
+ const paths=shape.paths.map(p=>'<polyline fill="none" stroke="'+(p.layer==="BRANCH_CUT"||p.layer==="MAIN_HOLE"?"#ffa726":p.layer==="BEVEL_GUIDE"?"#6acdf2":"#87929d")+'" stroke-width=".65" '+(p.dash?'stroke-dasharray="3 2" ':'')+'points="'+p.pts.map(v=>v.map(x=>x.toFixed(3)).join(",")).join(" ") + (p.closed?" "+p.pts[0].map(x=>x.toFixed(3)).join(","):"")+'"/>').join("");
+ const texts=shape.labels.map(t=>'<text x="'+t.x+'" y="'+t.y+'" font-size="4.3" fill="#b5bdc6">'+escapeText(t.text)+'</text>').join("");
+ return '<svg xmlns="http://www.w3.org/2000/svg" width="'+shape.width.toFixed(3)+'mm" height="'+shape.height.toFixed(3)+'mm" viewBox="0 0 '+shape.width.toFixed(3)+' '+shape.height.toFixed(3)+'">'+paths+texts+'</svg>';
+}
+function setPreview(id,shape){
+ const el=$(id);el.setAttribute("viewBox","0 0 "+shape.width.toFixed(3)+" "+shape.height.toFixed(3));
+ el.innerHTML=svgFor(shape).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"");
+}
+function renderTable(c){
+ $("stations").innerHTML=c.states.map(p=>'<tr><td>'+p.angle+'°</td><td>'+fmt(p.wrap)+' mm</td><td>'+fmt(p.depth)+' mm</td></tr>').join("");
+}
+function update(){
+ const q=inputs();
+ document.querySelectorAll("#angles button").forEach(b=>b.classList.toggle("active",Number(b.dataset.angle)===q.a));
+ $("modeHelp").textContent=q.mode==="on"?"Outside-wall saddle; main hole follows branch internal bore. Radial gap expands the reference surface.":"Branch end follows the main pipe inside wall; main hole follows branch OD plus opening clearance.";
+ try{
+  current=calculate(q);
+  const p=layoutFor(current);
+  $("wrap").innerHTML=fmt(TAU*current.r)+" <small>mm</small>";
+  $("depth").innerHTML=fmt(current.depth)+" <small>mm</small>";
+  $("mainWrap").innerHTML=fmt(TAU*current.R)+" <small>mm</small>";
+  $("sheets").innerHTML=String(p.sheets.length)+" <small>"+p.paper.toUpperCase()+"</small>";
+  $("note").textContent=(q.mode==="on"?"Set-on: branch cut seats against main outside wall; main opening sized to branch bore.":"Set-through: branch cut follows the inside main wall; opening sized to branch OD + clearance.")+" "+(q.bevel>0?"Blue bevel guide = "+fmt(current.bevelAxial)+" mm axial setback; not a CNC bevel path. ":"")+"Cut clearance is radial and geometrical only. Verify actual bevel, weld land and fabrication procedure on a test piece.";
+  $("error").hidden=true;$("output").hidden=false;
+  setPreview("branchSvg",current.branchShape);setPreview("mainSvg",current.mainShape);renderTable(current);render3D();
+ }catch(ex){current=null;$("output").hidden=true;$("error").textContent=ex.message;$("error").hidden=false;}
+}
+function saveBlob(data,type,name){
+ const url=URL.createObjectURL(new Blob([data],{type}));
+ const a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+}
+function downloadSvg(){
+ const shapes=selectedShapes(current);
+ if(shapes.length===1){saveBlob(svgFor(shapes[0]),"image/svg+xml","DCB-pipe-"+shapes[0].name.toLowerCase()+".svg");return;}
+ const w=shapes.reduce((sum,s)=>sum+s.width,25),h=Math.max(...shapes.map(s=>s.height)),content=shapes.map((s,i)=>'<g transform="translate('+(i?shapes[0].width+25:0)+',0)">'+svgFor(s).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"")+'</g>').join("");
+ saveBlob('<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'mm" height="'+h+'mm" viewBox="0 0 '+w+' '+h+'">'+content+'</svg>',"image/svg+xml","DCB-pipe-branch-templates.svg");
+}
+function dxfPolyline(p,xOffset){
+ const pts=p.pts,parts=["0","LWPOLYLINE","100","AcDbEntity","8",p.layer,"100","AcDbPolyline","90",String(pts.length),"70",p.closed?"1":"0"];
+ for(const [x,y] of pts)parts.push("10",(x+xOffset).toFixed(4),"20",(-y).toFixed(4));
+ return parts.join("\n")+"\n";
+}
+function downloadDxf(){
+ let x=0,entities="",shapes=selectedShapes(current);
+ for(const shape of shapes){for(const p of shape.paths)if(!["WRAP_STATIONS","BACK_REFERENCE","SEAM","CROWN","AXIAL_DATUM"].includes(p.layer))entities+=dxfPolyline(p,x);x+=shape.width+30;}
+ const dxf="0\nSECTION\n2\nHEADER\n9\n$ACADVER\n1\nAC1015\n9\n$INSUNITS\n70\n4\n0\nENDSEC\n0\nSECTION\n2\nENTITIES\n"+entities+"0\nENDSEC\n0\nEOF\n";
+ saveBlob(dxf,"application/dxf","DCB-pipe-branch-developed-mm.dxf");
+}
+function downloadCsv(){
+ const c=current,rows=["Template,Angle_deg,Wrap_mm,Cut_depth_mm,Axial_position_mm,Hole_left_mm,Hole_right_mm"];
+ if(c.q.select!=="main")for(const row of c.states)rows.push(["BRANCH",row.angle.toFixed(0),row.wrap.toFixed(3),row.depth.toFixed(3),row.axial.toFixed(3),"",""].join(","));
+ if(c.q.select!=="branch"){
+  const min=Math.asin((c.q.e-c.holeR)/c.R),max=Math.asin((c.q.e+c.holeR)/c.R);
+  for(let i=0;i<=24;i++){
+   const phi=min+(max-min)*i/24,y=c.R*Math.sin(phi),z=c.R*Math.cos(phi),root=Math.sqrt(Math.max(0,c.holeR*c.holeR-(y-c.q.e)*(y-c.q.e)));
+   rows.push(["MAIN_HOLE",(phi/DEG).toFixed(3),(c.R*(phi+Math.PI)).toFixed(3),"","",((z*c.ca-root)/c.sa).toFixed(3),((z*c.ca+root)/c.sa).toFixed(3)].join(","));
+  }
+ }
+ saveBlob(rows.join("\r\n")+"\r\n","text/csv","DCB-pipe-branch-stations.csv");
+}
+function pdfSafe(s){return String(s).replace(/[^\x20-\x7e]/g," ").replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");}
+function pdfText(x,y,size,s){return "BT /F1 "+size.toFixed(2)+" Tf "+(x*mmToPt).toFixed(3)+" "+(y*mmToPt).toFixed(3)+" Td ("+pdfSafe(s)+") Tj ET\n";}
+function pdfDoc(c){
+ const plan=layoutFor(c),W=plan.W,H=plan.H,viewW=plan.viewW,viewH=plan.viewH;
+ const objects=[null];const add=s=>(objects.push(s),objects.length-1);
+ const font=add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>");
+ const pageIds=[],contentStreams=[];
+ for(let pageIndex=0;pageIndex<plan.sheets.length;pageIndex++){
+  const tile=plan.sheets[pageIndex],shape=tile.shape,tx=10-tile.x,ty=33-tile.y;
+  let out="0.98 0.98 0.98 rg 0 0 "+(W*mmToPt).toFixed(3)+" "+(H*mmToPt).toFixed(3)+" re f\n0 0 0 RG 0 0 0 rg\n";
+  // PDF native coordinates start at bottom left; labels use millimetres from the top.
+  out+=pdfText(10,H-13,12,"DCB ENG  /  STEEL PIPE BRANCH TEMPLATE");
+  out+=pdfText(10,H-21,8,shape.name+"  |  "+fmt(c.q.D)+" x "+fmt(c.q.T)+" main  |  "+fmt(c.q.d)+" x "+fmt(c.q.t)+" branch  |  "+fmt(c.q.a)+" deg");
+  out+=pdfText(10,H-27,7,"1:1   "+plan.paper.toUpperCase()+" "+plan.orientation+"  |  "+(tile.xi+1)+"/"+tile.nx+" across; "+(tile.yi+1)+"/"+tile.ny+" down  |  Page "+(pageIndex+1)+"/"+plan.sheets.length);
+  const boxY=H-33-viewH;
+  out+="0.76 0.78 0.82 RG 0.35 w "+(10*mmToPt).toFixed(3)+" "+(boxY*mmToPt).toFixed(3)+" "+(viewW*mmToPt).toFixed(3)+" "+(viewH*mmToPt).toFixed(3)+" re S\n";
+  out+="q "+(10*mmToPt).toFixed(3)+" "+(boxY*mmToPt).toFixed(3)+" "+(viewW*mmToPt).toFixed(3)+" "+(viewH*mmToPt).toFixed(3)+" re W n\n";
+  for(const p of shape.paths){
+   if(!p.pts.length)continue;
+   const col=p.layer==="BRANCH_CUT"||p.layer==="MAIN_HOLE"?[0,0,0]:p.layer==="BEVEL_GUIDE"?[0,.33,.58]:[.55,.55,.55];
+   out+=col.map(v=>v.toFixed(2)).join(" ")+" RG "+(p.dash?"[5 5] 0 d":"[] 0 d")+" "+(p.layer==="BRANCH_CUT"||p.layer==="MAIN_HOLE"?"0.95":"0.45")+" w\n";
+   p.pts.forEach((pt,i)=>{const x=(pt[0]+tx)*mmToPt,y=(H-(pt[1]+ty))*mmToPt;out+=x.toFixed(3)+" "+y.toFixed(3)+(i?" l\n":" m\n");});
+   if(p.closed)out+="h\n";out+="S\n";
+  }
+  for(const t of shape.labels){const px=t.x+tx,py=t.y+ty;if(px>=10&&px<=10+viewW-15&&py>=33&&py<=33+viewH)out+="0.15 0.15 0.15 rg\n"+pdfText(px,H-py,7,t.text);}
+  out+="Q\n0 0 0 RG 0 0 0 rg [] 0 d\n";
+  // 10 mm corner registrations help align the 10 mm overlap.
+  for(const cx of [10,10+viewW])for(const cy of [33,H-24]){
+    const x=cx*mmToPt,y=(H-cy)*mmToPt;out+="0.45 w "+(x-8).toFixed(2)+" "+y.toFixed(2)+" m "+(x+8).toFixed(2)+" "+y.toFixed(2)+" l S "+x.toFixed(2)+" "+(y-8).toFixed(2)+" m "+x.toFixed(2)+" "+(y+8).toFixed(2)+" l S\n";
+  }
+  // Physical 100 mm calibration line in reserved footer.
+  const fy=H-13;
+  out+="0 0 0 RG 1.1 w "+(10*mmToPt).toFixed(3)+" "+(fy*mmToPt).toFixed(3)+" m "+(110*mmToPt).toFixed(3)+" "+(fy*mmToPt).toFixed(3)+" l S\n";
+  for(let j=0;j<=10;j++){let x=(10+j*10)*mmToPt;out+="0.7 w "+x.toFixed(3)+" "+((fy-1.8)*mmToPt).toFixed(3)+" m "+x.toFixed(3)+" "+((fy+1.8)*mmToPt).toFixed(3)+" l S\n";}
+  out+=pdfText(10,3.4,7,"100 mm CALIBRATION — Measure this before cutting. Print at ACTUAL SIZE / 100%.");
+  contentStreams.push(out);
+ }
+ const pagesId=add("");let i=0;
+ for(const stream of contentStreams){
+  const streamId=add("<< /Length "+stream.length+" >>\nstream\n"+stream+"endstream");
+  pageIds.push(add("<< /Type /Page /Parent "+pagesId+" 0 R /MediaBox [0 0 "+(W*mmToPt).toFixed(3)+" "+(H*mmToPt).toFixed(3)+"] /Resources << /Font << /F1 "+font+" 0 R >> >> /Contents "+streamId+" 0 R >>"));
+  i++;
+ }
+ objects[pagesId]="<< /Type /Pages /Count "+pageIds.length+" /Kids ["+pageIds.map(x=>x+" 0 R").join(" ")+"] >>";
+ const catalogId=add("<< /Type /Catalog /Pages "+pagesId+" 0 R >>");
+ let pdf="%PDF-1.4\n",offsets=[0];
+ for(let j=1;j<objects.length;j++){offsets[j]=pdf.length;pdf+=j+" 0 obj\n"+objects[j]+"\nendobj\n";}
+ const xref=pdf.length;pdf+="xref\n0 "+objects.length+"\n0000000000 65535 f \n";
+ for(let j=1;j<objects.length;j++)pdf+=String(offsets[j]).padStart(10,"0")+" 00000 n \n";
+ pdf+="trailer\n<< /Size "+objects.length+" /Root "+catalogId+" 0 R >>\nstartxref\n"+xref+"\n%%EOF\n";
+ return pdf;
+}
+function makePdf(open){
+ const blob=new Blob([pdfDoc(current)],{type:"application/pdf"}),url=URL.createObjectURL(blob);
+ if(open){const win=window.open(url,"_blank");if(!win){saveBlob(blob,"application/pdf","DCB-pipe-branch-print.pdf");alert("Pop-up blocked. PDF downloaded instead — open it and print at Actual size / 100%.");}}
+ else{const a=document.createElement("a");a.href=url;a.download="DCB-pipe-branch-"+current.q.paper+"-1to1.pdf";document.body.appendChild(a);a.click();a.remove();}
+ setTimeout(()=>URL.revokeObjectURL(url),180000);
+}
+function render3D(){
+ if(!current)return;const c=current,canvas=$("model"),rect=canvas.getBoundingClientRect(),ratio=Math.min(window.devicePixelRatio||1,2),width=Math.max(300,rect.width),height=Math.max(220,rect.height);
+ canvas.width=Math.round(width*ratio);canvas.height=Math.round(height*ratio);
+ const ctx=canvas.getContext("2d");ctx.scale(ratio,ratio);ctx.clearRect(0,0,width,height);
+ const L=Math.max(c.R*2.35,140),branchEnd=c.top+Math.max(c.r*2,90),points=[];
+ const b=[c.ca,0,c.sa],r=c.r,e=c.q.e,R=c.R;
+ const along=(t,th)=>[t*b[0]-r*Math.sin(th)*c.sa,e+r*Math.cos(th),t*b[2]+r*Math.sin(th)*c.ca];
+ const onMain=(x,th)=>[x,R*Math.sin(th),R*Math.cos(th)];
+ for(let i=0;i<=48;i++){let th=i*TAU/48;points.push(onMain(-L,th),onMain(L,th),along(c.tAt(th),th),along(branchEnd,th));}
+ const proj0=v=>{const xx=v[0]*Math.cos(yaw)-v[1]*Math.sin(yaw),yy=v[0]*Math.sin(yaw)+v[1]*Math.cos(yaw),zz=v[2];return [xx,zz*Math.cos(pitch)-yy*Math.sin(pitch),yy*Math.cos(pitch)+zz*Math.sin(pitch)];};
+ let transformed=points.map(proj0),minX=Math.min(...transformed.map(v=>v[0])),maxX=Math.max(...transformed.map(v=>v[0])),minY=Math.min(...transformed.map(v=>v[1])),maxY=Math.max(...transformed.map(v=>v[1]));
+ let scale=Math.min((width-40)/Math.max(1,maxX-minX),(height-40)/Math.max(1,maxY-minY));
+ let cx=width/2-scale*(minX+maxX)/2,cy=height/2+scale*(minY+maxY)/2;
+ const pp=v=>{const p=proj0(v);return [cx+p[0]*scale,cy-p[1]*scale,p[2]];};
+ let faces=[];
+ for(let i=0;i<48;i++){
+  let th0=i*TAU/48,th1=(i+1)*TAU/48;
+  for(let j=0;j<9;j++){
+   const x0=-L+2*L*j/9,x1=-L+2*L*(j+1)/9;
+   faces.push({kind:"main",ps:[onMain(x0,th0),onMain(x1,th0),onMain(x1,th1),onMain(x0,th1)]});
+  }
+  for(let j=0;j<7;j++){
+   const a0=c.tAt(th0),a1=c.tAt(th1);
+   faces.push({kind:"branch",ps:[along(a0+(branchEnd-a0)*j/7,th0),along(a0+(branchEnd-a0)*(j+1)/7,th0),along(a1+(branchEnd-a1)*(j+1)/7,th1),along(a1+(branchEnd-a1)*j/7,th1)]});
+  }
+ }
+ faces=faces.map(face=>({...face,projected:face.ps.map(pp)}));
+ faces.sort((a,b)=>a.projected.reduce((s,p)=>s+p[2],0)-b.projected.reduce((s,p)=>s+p[2],0));
+ for(const face of faces){
+  const ps=face.projected,depth=Math.abs((ps[0][0]-ps[1][0])*(ps[1][1]-ps[2][1])-(ps[0][1]-ps[1][1])*(ps[1][0]-ps[2][0]));
+  ctx.beginPath();ctx.moveTo(ps[0][0],ps[0][1]);for(let j=1;j<ps.length;j++)ctx.lineTo(ps[j][0],ps[j][1]);ctx.closePath();
+  const brightness=50+Math.min(70,depth/85);
+  if(face.kind==="main"){ctx.fillStyle="rgba("+Math.round(brightness)+","+Math.round(brightness+9)+","+Math.round(brightness+18)+",.82)";ctx.strokeStyle="rgba(210,218,229,.06)";}
+  else{ctx.fillStyle="rgba("+Math.round(brightness+45)+","+Math.round(brightness*.77+39)+","+Math.round(brightness*.38+10)+",.95)";ctx.strokeStyle="rgba(255,197,119,.08)";}
+  ctx.fill();ctx.lineWidth=.4;ctx.stroke();
+ }
+ function wire(p,col,line=2,closed=false){const ps=p.map(pp);ctx.strokeStyle=col;ctx.lineWidth=line;ctx.beginPath();ps.forEach((v,i)=>{if(i)ctx.lineTo(v[0],v[1]);else ctx.moveTo(v[0],v[1]);});if(closed)ctx.closePath();ctx.stroke();}
+ for(const x of [-L,L])wire(Array.from({length:97},(_,i)=>onMain(x,i*TAU/96)),"#aab3bc",1.4);
+ wire(Array.from({length:97},(_,i)=>along(branchEnd,i*TAU/96)),"#ffdeab",1.7);
+ wire(Array.from({length:145},(_,i)=>along(c.tAt(i*TAU/144),i*TAU/144)),"#ff9f30",2.1);
+ ctx.fillStyle="#b4bdc8";ctx.font="12px system-ui";ctx.fillText("DRAG TO ROTATE",13,height-12);
+}
+const canvas=$("model");
+canvas.addEventListener("pointerdown",ev=>{dragging=true;lastX=ev.clientX;lastY=ev.clientY;canvas.setPointerCapture(ev.pointerId);});
+canvas.addEventListener("pointermove",ev=>{if(!dragging)return;yaw+=(ev.clientX-lastX)*.012;pitch=Math.max(-1.35,Math.min(1.35,pitch+(ev.clientY-lastY)*.009));lastX=ev.clientX;lastY=ev.clientY;render3D();});
+canvas.addEventListener("pointerup",()=>dragging=false);canvas.addEventListener("pointercancel",()=>dragging=false);
+$("resetView").addEventListener("click",()=>{yaw=-.66;pitch=.31;render3D();});
+const defaults={mainOd:"168.3",branchOd:"88.9",mainWall:"5",branchWall:"5",angle:"90",offset:"0",mode:"on",gap:"0",holeGap:".5",bevel:"0",selectShape:"both",paper:"auto",orient:"auto"};
+$("reset").addEventListener("click",()=>{for(const id of ids)$(id).value=defaults[id];$("mainPreset").value="168.3";$("branchPreset").value="88.9";history.replaceState(null,"",location.pathname);update();});
+function applyParams(){const u=new URLSearchParams(location.search);for(const id of ids)if(u.has(id))$(id).value=u.get(id);for(const [sel,id] of [["mainPreset","mainOd"],["branchPreset","branchOd"]])$(sel).value=odList.some(v=>v===Number($(id).value))?String(Number($(id).value)):"custom";}
+$("link").addEventListener("click",async()=>{const url=new URL(location.href);for(const id of ids)url.searchParams.set(id,$(id).value);try{await navigator.clipboard.writeText(url.toString());$("link").textContent="Copied!";setTimeout(()=>$("link").textContent="Copy setup link",1700);}catch(e){prompt("Copy this setup URL:",url.toString());}});
+for(const [id,fn] of [["pdf",()=>makePdf(false)],["print",()=>makePdf(true)],["svg",downloadSvg],["dxf",downloadDxf],["csv",downloadCsv]])$(id).addEventListener("click",()=>{if(current)try{fn();}catch(e){alert("Export failed: "+e.message);}});
+window.addEventListener("resize",render3D);
+applyParams();update();
+})();
+</script>
+</body>
+</html>
