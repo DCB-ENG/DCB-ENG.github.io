@@ -37,7 +37,7 @@ try{
   assert((await page.locator("#zipButton").isDisabled())===false,"ZIP packaging control enabled after valid files");
   const [download]=await Promise.all([page.waitForEvent("download",{timeout:45000}),page.locator("#zipButton").click()]);
   assert.match(download.suggestedFilename(),/3-step-prototype\.zip$/);
-  const zipPath=download.path();
+  const zipPath=await download.path();
   const buf=await fs.readFile(zipPath);
   assert(buf.length>8000,"ZIP must not contain empty parts");
   assert.equal(buf[0],0x50,"ZIP local file PK header");
