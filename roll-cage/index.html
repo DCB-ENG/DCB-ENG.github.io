@@ -243,6 +243,31 @@
     </div>
     <div class="definition"><strong>Layout only:</strong> Front-leg geometry is a measured centreline fit, not a cage approval. Confirm the front leg follows the A-pillar, leaves occupant clearances and meets the permitted bend and mounting requirements. The AASA SC-1 illustration shows separate front legs and a windscreen header; it does not establish safe dimensions for a particular vehicle. Check your cage class and the <a href="https://www.aasa.com.au/ncr-appendices" target="_blank" rel="noopener noreferrer">current AASA safety cage requirements</a>, including header location, mounting, occupant clearance and tube specifications.</div>
   </div>
+<label class="addon-heading"><input type="checkbox" id="useHoopHarness"> Main-hoop harness bar <span class="comp-pill">full hoop width</span></label>
+<div class="addon-fields off" id="hoopHarnessFields"><p class="addon-hint">Single straight tube from left to right main hoop. For belts, separately validate harness angles, welds and fitting locations.</p>
+<div class="fields"><div class="field"><label for="hoopHarnessHeight">Harness bar height (mm)</label><input type="number" id="hoopHarnessHeight" value="650" step="1"></div>
+<div class="field"><label for="hoopHarnessOD">Harness bar CHS OD (mm)</label><input type="number" id="hoopHarnessOD" list="braceODPresets" value="38.1" step=".01"></div>
+<div class="field"><label for="hoopHarnessWall">Harness bar wall (mm)</label><input type="number" id="hoopHarnessWall" value="2.6" step=".1"></div></div></div>
+<label class="addon-heading"><input type="checkbox" id="useMainCross"> Second main-hoop diagonal <span class="comp-pill">X cross</span></label>
+<div class="addon-fields off" id="mainCrossFields"><p class="addon-hint">Opposite-hand diagonal using the primary diagonal connection heights and CHS. Check the central crossing and mandatory gussets.</p></div>
+<label class="addon-heading"><input type="checkbox" id="useRoofX"> Roof cross (two diagonals) <span class="comp-pill">front legs required</span></label>
+<div class="addon-fields off" id="roofXFields"><p class="addon-hint">Opposed roof diagonals from rear main-hoop points to opposite upper front-leg/header points. Intersecting roof tubes require separate design of their crossing/gussets.</p>
+<div class="fields"><div class="field"><label for="roofOD">Roof brace CHS OD (mm)</label><input id="roofOD" type="number" list="braceODPresets" value="38.1" step=".01"></div>
+<div class="field"><label for="roofWall">Roof brace wall (mm)</label><input id="roofWall" type="number" value="2.6" step=".1"></div></div></div>
+<label class="addon-heading"><input type="checkbox" id="usePillarA"> A-pillar reinforcing braces <span class="comp-pill">left + right</span></label>
+<div class="addon-fields off" id="pillarAFields"><p class="addon-hint">Straight diagonal chords between measured upper and lower points on each front leg. Check actual door/pillar clearance before building.</p>
+<div class="fields"><div class="field"><label for="pillarAUpperHeight">A-pillar upper joint height (mm)</label><input id="pillarAUpperHeight" type="number" value="980" step="1"></div>
+<div class="field"><label for="pillarALowerHeight">A-pillar lower joint height (mm)</label><input id="pillarALowerHeight" type="number" value="65" step="1"></div></div></div>
+<label class="addon-heading"><input type="checkbox" id="usePillarB"> B-pillar reinforcing braces <span class="comp-pill">left + right</span></label>
+<div class="addon-fields off" id="pillarBFields"><p class="addon-hint">Straight tubes triangulating between the main hoop and the upper roof section of each front leg.</p>
+<div class="fields"><div class="field"><label for="pillarBRearHeight">B-pillar lower hoop joint height (mm)</label><input id="pillarBRearHeight" type="number" value="650" step="1"></div>
+<div class="field"><label for="pillarBRoofFraction">Roof attachment (% of roof run)</label><input id="pillarBRoofFraction" type="number" value="25" min="5" max="80" step="1"></div></div></div>
+<label class="addon-heading"><input type="checkbox" id="useDoor2"> Second door bar (per selected side) <span class="comp-pill">double anti-intrusion</span></label>
+<div class="addon-fields off" id="door2Fields"><p class="addon-hint">Second straight bar crossing the first. Does not automatically design the crossing joint or gussets.</p>
+<div class="fields"><div class="field"><label for="door2RearHeight">Second door rear joint height (mm)</label><input id="door2RearHeight" type="number" value="400" step="1"></div>
+<div class="field"><label for="door2FrontHeight">Second door front joint height (mm)</label><input id="door2FrontHeight" type="number" value="170" step="1"></div>
+<div class="field"><label for="door2OD">Second door CHS OD (mm)</label><input id="door2OD" type="number" list="braceODPresets" value="38.1" step=".01"></div>
+<div class="field"><label for="door2Wall">Second door wall (mm)</label><input id="door2Wall" type="number" value="2.6" step=".1"></div></div></div>
   <h3>Tube preparation</h3>
   <div class="fields"><div class="field full"><label for="fitExtra">Extra material for coping, at each end (mm)</label><input type="number" id="fitExtra" value="20" min="0" step="1"><span class="hint">Added to each straight brace/stay span as a rough prep blank allowance. Trim/cope to fit.</span></div></div>
   <div class="definition"><strong>Important:</strong> Member lengths are measured between the <strong>intersection of member centrelines</strong>, not from the finished fishmouth tips. The prep length is a suggested oversized straight blank, <em>not</em> a calculated cope contour or an engineered cage joint.</div>
@@ -292,7 +317,12 @@
   <p class="notes">Sections and bend marks are theoretical centreline dimensions; they are not bender clamp/feed reference marks or production-ready compensated machine instructions. The front-leg rear end joins the main hoop; floor mounting feet are not tube-to-tube joints. The front legs are each one continuous tube, not assembled from individual straight sections. Validate bend-plane rotation against your bender and test tube.</p>
   <div class="row-actions"><button id="frontSvgDownload">Save front-structure views SVG</button><button id="frontBendCsvDownload">Save front-leg bend CSV</button></div>
 </section>
-<section class="panel" id="notchPanel">
+<section class="panel" id="reinforcementPanel"><div class="drawing-header"><h2 style="margin:0">Reinforcement layout · plan / front / side</h2><span class="unit">Projected centreline only · not an approved cage drawing</span></div>
+<div class="subviews">
+<div class="subview"><h3>Roof reinforcement · plan</h3><svg id="reinforcementPlanSvg" viewBox="0 0 650 360" aria-label="Roof brace plan"></svg></div>
+<div class="subview"><h3>Main hoop · front</h3><svg id="reinforcementFrontSvg" viewBox="0 0 650 360" aria-label="Main hoop cross and harness front"></svg></div>
+<div class="subview"><h3>Door, A- and B-pillar reinforcements · side</h3><svg id="reinforcementSideSvg" viewBox="0 0 650 360" aria-label="Pillar and door bar side elevation"></svg></div>
+</div><div class="cage-cut-summary" id="reinforcementSummary"></div></section><section class="panel" id="notchPanel">
   <div class="drawing-header" style="padding:0 0 10px"><h2 style="margin:0">All tube-to-tube joints · printable wrap-arounds</h2><span class="unit">1:1 CHS developed OD · individual end labels</span></div>
   <p class="notch-explain">Each separate tube end is calculated against its actual <strong>3D parent tube axis</strong> or the finished main-hoop centreline, including bends where a single cope contour is valid. Upper and lower ends, left and right sides, and harness ends are individually labelled. Rear stay footplates are <strong>not</strong> tube-to-tube joints.</p>
   <div class="notch-banner" id="notchStatus" role="status">Calculating joints…</div>
