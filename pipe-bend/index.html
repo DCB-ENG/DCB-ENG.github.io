@@ -113,10 +113,11 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
         <div id="springback-warning" class="sb-warning" hidden></div>
       </div>
     </div>
+    <p class="muted" style="margin:12px 0 0"><a href="https://racetechsteel.com.au/technical/" target="_blank" rel="noopener noreferrer">RaceTech material guide</a> · <a href="https://racetechsteel.com.au/wp-content/uploads/2021/07/RacetechcatalogueVersion1.171.pdf" target="_blank" rel="noopener noreferrer">RaceTech catalogue v1.171</a>. The supplier's 350/650 grades refer to minimum tensile classes, not yield strengths. Catalogue dimensions are historical and must be checked with the supplier.</p>
     <p class="muted" style="margin:15px 0 0">The live diagram and developed length use the desired <strong>finished</strong> angle, not the bender's overbent position. Use bend direction-change angles, not the inside corner angle. Recalibrate for material grade, OD, wall, centreline radius, die, machine or process changes.</p>
   </section>
   <section id="cut-section" class="panel" style="margin-top:18px" hidden><div class="result-head"><div><h2 style="margin-bottom:5px">Segment cutting list</h2><p class="muted" style="margin-top:0">Lengths are measured along each straight pipe piece, from cut face to cut face.</p></div><div class="actions" style="margin-top:0"><button type="button" class="primary" id="csv">Export cut list CSV</button><button type="button" id="wrap-template" title="Generate real-size A4/A3 cutting patterns to wrap around round pipe">Print 1:1 wrap templates</button></div></div><div class="table-scroll"><table><thead><tr><th>Piece</th><th>Qty</th><th>Cut angle / end</th><th>Centreline (mm)</th><th>Short side (mm)</th><th>Long side (mm)</th></tr></thead><tbody id="cut-rows"></tbody></table></div><p class="table-help">Mitre angle is measured <strong>from a square cut</strong>, not from the pipe axis. Short / long measurements are across the outside diameter. Inlet / outlet pieces have one square end; middle pieces have two mitred ends. Use <strong>Print 1:1 wrap templates</strong> for full-size A4/A3 paper patterns; check printer scale before cutting. Allow separately for kerf, weld gap and fit-up.</p></section>
-  <section class="panel" style="margin-top:18px"><details><summary>How the calculations work</summary><p><strong>Smooth bend:</strong> bend allowance (the centreline bend arc) = <code>R × θ</code>, where θ is in radians. Developed length = inlet straight + bend allowance + outlet straight. The tangent setback is <code>R × tan(θ / 2)</code> (not defined for a 180° return bend).</p><p><strong>Segmented bend:</strong> select <em>N</em> welded joints, making <em>N + 1</em> pieces. Each joint changes direction by <code>θ / N</code>; each mating cut is mitred by <code>θ / (2N)</code> from square. With <code>k = R × tan(θ / (2N))</code>, inlet / outlet piece centreline lengths are straight + k, and each middle piece is 2k. The joined straight centrelines form a polygon tangent to the reference circular bend of radius R.</p><p><strong>Mitred piece length:</strong> for each mitred end, add <code>(OD / 2) × tan(mitre angle)</code> to the centreline for its longest edge, and subtract the same amount for its shortest edge. The total length is based on the straight-piece centrelines; this differs slightly from a smooth bend of the same radius.</p><p><strong>Pipe schedules:</strong> ASME B36.10M nominal pipe sizes provide Schedule 5, 10, 30, 40, 80 and 160 where defined. Schedule changes wall thickness and inside diameter, not outside diameter. Metric CHS / tube dimensions remain independently selectable. Reference: <a href="https://www.skfitting.com/en/standard-hub/asme-b36-10-pipe-dimensions/" target="_blank" rel="noopener noreferrer">ASME B36.10 pipe dimensions chart</a>. Verify your purchased pipe specification before machining.</p><p><strong>Springback:</strong> After a test bend, measured loss is <code>test bender setting − test released angle</code>. Fixed-loss projection: <code>target angle + measured loss</code>. Optional proportional projection: <code>target angle × test setting / test released angle</code>. Both are first estimates, not material-property predictions; verify with a second bend.</p><p><strong>Limitations:</strong> These are geometrical estimates for circular pipe, not production-certified bend data. No compensation for bend thinning, ovality, elongation, tooling, saw kerf, weld preparation, weld gaps or fit-up. Always check the first cut and compare against the machine / fabrication drawing.</p></details></section>
+  <section class="panel" style="margin-top:18px"><details><summary>How the calculations work</summary><p><strong>Smooth bend:</strong> bend allowance (the centreline bend arc) = <code>R × θ</code>, where θ is in radians. Developed length = inlet straight + bend allowance + outlet straight. The tangent setback is <code>R × tan(θ / 2)</code> (not defined for a 180° return bend).</p><p><strong>Segmented bend:</strong> select <em>N</em> welded joints, making <em>N + 1</em> pieces. Each joint changes direction by <code>θ / N</code>; each mating cut is mitred by <code>θ / (2N)</code> from square. With <code>k = R × tan(θ / (2N))</code>, inlet / outlet piece centreline lengths are straight + k, and each middle piece is 2k. The joined straight centrelines form a polygon tangent to the reference circular bend of radius R.</p><p><strong>Mitred piece length:</strong> for each mitred end, add <code>(OD / 2) × tan(mitre angle)</code> to the centreline for its longest edge, and subtract the same amount for its shortest edge. The total length is based on the straight-piece centrelines; this differs slightly from a smooth bend of the same radius.</p><p><strong>Pipe schedules:</strong> ASME B36.10M nominal pipe sizes provide Schedule 5, 10, 30, 40, 80 and 160 where defined. Schedule changes wall thickness and inside diameter, not outside diameter. Metric CHS / tube dimensions remain independently selectable. Reference: <a href="https://www.skfitting.com/en/standard-hub/asme-b36-10-pipe-dimensions/" target="_blank" rel="noopener noreferrer">ASME B36.10 pipe dimensions chart</a>. Verify your purchased pipe specification before machining.</p><p><strong>Springback model:</strong> when a material is selected, a simplified elastic unloading estimate uses <code>M ≈ yield × plastic section modulus</code>, <code>Δκ ≈ M / (elastic modulus × I)</code> for a circular tube. It ignores hardening, neutral-axis shift, ovalisation and machine/tooling effects; the predicted bender setting is a low-confidence planning guide, not an assured angle. <strong>Method selection</strong> keeps machine-specific calibration separate and provides process notes but does not apply unverified method multipliers.</p><p><strong>Springback:</strong> After a test bend, measured loss is <code>test bender setting − test released angle</code>. Fixed-loss projection: <code>target angle + measured loss</code>. Optional proportional projection: <code>target angle × test setting / test released angle</code>. Both are first estimates, not material-property predictions; verify with a second bend.</p><p><strong>Limitations:</strong> These are geometrical estimates for circular pipe, not production-certified bend data. No compensation for bend thinning, ovality, elongation, tooling, saw kerf, weld preparation, weld gaps or fit-up. Always check the first cut and compare against the machine / fabrication drawing.</p></details></section>
   <p class="fine">DCB ENG workshop calculator · Metric millimetres · No files or inputs are uploaded; calculations run locally in your browser. For fabrication planning only—verify dimensions and fit-up before cutting.</p>
 </div>
 <script>
@@ -229,54 +230,125 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
   }
   const cell=(label,value,unit='mm')=>`<div class="stat"><div class="stat-label">${label}</div><div class="stat-value">${value} <small>${unit}</small></div></div>`;
 
+
   function springSetupKey(){
-    const vals=[outsideDiameter(),num('wall'),num('radius')];
-    return vals.every(Number.isFinite)?vals.map(x=>x.toFixed(4)).join('|'):null;
+    // A trial bend belongs to a particular material, geometry, bender and tooling.
+    const geometry=[outsideDiameter(),num('wall'),num('radius')];
+    if(!geometry.every(Number.isFinite))return null;
+    const settings=[$('bender-method').value,$('bender-id').value.trim().toLowerCase(),$('steel-grade').value,$('yield-mpa').value,$('elastic-mpa').value];
+    return geometry.map(v=>v.toFixed(4)).concat(settings).join('|');
   }
   function springbackEstimate(c){
     if(!c||c.mode!=='smooth')return null;
-    const trial=$('springback-mode').value==='trial';
+    const source=$('springback-mode').value;
     let loss,command,testSet=null;
-    if(trial){
+    if(source==='material'){
+      const grade=$('steel-grade').value;
+      if(!grade)return {ready:false,message:'Select a steel grade to calculate a rough material-based overbend.'};
+      const fy=num('yield-mpa'),E=num('elastic-mpa');
+      if(!Number.isFinite(fy)||fy<=0||fy>3000||!Number.isFinite(E)||E<10000||E>500000)
+        return {ready:false,warning:'Enter a valid yield strength (up to 3000 MPa) and elastic modulus (10000–500000 MPa).'};
+      const ro=c.D/2,ri=ro-c.wall;
+      // Simplified unloading model: approximate fully plastic bending moment
+      // M ≈ σy Zp. Curvature recovered on unloading Δκ≈M/(EI).
+      // I and Zp are for a circular annulus. This is NOT a validated
+      // rotary-draw, ram or compression bending model; ignores ovality,
+      // neutral axis migration and strain hardening.
+      const I=Math.PI/4*(Math.pow(ro,4)-Math.pow(ri,4));
+      const Zp=4/3*(Math.pow(ro,3)-Math.pow(ri,3));
+      const recovery=fy*Zp*c.R/(E*I);
+      if(!Number.isFinite(recovery)||recovery<=0||recovery>=.25)
+        return {ready:false,warning:'Geometry is outside this simplified model’s supported range. Use a measured trial bend.'};
+      if(ro/c.R<=fy/E)
+        return {ready:false,warning:'Specified bending strain is below the estimated yield strain. A permanent bend cannot be inferred from this model.'};
+      command=c.angle/(1-recovery);
+      if(command>270)
+        return {ready:false,warning:'Calculated machine angle is outside the supported display range. Confirm machine geometry with a trial.'};
+      const warnings=['Low confidence: idealised springback model, not a validated angle for this bender. Machine type does not apply an invented correction multiplier.'];
+      if(c.R/c.D<1.5)warnings.push('Tight radius: flattening, thinning and tooling effects could dominate.');
+      if($('bender-method').value!=='rotary-draw')
+        warnings.push('This bending method may produce a non-uniform radius: measure the real finished CLR.');
+      return {ready:true,source,command,extra:command-c.angle,recovery,warnings};
+    }
+    if(source==='trial'){
       if(!$('trial-commanded').value.trim()||!$('trial-finished').value.trim())
-        return {ready:false,message:'Enter the machine setting and released angle of a trial bend.'};
+        return {ready:false,message:'Enter the machine setting and the measured released angle of a trial bend.'};
       testSet=num('trial-commanded');
       const final=num('trial-finished');
       if(!Number.isFinite(testSet)||!Number.isFinite(final)||testSet<=0||testSet>270||final<=0||final>testSet)
-        return {ready:false,warning:'Test angles must be positive. The released bend angle must be no greater than the machine setting.'};
+        return {ready:false,warning:'Test angles must be positive. Released bend angle must not exceed the machine setting.'};
       loss=testSet-final;
       command=$('springback-projection').value==='ratio'?c.angle*testSet/final:c.angle+loss;
     }else{
       if(!$('springback-loss').value.trim())
-        return {ready:false,message:'Enter the known measured springback angle.'};
+        return {ready:false,message:'Enter a known measured springback angle loss.'};
       loss=num('springback-loss');
       if(!Number.isFinite(loss)||loss<0||loss>90)
         return {ready:false,warning:'Measured angle loss must be between 0° and 90°.'};
       command=c.angle+loss;
     }
     if(springbackCalibrationSetup!==springSetupKey())
-      return {ready:false,warning:'Pipe OD, wall thickness or bend radius changed after calibration. Re-enter measurements for this setup.'};
+      return {ready:false,warning:'Bender, grade, material properties, OD, wall or CLR changed after this test. Re-enter the measured correction for the current setup.'};
     if(!Number.isFinite(command)||command<=0||command>270)
-      return {ready:false,warning:'Calculated angle is outside the supported display range (up to 270°). Check the machine and calibration.'};
+      return {ready:false,warning:'Calculated angle is outside the supported display range. Check the test and machine limits.'};
     const warnings=[];
-    if(command>180)warnings.push('Commanded angle is over 180°. Confirm the bender supports it.');
+    if(command>180)warnings.push('Bender setting exceeds 180°. Confirm your machine supports it.');
     if(testSet!==null&&Math.abs(c.angle-testSet)>Math.max(15,testSet*.25))
-      warnings.push('Target differs substantially from the trial bend. Test again near the target angle.');
-    return {ready:true,command,extra:command-c.angle,loss,testSet,trial,warnings};
+      warnings.push('Target is far from the test angle. Verify with a closer trial bend.');
+    return {ready:true,source,command,extra:command-c.angle,loss,testSet,warnings};
   }
   function renderSpringback(c){
     $('springback-section').hidden=mode!=='smooth';
     if(mode!=='smooth')return;
-    const trial=$('springback-mode').value==='trial';
-    $('springback-trial').hidden=!trial;
-    $('springback-manual').hidden=trial;
+    const source=$('springback-mode').value;
+    $('springback-trial').hidden=source!=='trial';
+    $('springback-manual').hidden=source!=='manual';
     const r=springbackEstimate(c);
-    $('springback-command').textContent=r&&r.ready?fmt(r.command,2)+'°':'—°';
-    $('springback-extra').textContent=r&&r.ready?'Overbend: +'+fmt(r.extra,2)+'°':'Overbend: —°';
-    $('springback-status').textContent=!r?'Enter valid bend geometry above.':!r.ready?(r.message||'Correct the calibration inputs.'):(trial?'Measured trial springback: '+fmt(r.loss,2)+'° at a '+fmt(r.testSet,2)+'° bender setting.':'Using a known measured angle loss of '+fmt(r.loss,2)+'°.');
+    const estimated=source==='material';
+    $('springback-command').textContent=r&&r.ready?(estimated?'≈':'')+fmt(r.command,estimated?1:2)+'°':'—°';
+    $('springback-extra').textContent=r&&r.ready?(estimated?'Estimated overbend: ≈+':'Overbend: +')+fmt(r.extra,estimated?1:2)+'°':'Overbend: —°';
+    const method=BENDER_NOTES[$('bender-method').value]||'';
+    let message=!r?'Enter valid bend geometry above.':!r.ready?(r.message||'Correct the springback inputs.'):source==='material'?'Material-based first estimate only — does not include measured hardening, ovality or machine calibration.':source==='trial'?'Test bend lost '+fmt(r.loss,2)+'° at a '+fmt(r.testSet,2)+'° machine setting.':'Using a measured angle loss of '+fmt(r.loss,2)+'°.';
+    $('springback-status').textContent=message+' '+method;
     const warning=r?(r.warning||(r.warnings||[]).join(' ')):'';
     $('springback-warning').hidden=!warning;
     $('springback-warning').textContent=warning||'';
+  }
+  function updateSteelGrade(){
+    const grade=$('steel-grade').value;
+    const data=RACETECH[grade];
+    const select=$('racetech-stock');
+    select.replaceChildren(new Option('Keep current pipe dimensions',''));
+    $('racetech-stock-field').hidden=!data;
+    if(data){
+      $('yield-mpa').value=String(data.yield);
+      $('elastic-mpa').value='205000';
+      data.sizes.forEach((size,index)=>select.add(new Option(size[0]+' × '+size[1]+' mm · '+size[2],String(index))));
+      $('race-tech-reference').textContent=data.label+' — supplier reference: yield '+data.yield+' MPa; tensile '+data.tensile+' MPa; elongation '+data.elongation+'%. E = 205000 MPa is a separate generic steel assumption. Catalogue sizes are not live availability.';
+    }else if(grade==='custom'){
+      $('yield-mpa').value='';
+      $('elastic-mpa').value='205000';
+      $('race-tech-reference').textContent='Enter measured or specified yield strength for your steel. E = 205000 MPa is a general steel assumption unless you substitute a certified value.';
+    }else{
+      $('yield-mpa').value='';
+      $('elastic-mpa').value='205000';
+      $('race-tech-reference').textContent='Select a grade. RaceTech guide properties are not batch certificates. Use a trial bend for the reliable correction.';
+    }
+    render();
+  }
+  function chooseRaceTechSize(){
+    const grade=RACETECH[$('steel-grade').value],n=$('racetech-stock').value;
+    if(!grade||n==='')return;
+    const item=grade.sizes[Number(n)];
+    if(!item)return;
+    const [od,wall]=item;
+    $('profile').value='custom';
+    $('custom-od').value=String(od);
+    savedManualWall=wall;
+    populateSizes();
+    populateSchedules();
+    $('wall').value=String(wall);
+    render();
   }
   function makeStats(c){
     const data=c.mode==='smooth' ? [
@@ -369,14 +441,16 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
       renderDiagram(c);renderCutList(c);updateActive(c);renderSpringback(c);
     }catch(err){current=null;$('validation').textContent=err.message;$('validation').hidden=false;$('result-main').textContent='—';$('stats').innerHTML='';$('result-description').textContent='Correct the highlighted input to recalculate.';$('cut-section').hidden=true;$('drawing').innerHTML='<div style="padding:50px 20px;text-align:center;color:#bfc5ce">Enter valid dimensions to show the bend diagram.</div>';$('copy').disabled=true;$('csv').disabled=true;renderSpringback(null);}
   }
-  function makeSummary(c){if(!c)return '';const lines=[`DCB ENG Pipe Bend Calculator`,`${c.mode==='smooth'?'Smooth bend':'Segmented elbow'} — ${fmt(c.angle,2)}°`, `OD ${fmt(c.D,2)} mm; wall ${fmt(c.wall,2)} mm${$('profile').value==='NB'&&$('schedule').value!=='custom'?' (Sch '+$('schedule').value+')':''}; CLR ${fmt(c.R,2)} mm`,`Inlet ${fmt(c.inlet,2)} mm; outlet ${fmt(c.outlet,2)} mm; quantity ${c.qty}`,`Centreline per bend: ${fmt(c.perBend,2)} mm`,`Total centreline length: ${fmt(c.total,2)} mm`];if(c.mode==='smooth'){lines.push(`Bend allowance (centreline arc): ${fmt(c.arc,2)} mm`,`Tangent setback: ${c.setback===null?'Not defined':fmt(c.setback,2)+' mm'}`);const sb=springbackEstimate(c);if(sb&&sb.ready)lines.push(`Springback: bend to ${fmt(sb.command,2)} degrees (overbend +${fmt(sb.extra,2)} degrees)`);}else{lines.push(`Joints ${c.joints}; pieces per bend ${c.partsPerBend}; mitre cut ${fmt(c.mitre,3)}° from square`);c.pieces.forEach(p=>lines.push(`${p.name} x ${p.qty}: centreline ${fmt(p.cl,2)} mm, short ${fmt(p.short,2)} mm, long ${fmt(p.long,2)} mm`));}return lines.join('\n');}
+  function makeSummary(c){if(!c)return '';const lines=[`DCB ENG Pipe Bend Calculator`,`${c.mode==='smooth'?'Smooth bend':'Segmented elbow'} — ${fmt(c.angle,2)}°`, `OD ${fmt(c.D,2)} mm; wall ${fmt(c.wall,2)} mm${$('profile').value==='NB'&&$('schedule').value!=='custom'?' (Sch '+$('schedule').value+')':''}; CLR ${fmt(c.R,2)} mm`,`Inlet ${fmt(c.inlet,2)} mm; outlet ${fmt(c.outlet,2)} mm; quantity ${c.qty}`,`Centreline per bend: ${fmt(c.perBend,2)} mm`,`Total centreline length: ${fmt(c.total,2)} mm`];if(c.mode==='smooth'){lines.push(`Bend allowance (centreline arc): ${fmt(c.arc,2)} mm`,`Tangent setback: ${c.setback===null?'Not defined':fmt(c.setback,2)+' mm'}`);const sb=springbackEstimate(c);if(sb&&sb.ready)lines.push(`Springback (${sb.source}; ${$('steel-grade').selectedOptions[0].textContent}; ${$('bender-method').selectedOptions[0].textContent}): bend to ${fmt(sb.command,sb.source==='material'?1:2)} degrees (overbend +${fmt(sb.extra,sb.source==='material'?1:2)} degrees)`);}else{lines.push(`Joints ${c.joints}; pieces per bend ${c.partsPerBend}; mitre cut ${fmt(c.mitre,3)}° from square`);c.pieces.forEach(p=>lines.push(`${p.name} x ${p.qty}: centreline ${fmt(p.cl,2)} mm, short ${fmt(p.short,2)} mm, long ${fmt(p.long,2)} mm`));}return lines.join('\n');}
   function csvEscape(s){const t=String(s);return `"${t.replace(/"/g,'""')}"`;}
   function exportCSV(){const c=current;if(!c||c.mode!=='segmented')return;const rows=[['Piece','Qty','Cut angles from square','Centreline mm','Short side mm','Long side mm','OD mm','Wall mm','CLR mm','Bend angle deg','Joint count']];for(const p of c.pieces)rows.push([p.name,p.qty,p.angles,p.cl.toFixed(2),p.short.toFixed(2),p.long.toFixed(2),c.D.toFixed(2),c.wall.toFixed(2),c.R.toFixed(2),c.angle.toFixed(2),c.joints]);const csv='\ufeff'+rows.map(r=>r.map(csvEscape).join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='dcb-pipe-bend-cut-list.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-  function reset(){mode='smooth';springbackCalibrationSetup=null;$('springback-mode').value='trial';$('springback-projection').value='fixed';$('trial-commanded').value='';$('trial-finished').value='';$('springback-loss').value='';savedManualWall=3.2;$('profile').value='CHS';populateSizes(48.3);populateSchedules();$('wall').value='3.2';$('angle').value='90';$('radius').value='150';$('inlet').value='100';$('outlet').value='100';$('qty').value='1';$('joints').value='4';render();}
+  function reset(){mode='smooth';springbackCalibrationSetup=null;$('bender-method').value='rotary-draw';$('bender-id').value='';$('steel-grade').value='';$('yield-mpa').value='';$('elastic-mpa').value='205000';$('racetech-stock-field').hidden=true;$('springback-mode').value='material';$('springback-projection').value='fixed';$('trial-commanded').value='';$('trial-finished').value='';$('springback-loss').value='';savedManualWall=3.2;$('profile').value='CHS';populateSizes(48.3);populateSchedules();$('wall').value='3.2';$('angle').value='90';$('radius').value='150';$('inlet').value='100';$('outlet').value='100';$('qty').value='1';$('joints').value='4';render();}
   document.querySelectorAll('input,select').forEach(el=>{
     if(['profile','size','schedule'].includes(el.id))return;
     el.addEventListener('input',()=>{if(el.id==='wall'&&!el.readOnly)savedManualWall=num('wall');if(['trial-commanded','trial-finished','springback-loss'].includes(el.id))springbackCalibrationSetup=springSetupKey();render();});
   });
+  $('steel-grade').addEventListener('change',updateSteelGrade);
+  $('racetech-stock').addEventListener('change',chooseRaceTechSize);
   $('springback-mode').addEventListener('change',render);
   $('springback-projection').addEventListener('change',render);
   $('profile').addEventListener('change',()=>{populateSizes(48.3);populateSchedules('40');render();});
@@ -393,7 +467,7 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
     window.open(url.toString(),'_blank','noopener');
   });
   $('copy').addEventListener('click',async()=>{const s=makeSummary(current);if(!s)return;try{await navigator.clipboard.writeText(s);$('copy').textContent='Copied';setTimeout(()=>$('copy').textContent='Copy results',1500);}catch(e){const ta=document.createElement('textarea');ta.value=s;document.body.appendChild(ta);ta.select();const ok=document.execCommand('copy');ta.remove();$('copy').textContent=ok?'Copied':'Copy unavailable';setTimeout(()=>$('copy').textContent='Copy results',1500);}});
-  populateSizes(48.3);populateSchedules();render();
+  populateSizes(48.3);populateSchedules();updateSteelGrade();
 })();
 </script>
 </body>
