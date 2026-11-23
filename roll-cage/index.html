@@ -888,13 +888,105 @@
   return d;
 }
 
+  function frontStationRefs(front,side){
+  const leg=front[side];
+  return [
+    {id:'FL1',name:'Front mounting foot',point:leg.points[3],kind:'actual',field:'Floor height (0) · forward/spacing'},
+    {id:'FL2',name:'Base-of-windscreen bend corner',point:leg.points[2],kind:'virtual',field:'Base height + lower spacing'},
+    {id:'FL3',name:'Top-of-windscreen bend corner',point:leg.points[1],kind:'virtual',field:'Roof top height + upper spacing'},
+    {id:'FL4',name:'Roof bend start tangent (B1)',point:leg.bends[0].entry,kind:'actual',field:'Calculated from CLR and B1 angle'},
+    {id:'FL5',name:'Connection to main hoop',point:leg.points[0],kind:'actual',field:'Main-hoop attachment height'}
+  ];
+}
+
+  function frontDimensionLineH(x1,x2,y,label,color='#ffaf69'){
+  let a=Math.min(x1,x2),b=Math.max(x1,x2);
+  return `<g fill="none" stroke="${color}" stroke-width="1.25"><line x1="${round(a,2)}" y1="${round(y,2)}" x2="${round(b,2)}" y2="${round(y,2)}"/><path d="M ${round(a,2)} ${y-5} v 10 M ${round(b,2)} ${y-5} v 10"/></g><text x="${round((a+b)/2,2)}" y="${round(y-8,2)}" fill="${color}" font-size="12" text-anchor="middle">${label}</text>`;
+}
+
+  function frontDimensionLineV(x,y1,y2,label,color='#ffaf69'){
+  let a=Math.min(y1,y2),b=Math.max(y1,y2);
+  return `<g fill="none" stroke="${color}" stroke-width="1.1"><line x1="${round(x,2)}" y1="${round(a,2)}" x2="${round(x,2)}" y2="${round(b,2)}"/><path d="M ${round(x-5,2)} ${round(a,2)} h 10 M ${round(x-5,2)} ${round(b,2)} h 10"/></g><text x="${round(x-9,2)}" y="${round((a+b)/2,2)}" transform="rotate(-90 ${round(x-9,2)} ${round((a+b)/2,2)})" text-anchor="middle" fill="${color}" font-size="11.5">${label}</text>`;
+}
+
+  function frontReferenceMark(x,y,code,kind,dx,dy){
+  const virt=kind==='virtual',tx=x+dx,ty=y+dy,w=code.length*7+14,h=19;
+  const cx=tx+w/2,cy=ty-h/2;
+  const dot=virt?`<circle cx="${round(x,2)}" cy="${round(y,2)}" r="5" fill="#172026" stroke="#8bcfff" stroke-width="2" stroke-dasharray="2 2"/>`:`<circle cx="${round(x,2)}" cy="${round(y,2)}" r="5" fill="#ffc682" stroke="#352516" stroke-width="1.5"/>`;
+  return `<g class="fl-ref" aria-label="${code} ${virt?'virtual corner':'actual centreline point'}"><path d="M ${round(x,2)} ${round(y,2)} L ${round(cx,2)} ${round(cy,2)}" stroke="${virt?'#8bcfff':'#ffb878'}" stroke-width="1" fill="none"/><rect x="${round(tx,2)}" y="${round(ty-h,2)}" width="${round(w,2)}" height="${h}" rx="5" fill="#20282d" stroke="${virt?'#8bcfff':'#e09d5a'}" stroke-width="1"/><text x="${round(cx,2)}" y="${round(ty-5,2)}" font-size="11.2" font-weight="700" fill="${virt?'#c5ebff':'#ffd39f'}" text-anchor="middle">${code}</text>${dot}</g>`;
+}
+
+  function renderFrontStationLabels(g){
+  const front=g.addons.front;if(!front||front.errors.length)return;
+  const v=g.v,l=frontStationRefs(front,'left'),r=frontStationRefs(front,'right');
+  const byId=(items,id)=>items.find(q=>q.id===id).point;
+  const rowData=l.map((q,i)=>{
+    const p=q.point,pR=r[i].point,forward=Math.abs(p.z)<.000001?0:-p.z;
+    return `<tr><td>${q.id} <text style="color:#a4acb2;font-size:11px">(L/R)</text></td><td>${q.name}</td><td>${round(p.y,1)} mm</td><td>${round(forward,1)} mm</td><td>${round(pR.x-p.x,1)} mm</td><td>${q.kind==='virtual'?'Virtual geometry corner':'On tube centreline'}</td></tr>`;
+  });
+  $('frontStationsBody').innerHTML=rowData.join('');
+  const ss=Math.min(305/v.frontFootRun,220/Math.max(v.frontRoofTopHeight,g.Hc));
+  const side=p=>[474+p.z*ss,300-p.y*ss];
+  const sl={FL1:[-63,-19],FL2:[-65,39],FL3:[-57,-24],FL4:[10,45],FL5:[19,-16]};
+  const sideMarks=l.map(p=>{
+    const [x,y]=side(p.point),[dx,dy]=sl[p.id];
+    return frontReferenceMark(x,y,p.id,p.kind,dx,dy);
+  }).join('');
+  const mx=side(byId(l,'FL5'))[0],topX=side(byId(l,'FL3'))[0],footX=side(byId(l,'FL1'))[0];
+  const h5=side(byId(l,'FL5'))[1],h3=side(byId(l,'FL3'))[1],h2=side(byId(l,'FL2'))[1];
+  const sideDims=frontDimensionLineH(mx,footX,358,`FL1 forward ${round(v.frontFootRun,0)} mm`)
+    +frontDimensionLineH(mx,topX,400,`FL3 forward ${round(v.frontRoofRun,0)} mm`)
+    +frontDimensionLineV(540,300,h5,`FL5 H ${round(v.frontTieHeight,0)} mm`,'#dbdfe2')
+    +frontDimensionLineV(617,300,h3,`FL3 H ${round(v.frontRoofTopHeight,0)} mm`,'#dbdfe2')
+    +frontDimensionLineV(103,300,h2,`FL2 H ${round(v.frontWindBaseHeight,0)} mm`,'#9ed8ff')
+    +`<text x="340" y="436" text-anchor="middle" fill="#8aa1ae" font-size="11">FL3 / FL2 are VIRTUAL bend corners · FL4 is B1 start tangent</text>`;
+  $('frontSideSvg').innerHTML+=sideDims+sideMarks;
+  // The shared plan view separates the floor datum and all measured widths.
+  const ps=Math.min(470/Math.max(g.Wc,v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth),220/v.frontFootRun);
+  const plan=p=>[300+(p.x-g.Wc/2)*ps,75-p.z*ps];
+  const planMarks=['left','right'].map(sideName=>{
+    const refs=sideName==='left'?l:r,sgn=sideName==='left'?-1:1;
+    const dy={FL1:29,FL2:-7,FL3:13,FL4:-12,FL5:20};
+    return refs.map(q=>{
+      const [x,y]=plan(q.point),code=`${sideName==='left'?'L':'R'}-${q.id}`;
+      return frontReferenceMark(x,y,code,q.kind,sgn<0?-82:20,dy[q.id]);
+    }).join('');
+  }).join('');
+  const z5=plan(byId(l,'FL5'))[1],z3=plan(byId(l,'FL3'))[1],z2=plan(byId(l,'FL2'))[1],z1=plan(byId(l,'FL1'))[1];
+  const planDims=frontDimensionLineV(585,z5,z3,`FL3 forward ${round(v.frontRoofRun,0)} mm`,'#dce3e6')
+    +frontDimensionLineV(644,z5,z1,`FL1 forward ${round(v.frontFootRun,0)} mm`,'#dce3e6')
+    +`<text x="508" y="${round(z3-10,1)}" font-size="11" fill="#ffc58c">FL3 width ${round(v.frontHeaderWidth,0)}</text>`
+    +`<text x="508" y="${round(z2-10,1)}" font-size="11" fill="#a9dfff">FL2 width ${round(v.frontBaseWidth,0)}</text>`
+    +`<text x="508" y="${round(z1+19,1)}" font-size="11" fill="#ffc58c">FL1 width ${round(v.frontFootWidth,0)}</text>`
+    +`<text x="490" y="394" font-size="11" fill="#91a5af">FL1 and FL2 overlap in plan if aligned</text>`;
+  $('frontPlanSvg').innerHTML+=planDims+planMarks;
+  const fs=Math.min(470/Math.max(g.Wc,v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth),230/v.frontRoofTopHeight);
+  const face=p=>[300+(p.x-g.Wc/2)*fs,300-p.y*fs];
+  const faceOffsets={FL1:22,FL2:-10,FL3:-30,FL4:11,FL5:38};
+  const faceMarks=['left','right'].map(sideName=>{
+    const refs=sideName==='left'?l:r,sgn=sideName==='left'?-1:1;
+    return refs.map(q=>{
+      const [x,y]=face(q.point),code=`${sideName==='left'?'L':'R'}-${q.id}`;
+      return frontReferenceMark(x,y,code,q.kind,sgn<0?-91:22,faceOffsets[q.id]);
+    }).join('');
+  }).join('');
+  const f1=face(byId(l,'FL1')),f2=face(byId(l,'FL2')),f3=face(byId(l,'FL3')),f5=face(byId(l,'FL5'));
+  const f1r=face(byId(r,'FL1')),f2r=face(byId(r,'FL2')),f3r=face(byId(r,'FL3'));
+  const frontDims=frontDimensionLineH(f3[0],f3r[0],f3[1]-21,`FL3 top ${round(v.frontHeaderWidth,0)} mm`,'#ffc58c')
+    +frontDimensionLineH(f2[0],f2r[0],f2[1]-25,`FL2 base ${round(v.frontBaseWidth,0)} mm`,'#a9dfff')
+    +frontDimensionLineH(f1[0],f1r[0],f1[1]+29,`FL1 feet ${round(v.frontFootWidth,0)} mm`,'#ffc58c')
+    +`<text x="340" y="396" text-anchor="middle" fill="#afc0cb" font-size="12">FL5 main-hoop join spacing ${round(r[4].point.x-l[4].point.x,0)} mm</text>`
+    +(front.header?`<text x="340" y="375" text-anchor="middle" fill="#e0c7ff" font-size="12">WH1 header centre length ${round(front.header.length,1)} mm</text>`:'');
+  $('frontFaceSvg').innerHTML+=frontDims+faceMarks;
+}
+
   function renderFrontStructure(g){
   const front=g.addons.front,valid=front&&!front.errors.length,warning=$('frontWarning');
   warning.style.display=front?.errors.length?'block':'none';warning.textContent=front?.errors.join(' ')||'';
   if(!valid){
     $('frontDeveloped').textContent='—';$('frontBlank').textContent='Enable front legs';
     $('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';
-    $('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';
+    $('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';
     const msg=front?.errors.length?'Adjust front leg measurements':'Enable continuous front legs';
     for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML=`<text x="300" y="170" text-anchor="middle" fill="#a4acb2" font-size="16">${msg}</text>`;
     $('frontBendCsvDownload').disabled=true;$('frontSvgDownload').disabled=true;return;
@@ -921,6 +1013,7 @@
   const flines=['left','right'].map(k=>`<path d="${frontSVGPath(front[k],face)}" fill="none" stroke="#ffb46c" stroke-width="5"/>`).join('');
   const hf=h?(()=>{const a=face(h.left),b=face(h.right);return `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="#c4a0ff" stroke-width="6"/><text x="300" y="${a[1]-12}" text-anchor="middle" font-size="13" fill="#dec8ff">Header ${round(h.length,0)} mm</text>`;})():'';
   $('frontFaceSvg').innerHTML=`<text x="300" y="21" text-anchor="middle" fill="#adbbc7" font-size="12">Front elevation · longitudinal positions projected</text>${flines}${hf}<text x="300" y="344" text-anchor="middle" fill="#ffbb79" font-size="13">Mount spacing ${round(v.frontFootWidth,0)} mm</text>`;
+  renderFrontStationLabels(g);
 }
 
   function renderAddons(g){
@@ -1028,7 +1121,7 @@
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
+    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
