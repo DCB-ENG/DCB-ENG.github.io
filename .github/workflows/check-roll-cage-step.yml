@@ -28,7 +28,7 @@ jobs:
           import cadquery as cq
           from pathlib import Path
           root=Path('/tmp/roll-cage-step-check')
-          tubes=sorted(root.glob('TEST-RC-*.step'))
+          tubes=sorted(root.glob('test-rc-*.step'))
           assert len(tubes)==2, tubes
           for p in tubes:
               shape=cq.importers.importStep(str(p))
