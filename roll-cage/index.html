@@ -97,6 +97,24 @@
 #frontPanel .table-scroll{margin:10px 0}
 #frontPanel .subview{overflow:hidden}
 @media print{.fl-station-intro{background:white!important;border-color:#333;color:#111}}
+
+/* Developed tube marking schedule for every independent cage tube */
+.member-markout-list{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+.member-markout-card{border:1px solid #3d4a53;border-radius:11px;background:#13191c;padding:14px;min-width:0}
+.member-markout-heading{display:flex;justify-content:space-between;align-items:start;gap:14px;flex-wrap:wrap;margin-bottom:7px}
+.member-markout-heading h3{margin:0;font-size:16px;color:#ffa441}
+.member-markout-heading .mark-subtitle{font-size:12px;color:#aebcc4;white-space:normal}
+.member-mark-ruler{border:1px solid #3a4851;background:#0f1519;border-radius:9px;padding:5px;overflow:hidden}
+.member-mark-ruler svg{width:100%;height:auto;display:block;background:#0f1519}
+.member-mark-summary{font-size:12px;color:#c2cbd2;line-height:1.55;margin:10px 0 6px}
+.member-mark-summary strong{color:#ffd09a}
+.member-mark-bends{display:flex;flex-wrap:wrap;gap:9px 17px;padding-top:5px}
+.member-mark-bends span{font-size:12px;color:#c9d2da;white-space:nowrap}
+.member-mark-bends b{color:#ffb76b}
+.member-markout-card .row-actions{margin-top:12px;gap:8px}
+.member-markout-card .row-actions button{font-size:12px}
+.member-markout-card .row-actions a{color:#a9d5f5;font-size:12px}
+@media print{#allMemberMarksPanel{break-before:page}.member-markout-card{break-inside:avoid;background:#fff!important;border-color:#bbb}.member-mark-ruler,.member-mark-ruler svg{background:#fff!important}.member-markout-heading h3,.member-markout-heading .mark-subtitle,.member-mark-summary,.member-mark-summary strong,.member-mark-bends span,.member-mark-bends b{color:#111!important}.member-markout-card .row-actions{display:none!important}}
 </style>
 </head>
 <body>
@@ -242,6 +260,20 @@
 <div class="mark-ruler"><svg id="markingSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 170" role="img" aria-label="Developed straight tube showing the three marks for every bend"></svg></div>
 <div class="mark-cards" id="markCards"></div>
 <div class="datum">All marks include the optional extra length at the beginning of the blank. This is a geometric layout; follow your bender's own reference-mark method and compensate for actual bend growth and springback using a test piece.</div>
+</section>
+<section class="panel" id="allMemberMarksPanel">
+  <div class="drawing-header">
+    <h2 style="margin:0">Individual tube mark-outs</h2>
+    <span class="unit">One straight-blank diagram for every enabled tube</span>
+  </div>
+  <p class="marking-info">Each diagram uses <strong>one square-blank datum end (0 mm)</strong> and shows the <strong>full preparation-blank length</strong>. Bent members show <span class="mark-start">start</span>, <span class="mark-mid">centre</span> and <span class="mark-end">end</span> of each developed bend. Straight members show the theoretical <strong>joint-centre/reference stations</strong> and end allowances instead. These reference stations are <strong>not finished fishmouth cut edges</strong>.</p>
+  <div class="row-actions">
+    <button class="primary" type="button" id="printMemberMarkouts">Print every tube mark-out</button>
+    <button type="button" id="saveMemberMarkoutsSVG">Save all mark-outs SVG</button>
+    <span class="unit" id="memberMarkoutCount">—</span>
+  </div>
+  <div id="memberMarkoutCards" class="member-markout-list"></div>
+  <p class="datum">Diagrams are <strong>not 1:1</strong> and are not a bend-machine feed program. Use the numeric millimetre dimensions, verify tube end orientation, test-bend CLR/springback, and check the separate labelled 1:1 fishmouth wrap-arounds. Cutting/prep blanks include allowances but do not account for the final fishmouth tip-to-tip profile.</p>
 </section>
 <section class="panel"><h2>Bend schedule</h2><div class="table-scroll"><table><thead><tr><th>Bend</th><th>Turn angle</th><th>Start of bend¹</th><th>Centre of bend¹</th><th>End of bend¹</th></tr></thead><tbody id="bendsBody"></tbody></table></div><p class="notes">¹ Distance from the <strong>left-hand tube end</strong> along the straightened tube. If extra trim stock is entered, it is added to each mark. Start and end are geometric tangency points; centre is halfway along the developed bend arc. These are <em>not automatically your bender’s feed/clamp marks</em>. Verify with a test bend.</p>
 <h3>Straight sections between bends</h3><div class="table-scroll"><table><thead><tr><th>Section</th><th>Finished length (mm)</th></tr></thead><tbody id="segmentsBody"></tbody></table></div><p class="notes" id="summaryNote"></p><div class="row-actions"><button class="primary" id="copy">Copy fabrication sheet</button><button id="print">Print layout</button><button id="svgDownload">Save drawing SVG</button><button id="markSvgDownload">Save mark-out SVG</button><button id="csvDownload">Save bend CSV</button></div></section>
