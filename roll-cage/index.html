@@ -128,7 +128,7 @@
 <div class="field"><label for="harnessWall">Harness wall (mm)</label><input type="number" id="harnessWall" value="2.6" min=".1" step=".1"></div>
 </div></div>
 <label class="addon-heading"><input type="checkbox" id="useDoor" checked> Side intrusion bars <span class="comp-pill">door side + plan</span></label>
-<div class="addon-fields" id="doorFields"><p class="addon-hint">Rear joint on the main hoop, front joint at your independently measured reference position. Enter the measured front-to-rear run and joint spacing to include sideways offset in tube length.</p><div class="fields">
+<div class="addon-fields" id="doorFields"><p class="addon-hint">Rear joint on the main hoop. With Front Legs enabled, the front joint follows the actual A-pillar; otherwise enter the independent front reference positions below.</p><div class="fields">
 <div class="field"><label for="doorRearHeight">Rear joint height (mm)</label><input type="number" id="doorRearHeight" value="300" min="0" step="1"></div>
 <div class="field"><label for="doorFrontHeight">Front joint height (mm)</label><input type="number" id="doorFrontHeight" value="420" min="0" step="1"></div>
 <div class="field"><label for="doorRun">Front-to-rear distance (mm)</label><input type="number" id="doorRun" value="900" min="1" step="1"></div>
@@ -139,7 +139,7 @@
 <div class="field full"><label for="frontTubeOD">Front/A-pillar parent CHS OD (mm)</label><input type="number" id="frontTubeOD" list="braceODPresets" value="44.45" min="1" step=".01"><span class="hint">Tube receiving the FRONT end of each side intrusion bar</span></div>
 <div class="field"><label for="frontTubeSideLean">Front tube outward lean (degrees)</label><input type="number" id="frontTubeSideLean" value="0" min="-80" max="80" step=".5"><span class="hint">+ outward at the roof; mirror left/right</span></div>
 <div class="field"><label for="frontTubeRearLean">Front tube rearward lean (degrees)</label><input type="number" id="frontTubeRearLean" value="0" min="-80" max="80" step=".5"><span class="hint">+ rearward at roof, − forward</span></div>
-<div class="field full"><label class="inline-toggle"><input type="checkbox" id="frontTubeConfirmed"> I measured the front parent tube OD and lean angles</label><span class="hint">Required before generating front-end fishmouth templates. The front hoop is not yet modelled, so these are local reference-cylinder measurements.</span></div>
+<div class="field full"><label class="inline-toggle"><input type="checkbox" id="frontTubeConfirmed"> I measured the front parent tube OD and lean angles</label><span class="hint">Required before generating front-end fishmouth templates. Only used if continuous front legs are disabled; otherwise the calculated front leg is the parent tube.</span></div>
 </div></div>
 
   <div class="addon-group" id="frontStructure">
@@ -782,7 +782,7 @@
       <line x1="${xr}" y1="${yr}" x2="${xf}" y2="${yf}" stroke="#ffb76b" stroke-width="6"/>
       <circle cx="${xr}" cy="${yr}" r="6" fill="#ffd39e" stroke="#14191c" stroke-width="2"/>
       <circle cx="${xf}" cy="${yf}" r="6" fill="#ffd39e" stroke="#14191c" stroke-width="2"/>
-      <text x="300" y="23" text-anchor="middle" font-size="12" fill="#aab8c2">Front reference at left · main hoop at right · ${chosen}</text>
+      <text x="300" y="23" text-anchor="middle" font-size="12" fill="#aab8c2">${door.frontIsModelled?'Modelled front leg':'Front reference'} at left · main hoop at right · ${chosen}</text>
       <text x="300" y="67" text-anchor="middle" font-size="13" fill="#ffc992">Side elevation ${round(door.sideAngle,1)}°</text>
       <text x="300" y="91" text-anchor="middle" font-size="13" fill="#d8e0e6">True length ${round(door.members[0].length,1)} mm</text>
       <line x1="${xf}" y1="306" x2="${xr}" y2="306" stroke="#ed9949" stroke-width="1.5"/>
@@ -935,6 +935,7 @@
     if(a.stays){rows.push([1,'Left rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);rows.push([1,'Right rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);}
     if(a.harness)rows.push([1,'Harness crossbar',a.harness.length,a.harness.blank,`CHS ${round(a.harness.OD,2)} × ${round(a.harness.wall,2)} · both ends to rear stays`]);
     if(a.door)for(const m of a.door.members)rows.push([1,`${m.name} side intrusion bar`,m.length,m.blank,`CHS ${round(a.door.OD,2)} × ${round(a.door.wall,2)} · ${round(m.angle,1)}° elevation`]);
+    if(a.front&&!a.front.errors.length){for(const side of ['left','right'])rows.push([1,`${side.toUpperCase()} continuous front leg`,a.front[side].total,a.front[side].blank,`CHS ${round(a.front.OD,2)} × ${round(a.front.wall,2)} · ${a.front[side].bends.length} bends`]);if(a.front.header)rows.push([1,'Windscreen header',a.front.header.length,a.front.header.blank,`CHS ${round(a.front.header.OD,2)} × ${round(a.front.header.wall,2)} · single straight tube`]);}
     $('addonsBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${round(r[2],1)} mm</td><td><strong>${round(r[3],1)} mm</strong></td><td>${r[4]}</td></tr>`).join(''):'<tr><td colspan="5">Enable a component and enter valid dimensions to see the cut list.</td></tr>';
     renderStayViews(g);
     renderDoorViews(g);
@@ -1034,8 +1035,9 @@
     if(a.stays){text.push('TWO REAR STAYS:',`Top joint height ${round(v.stayTop,1)} mm, upper joint spacing ${round(a.stays.upperWidth,1)} mm`,`Rearward run ${round(v.rearRun,1)} mm, rear mount height ${round(v.rearFootHeight,1)} mm, rear mount spacing ${round(v.rearFootWidth,1)} mm`,`Each true 3D joint-to-joint ${round(a.stays.length,1)} mm | prep blank ${round(a.stays.blank,1)} mm (includes ${round(v.fitExtra,1)} mm each end)`,`Inclination ${round(a.stays.angle,1)}° below horizontal, side-view projection ${round(a.stays.sideAngle,1)}°, plan-view splay ${round(a.stays.splayAngle,1)}°`);}
     if(a.harness)text.push('HARNESS CROSSBAR BETWEEN REAR STAYS:',`CHS ${round(v.harnessOD,2)} × ${round(v.harnessWall,2)} mm · centre height ${round(a.harness.height,1)} mm · behind hoop ${round(a.harness.z,1)} mm`,`Joint-centre length ${round(a.harness.length,1)} mm · prep blank ${round(a.harness.blank,1)} mm`);
     if(a.door)text.push('SIDE INTRUSION BAR(S):',`CHS ${round(v.doorOD,2)} × ${round(v.doorWall,2)} mm · front/rear heights ${round(v.doorFrontHeight,1)} / ${round(v.doorRearHeight,1)} mm · forward run ${round(v.doorRun,1)} mm · front spacing ${round(v.doorFrontWidth,1)} mm`,...a.door.members.map(m=>`${m.name} joint-centre 3D length ${round(m.length,1)} mm · prep blank ${round(m.blank,1)} mm · lateral offset ${round(m.lateral,1)} mm · elevation ${round(m.angle,1)}°`));
+    if(a.front&&!a.front.errors.length){text.push('CONTINUOUS FRONT LEGS (single tube each):',`CHS ${round(v.frontOD,2)} × ${round(v.frontWall,2)} mm · CLR ${round(v.frontCLR,1)} mm · trim ${round(v.frontTrim,1)} mm each end`);for(const side of ['left','right']){const leg=a.front[side];text.push(`${side.toUpperCase()}: developed ${round(leg.total,1)} mm · blank ${round(leg.blank,1)} mm · B1→B2 signed clock ${round(leg.clock,1)}°`,...leg.bends.map(b=>`${b.name} ${round(b.angle,2)}°: START ${round(b.start+v.frontTrim,1)} / CENTRE ${round(b.mid+v.frontTrim,1)} / END ${round(b.end+v.frontTrim,1)} mm from rear end`));}if(a.front.header)text.push(`WINDSCREEN HEADER: CHS ${round(v.headerOD,2)} × ${round(v.headerWall,2)} mm, span ${round(a.front.header.length,1)} mm, prep blank ${round(a.front.header.blank,1)} mm.`);}
     if(g.tubeJoints?.length){text.push('TUBE-TO-TUBE FISHMOUTH WRAP-AROUNDS:');for(const j of g.tubeJoints){text.push(j.error?`${j.title}: NOT READY — ${j.error}`:`${j.title} | branch CHS ${round(j.branchOD,2)}×${round(j.branchWall,2)} to parent OD ${round(j.parentOD,2)} | axes ${round(j.angle,1)}° | cope depth ${round(j.cutDepth,1)} mm | print labelled 1:1 SVG`);}}
-    text.push('All members are centreline intersection spans, NOT exact coped tip-to-tip cut lengths. Front side-bar joint is a measured reference, not generated front-hoop geometry. Print 1:1 wrap-arounds for supported member ends; the front side intrusion joint requires a verified parent CHS OD and local lean angles. Verify belt mounts and roll cage design against applicable motorsport rules.');
+    text.push('All members are ideal centreline spans, NOT exact coped tip-to-tip cut lengths. Side bars reference the modelled front legs when enabled, otherwise an independently measured front tube. Print 1:1 wrap-arounds for supported member ends; the front side intrusion joint requires a verified parent CHS OD and local lean angles. Verify belt mounts and roll cage design against applicable motorsport rules.');
     return text.join('\n');}
   function download(filename,data,mime){const blob=new Blob([data],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function copy(){const s=getSheet();if(!s)return;const done=()=>{for(const id of ['copy','copyTop']){const b=$(id),old=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=old,1600);}};if(navigator.clipboard?.writeText){navigator.clipboard.writeText(s).then(done).catch(()=>download('main-hoop-bending-sheet.txt',s,'text/plain'));}else download('main-hoop-bending-sheet.txt',s,'text/plain');}
@@ -1043,6 +1045,14 @@
   $('braceUpperSide').addEventListener('change',render);
    $('doorSides').addEventListener('change',render);
    $('frontTubeConfirmed').addEventListener('change',render);
+  function updateFrontControls(){
+    const enabled=$('useFrontLegs').checked;
+    $('frontLegFields').classList.toggle('off',!enabled);
+    $('headerFields').classList.toggle('off',!enabled||!$('useHeader').checked);
+    for(const id of ['doorRun','doorFrontWidth','frontTubeOD','frontTubeSideLean','frontTubeRearLean','frontTubeConfirmed'])$(id).disabled=enabled;
+  }
+  $('useFrontLegs').addEventListener('change',()=>{updateFrontControls();render();});
+  $('useHeader').addEventListener('change',()=>{updateFrontControls();render();});
   for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields'],['useHarness','harnessFields'],['useDoor','doorFields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
   $('mode2').addEventListener('click',()=>setMode(2));$('mode4').addEventListener('click',()=>setMode(4));
   $('copy').addEventListener('click',copy);$('copyTop').addEventListener('click',copy);
@@ -1086,6 +1096,7 @@
     if(a.stays){rows.push([1,'Left rear stay',round(a.stays.length,1),round(a.stays.blank,1),`${round(a.stays.angle,1)} deg below horizontal`]);rows.push([1,'Right rear stay',round(a.stays.length,1),round(a.stays.blank,1),`${round(a.stays.angle,1)} deg below horizontal`]);}
     if(a.harness)rows.push([1,`Harness crossbar CHS ${round(a.harness.OD,2)}x${round(a.harness.wall,2)}`,round(a.harness.length,1),round(a.harness.blank,1),`Between rear stays | height ${round(a.harness.height,1)} mm | back from hoop ${round(a.harness.z,1)} mm`]);
     if(a.door)for(const m of a.door.members)rows.push([1,`${m.name} side intrusion CHS ${round(a.door.OD,2)}x${round(a.door.wall,2)}`,round(m.length,1),round(m.blank,1),`True 3D length | forward ${round(a.door.run,1)} mm | lateral ${round(m.lateral,1)} mm | elevation ${round(m.angle,1)} deg`]);
+    if(a.front&&!a.front.errors.length){for(const side of ['left','right'])rows.push([1,`${side.toUpperCase()} continuous front leg CHS ${round(v.frontOD,2)}x${round(v.frontWall,2)}`,round(a.front[side].total,1),round(a.front[side].blank,1),`2 bends | CLR ${round(v.frontCLR,1)} mm | signed plane clock ${round(a.front[side].clock,1)} deg`]);if(a.front.header)rows.push([1,`Windscreen header CHS ${round(v.headerOD,2)}x${round(v.headerWall,2)}`,round(a.front.header.length,1),round(a.front.header.blank,1),`Straight single piece | height ${round(v.headerHeight,1)} mm`]);}
     if(latest.tubeJoints?.length)for(const j of latest.tubeJoints)rows.push(['',`FISHMOUTH — ${j.title}`,'','',j.error?`Not ready: ${j.error}`:`1:1 ${j.paper.label}; axes ${round(j.angle,2)} deg; branch ${round(j.branchOD,2)}×${round(j.branchWall,2)} mm; parent OD ${round(j.parentOD,2)} mm; cope depth ${round(j.cutDepth,2)} mm`]);
     rows.push(['','Notes','','',`Centreline spans only; cope to fit; extra stock ${round(v.fitExtra,1)} mm per end; 1:1 tube-to-tube wrap-arounds available in the templates section, subject to joint validation`]);
     if(a.brace?.notches&&!a.brace.notches.errors.length)rows.push(['','Theoretical square tip-to-tip before coping',round(a.brace.notches.nominalSquare,1),'',`Verify with test fit; upper setback ${round(a.brace.notches.upper.minDepth,2)} lower ${round(a.brace.notches.lower.minDepth,2)}`]);
@@ -1114,11 +1125,11 @@
   });
   $('modelJSON').addEventListener('click',()=>{
     if(!latest)return;
-    const g=latest,brace=g.addons.brace,stays=g.addons.stays,harness=g.addons.harness,door=g.addons.door;
-    const payload={schema:'roll-cage-geometry-v2',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
+    const g=latest,brace=g.addons.brace,stays=g.addons.stays,harness=g.addons.harness,door=g.addons.door,front=g.addons.front;
+    const payload={schema:'roll-cage-geometry-v2',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,frontStructure:front,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
     download('roll-cage-geometry-for-future-step.json',JSON.stringify(payload,null,2),'application/json');
   });
-  render();
+  updateFrontControls();render();
 })();
 </script>
 </body></html>
