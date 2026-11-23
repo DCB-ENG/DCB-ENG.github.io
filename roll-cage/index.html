@@ -1172,6 +1172,89 @@
     const inner=`${boundary}${dimWidth}${dimHeight}${legendTop}${roofGuide}${shoulderDimension}${overlayLabels}${braceOverlay}${harnessOverlay}<path d="${path}" stroke="#d3dce1" stroke-width="${round(Math.max(d*s,3),3)}" stroke-linecap="butt" stroke-linejoin="round" fill="none"/><path d="${path}" stroke="#fc912c" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round" fill="none"/>${joints.map(dot).join('')}${stayOverlay}${doorOverlay}<text x="${round(xwall+10,1)}" y="${round(floorY+24,1)}" class="note">Tube start</text><text x="${round(dx-10,1)}" y="${round(floorY+24,1)}" class="note" text-anchor="end">Tube end</text><text x="380" y="549" class="note" text-anchor="middle">Finished front profile · dashed envelope connects measured widths</text>`;
     $('drawingSvg').innerHTML=inner;
   }
+  function cagePartNumber(id){
+  const fixed={'main-hoop':'001','front-leg-left':'002','front-leg-right':'003','windscreen-header':'004',
+    'diagonal-brace':'005','rear-stay-left':'006','rear-stay-right':'007','harness-bar':'008',
+    'side-intrusion-left':'009','side-intrusion-right':'010'};
+  const suffix=fixed[id];
+  if(!suffix)throw Error('Unknown roll-cage member ID: '+id);
+  const job=String($('cageJobRef').value||'').toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,20);
+  return `${job?job+'-':''}RC-${suffix}`;
+}
+
+  function cageCutData(g){
+  const members=g.memberMarkouts||[],material=String($('cageMaterial').value||'').trim().slice(0,50)||'Not specified';
+  const job=String($('cageJobRef').value||'').toUpperCase().replace(/[^A-Z0-9_-]/g,'').slice(0,20);
+  const rows=members.map(m=>({
+    id:m.id,partNumber:cagePartNumber(m.id),qty:1,member:m.title,
+    od:m.od,wall:m.wall,span:m.span,blank:m.blank,bendCount:m.bends.length,
+    datum:m.startDescription,farEnd:m.endDescription,
+    material,notes:m.notes,extra:m.extra,jointStart:m.jointStart,jointEnd:m.jointEnd
+  }));
+  const groups=new Map();
+  for(const row of rows){
+    const key=`${round(row.od,2)} × ${round(row.wall,2)} mm`;
+    if(!groups.has(key))groups.set(key,{label:key,count:0,totalBlank:0,totalSpan:0});
+    const gr=groups.get(key);gr.count+=row.qty;gr.totalBlank+=row.blank*row.qty;gr.totalSpan+=row.span*row.qty;
+  }
+  return {job,material,rows,groups:[...groups.values()],count:rows.reduce((a,r)=>a+r.qty,0),
+    totalBlank:rows.reduce((a,r)=>a+r.blank*r.qty,0),totalSpan:rows.reduce((a,r)=>a+r.span*r.qty,0)};
+}
+
+  function cageSafeHTML(v){
+  return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+  function renderCageCutList(g){
+  const d=cageCutData(g);g.cutList=d;
+  $('cageCutCount').textContent=`${d.count} tube${d.count===1?'':'s'} · ${d.groups.length} CHS size${d.groups.length===1?'':'s'}`;
+  $('printCageCutList').disabled=!d.rows.length;
+  $('saveCageCutCSV').disabled=!d.rows.length;
+  $('cageCutBody').innerHTML=d.rows.length?d.rows.map(r=>
+    `<tr><td>${r.partNumber}</td><td>${r.qty}</td><td>${cageSafeHTML(r.member)}</td>
+    <td>CHS ${round(r.od,2)} × ${round(r.wall,2)}</td>
+    <td>${round(r.span,1)}</td><td>${round(r.blank,1)}</td>
+    <td>${r.bendCount}</td><td>${cageSafeHTML(r.datum)} → ${cageSafeHTML(r.farEnd)}</td></tr>`).join(''):
+    '<tr><td colspan="8">No valid members available.</td></tr>';
+  $('cageCutTotals').innerHTML=d.groups.map(t=>
+    `<tr><td>${t.label}</td><td>${t.count}</td><td>${round(t.totalBlank,1)} mm</td><td>${round(t.totalSpan,1)} mm</td></tr>`).join('');
+  $('cageCutSummary').innerHTML=`<b>${d.count} tube${d.count===1?'':'s'}</b> · combined prep-blank lengths <b>${round(d.totalBlank/1000,3)} m</b>
+    · developed / centreline lengths <b>${round(d.totalSpan/1000,3)} m</b> · material: <b>${cageSafeHTML(d.material)}</b>
+    ${d.job?` · job: <b>${d.job}</b>`:''}`;
+}
+
+  function cageCutCSV(data){
+  const rows=[['Job','Part number','Qty','Member','CHS OD (mm)','Wall (mm)','Material / grade','Developed / centreline (mm)','Prep blank (mm)','Combined prep (mm)','Bend count','Datum end','Far end','Notes']];
+  for(const p of data.rows)rows.push([data.job,p.partNumber,p.qty,p.member,round(p.od,2),round(p.wall,2),
+    data.material,round(p.span,1),round(p.blank,1),round(p.blank*p.qty,1),p.bendCount,p.datum,p.farEnd,p.notes]);
+  return '\ufeff'+rows.map(row=>row.map(cell=>`"${String(cell).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+}
+
+  function cageCutPrintHTML(data){
+  const trs=data.rows.map(p=>`<tr><td class="part">${p.partNumber}</td><td>${p.qty}</td><td>${cageSafeHTML(p.member)}</td>
+    <td>${round(p.od,2)} × ${round(p.wall,2)}</td><td>${round(p.span,1)}</td><td class="blank">${round(p.blank,1)}</td>
+    <td>${p.bendCount}</td><td>${cageSafeHTML(p.datum)} → ${cageSafeHTML(p.farEnd)}</td></tr>`).join('');
+  const groups=data.groups.map(t=>`<tr><td>${t.label}</td><td>${t.count}</td><td>${round(t.totalBlank,1)} mm</td><td>${round(t.totalSpan,1)} mm</td></tr>`).join('');
+  return `<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><title>${data.job||'Roll cage'} — numbered tube cutting list</title>
+  <style>@page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#e8e9eb;color:#17242b;font:11px Arial,sans-serif}
+  .toolbar{text-align:center;background:#202830;color:white;padding:10px;font-size:13px}.toolbar button{padding:8px 16px;background:#fc912c;border:0;border-radius:7px;cursor:pointer;font-weight:bold}
+  .sheet{width:277mm;margin:15px auto;padding:15px;background:white;min-height:180mm;box-shadow:0 5px 19px #0002}
+  h1{font-size:20px;margin:0 0 5px}h2{font-size:13px;margin:14px 0 7px}
+  .meta{margin-bottom:13px;font-size:11px}table{width:100%;border-collapse:collapse;table-layout:fixed}th,td{padding:5px;border-bottom:1px solid #cdd1d4;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#e8edf0}
+  th:nth-child(1){width:13%}th:nth-child(2){width:5%}th:nth-child(3){width:19%}th:nth-child(4){width:12%}th:nth-child(5){width:11%}th:nth-child(6){width:11%}th:nth-child(7){width:6%}
+  .part,.blank{font-weight:bold}.summary{border:1px solid #bbb;padding:8px;margin:12px 0;font-size:12px}.warning{font-size:10px;line-height:1.45;margin:14px 0}
+  .totals{width:64%}.totals th{width:auto}.totals td{padding:4px}
+  @media print{body{background:white}.toolbar{display:none}.sheet{margin:0;padding:0;width:auto;min-height:0;box-shadow:none}}</style>
+  </head><body><div class="toolbar"><button onclick="window.print()">PRINT NUMBERED TUBE CUT LIST — A4 LANDSCAPE</button></div>
+  <main class="sheet"><h1>Roll cage — numbered tube cutting list</h1>
+  <div class="meta"><strong>Job:</strong> ${cageSafeHTML(data.job||'Not assigned')} &nbsp; | &nbsp; <strong>Material / grade:</strong> ${cageSafeHTML(data.material)} &nbsp; | &nbsp; Units: mm</div>
+  <table><thead><tr><th>Part</th><th>Qty</th><th>Member</th><th>CHS OD × wall</th><th>Centreline</th><th>Prep blank</th><th>Bends</th><th>Connections / datum</th></tr></thead>
+  <tbody>${trs}</tbody></table><h2>Totals by CHS size</h2>
+  <table class="totals"><thead><tr><th>Tube</th><th>Qty</th><th>Total prep blanks</th><th>Total centreline</th></tr></thead><tbody>${groups}</tbody></table>
+  <div class="summary"><strong>${data.count} tubes</strong> · combined prep blanks <strong>${round(data.totalBlank/1000,3)} m</strong> · combined centreline <strong>${round(data.totalSpan/1000,3)} m</strong></div>
+  <p class="warning"><strong>Fabrication note:</strong> Prep blank includes extra stock for coping/trim and is NOT the finished tip-to-tip cut length of a coped tube. Mark-out positions are geometric, not bender feed marks; print fishmouth templates separately at 1:1. Check cage rules, material grade and physical fit before fabrication.</p></main></body></html>`;
+}
+
   function memberMarkoutSpecs(g){
   const v=g.v,a=g.addons,fit=Math.max(0,v.fitExtra),list=[];
   const push=(member)=>{if(Number.isFinite(member.blank)&&member.blank>0&&Number.isFinite(member.span)&&member.span>0)list.push(member);};
