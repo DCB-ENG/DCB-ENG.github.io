@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#131a1e">
+<title>Browser STEP Lab · Roll Cage Generator | DCB ENG</title>
+<style>
+:root{color-scheme:dark;background:#11181c;color:#e7ecef;font-family:Inter,Segoe UI,Arial,sans-serif}
+*{box-sizing:border-box}body{margin:0;line-height:1.5}
+header{background:#0b1013;border-bottom:2px solid #ef8627}
+.container{max-width:1100px;margin:0 auto;padding:24px}
+.topline{display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.brand{font-weight:850;font-size:20px;letter-spacing:.03em;color:#ffa943}
+a{color:#ffb56c}h1{font-size:clamp(25px,3.5vw,35px);margin:2px 0 9px}h2{font-size:19px;margin:0 0 14px}
+.subtitle{color:#aebec8;max-width:800px}
+.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:16px;margin-top:20px}
+.panel{background:#192127;border:1px solid #374750;border-radius:12px;padding:20px;min-width:0}
+label{font-weight:700;font-size:13px;display:block;margin:12px 0 5px}
+input[type=file],select{display:block;width:100%;background:#10171b;color:#eff3f5;border:1px solid #566570;border-radius:7px;padding:11px}
+button,.button{display:inline-flex;align-items:center;justify-content:center;border:1px solid #bb7c35;background:#ff972f;color:#161c20;border-radius:7px;font:700 14px inherit;padding:12px 14px;cursor:pointer;min-height:44px;text-decoration:none}
+button:disabled{opacity:.5;cursor:not-allowed}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin:17px 0}
+.button-secondary{background:#232d33;color:#e3eaee;border-color:#5b6c76}
+.status{border:1px solid #485f6a;border-radius:8px;background:#111c21;padding:12px 14px;min-height:62px;white-space:pre-wrap;font-size:13px;color:#cbdbe4}
+.status.error{border-color:#b44d42;color:#ffd0ca;background:#311e1d}
+.status.success{border-color:#42795e;color:#c5f5d9}
+.parts{display:grid;gap:10px;margin-top:12px}
+.part{border:1px solid #43515c;padding:11px 12px;border-radius:7px;background:#121b20;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.part strong{color:#ffb66e}.muted{font-size:12px;color:#aebbc6}.part a{font-size:12px;font-weight:700}
+.note{font-size:13px;color:#aebdc5;line-height:1.55;margin:12px 0}
+.warning{border-left:3px solid #ff9a31;background:#2d241d;padding:12px 14px;border-radius:0 8px 8px 0;margin-top:14px;color:#f0d6b8;font-size:13px}
+ol{padding-left:22px}li{margin-bottom:10px}code{color:#ffc88a}
+@media(max-width:760px){.grid{grid-template-columns:1fr}.container{padding:16px}.panel{padding:16px}}
+</style>
+</head>
+<body>
+<header><div class="container topline"><div class="brand">DCB ENG <span style="color:#dbe4e9">/ ROLL CAGE</span></div>
+<a href="../">Back to Roll Cage Generator</a></div></header>
+<main class="container">
+<div class="muted">EXPERIMENTAL · THREE-PART CAD PROOF OF CONCEPT</div>
+<h1>Direct browser STEP export</h1>
+<p class="subtitle">Create genuine analytic hollow-tube STEP solids in your browser using an OpenCascade WebAssembly CAD kernel. No Python installation required. This experimental page is limited to the main hoop, one front leg, and the main-hoop diagonal.</p>
+<div class="grid">
+<section class="panel">
+<h2>1. Load your cage geometry</h2>
+<p class="note" id="sourceLabel">Open this from the calculator using <strong>Browser STEP lab</strong>, or select a saved geometry JSON file below.</p>
+<label for="jsonFile">Geometry JSON (optional if opened from calculator)</label>
+<input type="file" id="jsonFile" accept=".json,application/json">
+<label for="frontSide">Front leg to export</label>
+<select id="frontSide"><option value="left">Left front leg · RC-002</option><option value="right">Right front leg · RC-003</option></select>
+<div class="actions"><button id="exportButton" type="button" disabled>Generate three STEP solids</button>
+<button id="resetButton" type="button" class="button-secondary">Clear results</button></div>
+<div role="status" aria-live="polite" class="status" id="exportStatus">Choose geometry with a valid main hoop, continuous front legs and diagonal brace.</div>
+<p class="note">The CAD engine downloads once on first use and can take some memory. No cage geometry is uploaded to DCB ENG servers. Your browser processes it locally.</p>
+</section>
+<section class="panel">
+<h2>2. Check exported parts</h2>
+<div id="partList" class="parts">
+<div class="part"><strong>RC-001 · Main hoop</strong><span class="muted">Analytic circular-bend CHS</span></div>
+<div class="part"><strong>RC-002/003 · Front leg</strong><span class="muted">One bent, main-hoop-coped tube</span></div>
+<div class="part"><strong>RC-005 · Main-hoop diagonal</strong><span class="muted">Both ends coped to formed hoop</span></div>
+</div>
+<div class="actions"><button type="button" id="zipButton" disabled>Download three-part ZIP</button></div>
+<div class="warning"><strong>Not production-ready:</strong> These are prototype CAD solids, not a certified safety cage or laser program. Open each STEP in ProCAM or another true B-rep CAD viewer and verify length, CHS OD/wall, surface continuity, fishmouth depths, datum orientation and end fit before manufacturing.</div>
+</section>
+</div>
+<section class="panel" style="margin-top:16px">
+<h2>What the browser proof of concept does—and doesn't do</h2>
+<ol>
+<li>Models actual circular bend arcs and round tube walls; no faceted STEP or renamed STL.</li>
+<li>Boolean-subtracts the full modelled main hoop from the front leg rear end and from the diagonal's two ends.</li>
+<li>Checks nonzero positive B-rep volume and STEP headers before downloads. It does <strong>not</strong> yet guarantee an independent STEP readback or ProCAM acceptance.</li>
+<li>Does not handle all 20 cage tubes, crossing reinforcements, mounting feet, weld gaps, ovalisation or tube-laser machine-specific setup.</li>
+</ol>
+<p class="note">If the browser CAD kernel fails, the existing <a href="../../docs/roll-cage-step-export.md">Windows CadQuery/OpenCascade converter</a> remains available. For a production release, further CAD round-trip and physical cutting tests are required.</p>
+</section>
+</main>
+<script type="module" src="./app.mjs"></script>
+</body></html>

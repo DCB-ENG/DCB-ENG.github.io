@@ -1,6 +1,24 @@
+## Experimental browser STEP lab (three tubes)
+
+The Roll Cage Generator now offers **Browser STEP lab · 3 tubes** as an experimental proof of concept. Enable the **main-hoop diagonal** and **continuous front legs**, set the measured dimensions, and use that button beside the 1:1 fishmouth exports. It opens a separate page using an OpenCascade WebAssembly CAD kernel from the [brepjs](https://github.com/andymai/brepjs) and [occt-wasm](https://github.com/andymai/occt-wasm) projects.
+
+1. Open [Roll Cage Generator](https://dcb-eng.github.io/roll-cage/), enable the diagonal and front legs, and enter the actual cage dimensions.
+2. Click **Browser STEP lab · 3 tubes**. Your geometry is passed locally to the lab tab; if browser privacy settings prevent this, download the JSON and use its file picker instead.
+3. Choose **left** (RC-002) or **right** (RC-003) front leg.
+4. Click **Generate three STEP solids**. On success, download the three individual STEP files or the single ZIP.
+5. Open each file in CAD or ProCAM and check tube diameter, wall thickness, bend and joint geometry. Do not manufacture from the prototype without independent inspection.
+
+The proof-of-concept includes only the **main hoop, one front leg and the main-hoop diagonal**. It creates actual analytical B-rep solids with circular bends, a hollow wall, and modelled cope Boolean cuts. The UI checks the STEP file structure and volume; the repository's independent OpenCascade test verifies that generated STEP files reopen as valid, single-solid models.
+
+This is **not yet a full website STEP exporter**. Other members, mounting feet, structural crossings, gussets, weld gaps and production machine setup are not exported. A browser may require an initial download of the WebAssembly CAD kernel from the pinned external module CDN. No vehicle geometry is intentionally sent to that service.
+
+For **all** modelled members, continue using the desktop converter below.
+
+---
+
 # Roll Cage Generator — true STEP tube solids
 
-The Roll Cage Generator on GitHub Pages exports geometry JSON, not STEP. The companion **roll_cage_step_export.py** converts JSON into actual analytic CadQuery/OpenCascade STEP B-rep solids on a computer.
+The offline converter accepts geometry JSON from GitHub Pages and exports a wider set of tube STEP files (with the limitations below). The companion **roll_cage_step_export.py** converts JSON into actual analytic CadQuery/OpenCascade STEP B-rep solids on a computer.
 
 ## Windows setup
 
@@ -44,4 +62,4 @@ The repository's [STEP CAD regression workflow](../.github/workflows/check-roll-
 
 If a part gives zero or multiple solid bodies, the converter stops rather than exporting a knowingly invalid tube. Use FreeCAD or another STEP-capable CAD tool to inspect and repair any difficult intersection.
 
-A future release may package the converter as a standalone Windows executable or provide a browser WebAssembly CAD kernel; renaming JSON or SVG as a STEP file would not produce a real solid.
+A future release may package the converter as a standalone Windows executable or expand the experimental browser WebAssembly CAD kernel to the entire cage. Merely renaming JSON or SVG to STEP does not produce a solid.
