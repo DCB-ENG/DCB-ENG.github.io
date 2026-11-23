@@ -16,7 +16,7 @@ const document={
   querySelectorAll(){return [];}
 };
 const ctx=vm.createContext({document,window:{},navigator:{},console,Blob:class{},URL:{},XMLSerializer:class{},setTimeout(){},alert(){}});
-const injected=scripts[0].replace(/  updateFrontControls\(\);render\(\);\s*\}\)\(\);\s*$/, '  updateFrontControls();render(); window.__inspectRollCage=()=>latest; window.__inspectCutCSV=()=>cageCutCSV(latest.cutList); window.__inspectCutPrint=()=>cageCutPrintHTML(latest.cutList);\n})();');
+const injected=scripts[0].replace(/  updateFrontControls\(\);render\(\);\s*\}\)\(\);\s*$/, '  updateFrontControls();render(); window.__inspectRollCage=()=>latest; window.__inspectCutCSV=()=>cageCutCSV(latest.cutList); window.__inspectCutPrint=()=>cageCutPrintHTML(latest.cutList); window.__bendCSV=()=>cageBendMarkCSV(latest.bendMarkList); window.__bendPrint=()=>cageBendMarkPrintHTML(latest.bendMarkList);\n})();');
 assert.notEqual(injected,scripts[0],'Test probe injection must match script tail');
 vm.runInContext(injected,ctx,{timeout:12000,filename:'roll-cage/index.html'});
 function isSpan(id){assert.match(els.get(id).textContent,/^\d+[.]?\d* mm$/,'Missing computed span for '+id);}
@@ -26,6 +26,28 @@ assert.equal(initialMarkouts.length,7,'Default enabled set: main hoop, diagonal,
 
 const initialCut=ctx.window.__inspectRollCage().cutList;
 assert.equal(initialCut.count,7,'The original seven enabled pieces are all in the numbered cut list');
+const initialBends=ctx.window.__inspectRollCage().bendMarkList;
+assert.equal(initialBends.tubeCount,7,'All seven enabled tubes have a bend-mark entry');
+assert.equal(initialBends.bentTubeCount,1,'Only the main hoop requires bending before front legs are enabled');
+assert.equal(initialBends.bendCount,2,'Default U-hoop yields two bends');
+assert.deepEqual(Array.from(initialBends.tubes,t=>t.partNumber),['RC-001','RC-005','RC-006','RC-007','RC-008','RC-009','RC-010']);
+assert(initialBends.tubes.slice(1).every(t=>t.bends.length===0),'All straight braces/stays/bars have zero bend marks');
+for(const t of initialBends.tubes)for(const b of t.bends){
+  assert(b.start>=0&&b.start<=b.mid&&b.mid<=b.end&&b.end<=t.blank,'Developed marks stay inside square blank');
+  assert(Number.isFinite(b.clr)&&b.clr>0,'Each bend has an actual die CLR');
+}
+assert.match(els.get('cageBendListCount').textContent,/7 tubes · 1 bent members · 2 bends/);
+assert.match(els.get('cageBendListBody').innerHTML,/RC-001/);
+assert.match(els.get('cageBendListBody').innerHTML,/NO BENDS/i);
+assert.match(els.get('cageBendListBody').innerHTML,/No bends/);
+assert.match(els.get('cageBendListBody').innerHTML,/start \(mm\)/i);
+assert.match(ctx.window.__bendCSV(),/Part number/);
+assert.match(ctx.window.__bendCSV(),/Bend centre from datum \(mm\)/);
+assert.match(ctx.window.__bendCSV(),/NO BENDS/);
+assert.match(ctx.window.__bendPrint(),/A4 landscape/);
+assert.match(ctx.window.__bendPrint(),/RC-001/);
+assert.match(ctx.window.__bendPrint(),/NO BENDS/);
+
 assert.deepEqual(Array.from(initialCut.rows,p=>p.partNumber),['RC-001','RC-005','RC-006','RC-007','RC-008','RC-009','RC-010'],'Stable part numbers do not depend on optional parts');
 assert.equal(initialCut.groups.length,2,'Default CHS sizes are grouped');
 assert(Math.abs(initialCut.totalBlank-initialCut.rows.reduce((n,p)=>n+p.blank,0))<.000001,'Prep blank total matches member sum');
@@ -46,12 +68,16 @@ assert.match(ctx.window.__inspectCutPrint(),/NOT the finished tip-to-tip cut len
 els.get('cageJobRef').value='45186';els.get('cageJobRef').events.input();
 assert.equal(ctx.window.__inspectRollCage().cutList.rows[0].partNumber,'45186-RC-001');
 assert.match(els.get('memberMarkoutCards').innerHTML,/45186-RC-005/);
+assert.match(els.get('cageBendListBody').innerHTML,/45186-RC-005/);
+assert.match(ctx.window.__bendCSV(),/45186-RC-001/);
+assert.match(ctx.window.__bendPrint(),/45186-RC-001/);
 assert.match(els.get('jointNotchCards').innerHTML,/PART 45186-RC-005/,'Changing the job also updates the finished fishmouth template ID');
 assert.match(ctx.window.__inspectCutCSV(),/45186-RC-005/);
 els.get('cageMaterial').value='CDS & <Grade>';els.get('cageMaterial').events.input();
 assert.match(els.get('cageCutSummary').innerHTML,/CDS &amp; &lt;Grade&gt;/,'User-entered material escaped in webpage');
 assert.match(ctx.window.__inspectCutCSV(),/CDS & <Grade>/,'Raw material description retained in quoted CSV');
 assert.match(ctx.window.__inspectCutPrint(),/CDS &amp; &lt;Grade&gt;/,'Print sheet escapes user-provided material');
+assert.match(ctx.window.__bendPrint(),/CDS &amp; &lt;Grade&gt;/,'Bend print sheet also safely escapes material');
 els.get('cageJobRef').value='';els.get('cageJobRef').events.input();
 els.get('cageMaterial').value='';els.get('cageMaterial').events.input();
 assert.equal(ctx.window.__inspectRollCage().cutList.rows[0].partNumber,'RC-001');
@@ -83,6 +109,7 @@ assert.match(els.get('addonsBody').innerHTML,/Harness crossbar/);
 assert.match(els.get('addonsBody').innerHTML,/side intrusion/);
 assert.match(els.get('drawingSvg').innerHTML,/Harness/);
 els.get('mode4').events.click();isSpan('harnessSpan');isSpan('doorSpan');
+assert.equal(ctx.window.__inspectRollCage().bendMarkList.bendCount,4,'Four bend main hoop adds all four marks to all-tube schedule');
 assert.equal(ctx.window.__inspectRollCage().memberMarkouts.find(m=>m.id==='main-hoop').bends.length,4,
   'Four bend tapered hoop has four bend-mark triples in its individual sheet');
 assert.match(els.get('drawingSvg').innerHTML,/Shoulder/);
@@ -91,6 +118,7 @@ assert.match(els.get('addonsBody').innerHTML,/Left side intrusion/);
 assert.doesNotMatch(els.get('addonsBody').innerHTML,/Right side intrusion/);
 assert.equal(ctx.window.__inspectRollCage().memberMarkouts.length,6,'Left-only intrusion produces one tube sheet');
 assert.equal(ctx.window.__inspectRollCage().cutList.count,6);
+assert.equal(ctx.window.__inspectRollCage().bendMarkList.tubeCount,6,'Optional right bar removed from bend list');
 assert(!ctx.window.__inspectRollCage().cutList.rows.some(p=>p.partNumber==='RC-010'),'Right side part removed without renumbering left');
 
 els.get('harnessHeight').value='1600';els.get('harnessHeight').events.input();
@@ -143,6 +171,8 @@ assert.match(els.get('validation').innerHTML,/Not enough space/);
 assert.equal(els.get('jointNotchCards').innerHTML,'','Invalid hoop clears output without referencing legacy DOM IDs');
 assert.equal(els.get('memberMarkoutCards').innerHTML,'','Invalid hoop also clears all per-member diagrams');
 assert.equal(els.get('cageCutBody').innerHTML,'','Invalid hoop clears cut list');
+assert.equal(els.get('cageBendListBody').innerHTML,'','Invalid hoop also clears all bend mark-out rows');
+assert.equal(els.get('cageBendListCount').textContent,'—');
 assert.equal(els.get('cageCutTotals').innerHTML,'','Invalid hoop clears material totals');
 
 
@@ -161,6 +191,30 @@ assert(g.addons.front.left.total>0&&g.addons.front.left.blank>0,'Positive centre
 assert(g.addons.front.header?.length>0,'Header between modelled front legs');
 assert.equal(g.memberMarkouts.length,10,'Whole cage includes ten physical individual member mark-outs');
 assert.equal(g.cutList.count,10,'Full cage cut list includes all ten pieces');
+assert.equal(g.bendMarkList.tubeCount,10,'All ten cage parts are represented in the consolidated bend mark-out list');
+assert.equal(g.bendMarkList.bentTubeCount,3,'Two front legs and the main hoop are the bent members');
+assert.equal(g.bendMarkList.bendCount,8,'4 main-hoop bends and 2 per front leg (4 total) in current four-bend mode');
+assert(g.bendMarkList.tubes.some(t=>t.partNumber==='RC-004'&&t.bends.length===0),'Windscreen header has a straight-member NO BENDS row');
+for(const side of ['left','right']){
+  const tube=g.bendMarkList.tubes.find(t=>t.id==='front-leg-'+side);
+  assert(tube&&tube.bends.length===2,'Front leg '+side+' has two developed bend marks');
+  assert.match(tube.datum,/FL5/,'Front leg datum retained');
+  assert(tube.bends[0].clockFromPrevious===null,'First bend has no preceding bend plane');
+  assert(Math.abs(tube.bends[1].clockFromPrevious-g.addons.front[side].clock)<0.001,'B2 clock angle matches 3D geometry');
+  for(const [i,b] of tube.bends.entries()){
+    const bend=g.addons.front[side].bends[i];
+    assert(Math.abs(b.start-(bend.start+g.v.frontTrim))<0.01,'Front mark start follows the actual datum allowance');
+    assert(Math.abs(b.mid-(bend.mid+g.v.frontTrim))<0.01);
+    assert(Math.abs(b.end-(bend.end+g.v.frontTrim))<0.01);
+    assert.equal(b.clr,g.v.frontCLR);
+  }
+}
+assert.match(els.get('cageBendListBody').innerHTML,/RC-002/);
+assert.match(els.get('cageBendListBody').innerHTML,/RC-003/);
+assert.match(els.get('cageBendListBody').innerHTML,/FL3/);
+assert.match(els.get('cageBendListBody').innerHTML,/Clock from previous/);
+assert.match(ctx.window.__bendPrint(),/signed clock/i);
+
 assert.deepEqual(Array.from(g.cutList.rows,p=>p.partNumber).sort(),[
   'RC-001','RC-002','RC-003','RC-004','RC-005','RC-006','RC-007','RC-008','RC-009','RC-010'
 ],'All ten stable IDs are included when the full cage is enabled');
@@ -250,6 +304,7 @@ assert.equal(g.addons.front,null,'Manual front mode preserved when front legs di
 assert.equal(g.tubeJoints.length,10,'Original ten joint inventory restored');
 assert.equal(g.memberMarkouts.length,7,'Disabling front legs also removes both leg sheets and header sheet');
 assert.equal(g.cutList.count,7);
+assert.equal(g.bendMarkList.tubeCount,7,'Turning off front legs also removes bend schedules for optional front members');
 assert(!g.cutList.rows.some(p=>p.partNumber==='RC-004'),'Disabled windscreen header is not silently counted');
 
 console.log('Roll cage geometry, views, controls and invalid-input smoke tests passed');
