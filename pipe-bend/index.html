@@ -149,17 +149,33 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
           </table></div>
         </details>
       </div>
-      <div class="field span2"><label for="steel-grade">Steel / material grade</label><select id="steel-grade">
+      <div class="field span2"><label for="steel-grade">Material and grade</label><select id="steel-grade">
         <option value="">Select a material / grade</option>
-        <option value="rt1020">RaceTech RT350 · 1020 CDS / CDW / DOM mild steel</option>
-        <option value="rt1026">RaceTech RT350 · 1026 CDS / DOM mild steel</option>
-        <option value="rt4130">RaceTech RT650 · 4130 Condition N chromoly</option>
-        <option value="custom">Other steel · enter material properties</option>
+        <optgroup label="Mild steel · Australian structural tube">
+          <option value="c250l0">AS/NZS 1163 C250L0 · mild steel CHS</option>
+          <option value="c350l0">AS/NZS 1163 C350L0 · structural steel CHS</option>
+        </optgroup>
+        <optgroup label="Stainless steel">
+          <option value="ss304">304 · annealed stainless steel</option>
+          <option value="ss316">316 · annealed stainless steel</option>
+          <option value="ss409">409 · annealed ferritic stainless / exhaust</option>
+        </optgroup>
+        <optgroup label="Aluminium · extrusion tempers">
+          <option value="al6061t4">6061-T4 · aluminium tube</option>
+          <option value="al6061t6">6061-T6 · aluminium tube</option>
+          <option value="al6063t5">6063-T5 · aluminium extrusion</option>
+        </optgroup>
+        <optgroup label="RaceTech Steel · motorsport tube">
+          <option value="rt1020">RaceTech RT350 · 1020 CDS / CDW / DOM</option>
+          <option value="rt1026">RaceTech RT350 · 1026 CDS / DOM</option>
+          <option value="rt4130">RaceTech RT650 · 4130 Condition N chromoly</option>
+        </optgroup>
+        <optgroup label="Custom"><option value="custom">Other material · enter properties</option></optgroup>
       </select></div>
       <div class="field span2" id="racetech-stock-field" hidden><label for="racetech-stock">RaceTech catalogue size (optional)</label><select id="racetech-stock"><option value="">Keep current pipe dimensions</option></select><p class="hint">Choose a listed sample to fill OD and wall automatically. Historical catalogue, not live stock.</p></div>
-      <div class="field"><label for="yield-mpa" title="Yield strength. RaceTech technical page supplies approximate guide values; change if you have a mill certificate.">Yield strength (MPa) ⓘ</label><input id="yield-mpa" type="number" step="any" min="1" max="3000" inputmode="decimal" placeholder="e.g. 415"></div>
-      <div class="field"><label for="elastic-mpa" title="Elastic modulus. 205000 MPa is a general engineering assumption for steel, NOT a RaceTech-measured batch value.">Elastic modulus (MPa) ⓘ</label><input id="elastic-mpa" type="number" step="any" min="10000" max="500000" value="205000" inputmode="decimal"></div>
-      <div class="field span2"><p id="race-tech-reference" class="hint" style="margin:0">Choose a grade for material properties. RaceTech reference values are guides, not material certificates.</p></div>
+      <div class="field"><label for="yield-mpa" title="Yield strength or 0.2% proof stress (depending on grade and condition). These defaults are reference minimums, not measured values for a specific tube or batch.">Yield / 0.2% proof (MPa) ⓘ</label><input id="yield-mpa" type="number" step="any" min="1" max="3000" inputmode="decimal" placeholder="e.g. 415"></div>
+      <div class="field"><label for="elastic-mpa" title="Young’s modulus in MPa. Depends on material family; each grade loads its own reference value.">Elastic modulus (MPa) ⓘ</label><input id="elastic-mpa" type="number" step="any" min="10000" max="500000" value="205000" inputmode="decimal"></div>
+      <div class="field span2"><p id="material-reference" class="hint" style="margin:0">Choose a grade to load approximate reference properties. Confirm material grade, temper and supplied tube condition before bending.</p></div>
     </div>
     <div class="sb-grid">
       <div class="sb-form">
@@ -179,7 +195,7 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
         <div id="springback-warning" class="sb-warning" hidden></div>
       </div>
     </div>
-    <p class="muted" style="margin:12px 0 0"><a href="https://racetechsteel.com.au/technical/" target="_blank" rel="noopener noreferrer">RaceTech material guide</a> · <a href="https://racetechsteel.com.au/wp-content/uploads/2021/07/RacetechcatalogueVersion1.171.pdf" target="_blank" rel="noopener noreferrer">RaceTech catalogue v1.171</a>. The supplier's 350/650 grades refer to minimum tensile classes, not yield strengths. Catalogue dimensions are historical and must be checked with the supplier.</p>
+    <p class="muted" style="margin:12px 0 0">Material reference sources: <a href="https://orrconmanufacturing.com.au/app/uploads/2023/11/Orr-Man-Pocket-Cat.pdf" target="_blank" rel="noopener noreferrer">Orrcon structural tube</a> · <a href="https://www.assda.asn.au/stainless-steel/properties-and-performance" target="_blank" rel="noopener noreferrer">ASSDA stainless</a> · <a href="https://www.alumeco.com/aluminium/data/mechanical-properties/tubes/" target="_blank" rel="noopener noreferrer">Aluminium tube strength</a> · <a href="https://www.alumeco.com/aluminium/data/physical-properties/" target="_blank" rel="noopener noreferrer">Aluminium modulus</a> · <a href="https://racetechsteel.com.au/technical/" target="_blank" rel="noopener noreferrer">RaceTech</a>. These values are approximate/reference minima for listed forms and conditions; not batch certificates or validated springback data.</p>
     <p class="muted" style="margin:15px 0 0">The live diagram and developed length use the desired <strong>finished</strong> angle, not the bender's overbent position. Use bend direction-change angles, not the inside corner angle. Recalibrate for material grade, OD, wall, centreline radius, die, machine or process changes.</p>
   </section>
   <section id="cut-section" class="panel" style="margin-top:18px" hidden><div class="result-head"><div><h2 style="margin-bottom:5px">Segment cutting list</h2><p class="muted" style="margin-top:0">Lengths are measured along each straight pipe piece, from cut face to cut face.</p></div><div class="actions" style="margin-top:0"><button type="button" class="primary" id="csv">Export cut list CSV</button><button type="button" id="wrap-template" title="Generate real-size A4/A3 cutting patterns to wrap around round pipe">Print 1:1 wrap templates</button></div></div><div class="table-scroll"><table><thead><tr><th>Piece</th><th>Qty</th><th>Cut angle / end</th><th>Centreline (mm)</th><th>Short side (mm)</th><th>Long side (mm)</th></tr></thead><tbody id="cut-rows"></tbody></table></div><p class="table-help">Mitre angle is measured <strong>from a square cut</strong>, not from the pipe axis. Short / long measurements are across the outside diameter. Inlet / outlet pieces have one square end; middle pieces have two mitred ends. Use <strong>Print 1:1 wrap templates</strong> for full-size A4/A3 paper patterns; check printer scale before cutting. Allow separately for kerf, weld gap and fit-up.</p></section>
@@ -324,6 +340,22 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
     // Graphics are local, static authored strings; no user-provided HTML enters here.
     $('bender-guide-art').innerHTML=g.drawing;
   }
+
+  // Reference strength values used for first-pass springback planning, not certified
+  // as-supplied pipe properties. See material source links in the page.
+  // For C250/C350 use design minimum fy; for annealed stainless use 0.2% proof
+  // minimum, and for aluminium use extruded tube/section minimums (product and
+  // thickness restrictions may change these). E is a reference, not batch test.
+  const STANDARD_MATERIALS=Object.freeze({
+    c250l0:{label:'AS/NZS 1163 C250L0 CHS',family:'carbon',yield:250,E:200000,note:'Minimum structural-tube yield strength (250 MPa). Use the steel modulus reference of 200000 MPa; actual cold-forming properties can vary.'},
+    c350l0:{label:'AS/NZS 1163 C350L0 CHS',family:'carbon',yield:350,E:200000,note:'Minimum structural-tube yield strength (350 MPa). Cold work and supplier-specific condition can affect measured springback.'},
+    ss304:{label:'304 stainless (annealed)',family:'stainless',yield:205,E:193000,note:'ASSDA annealed flat-product minimum 0.2% proof stress; cold-worked tube can be substantially stronger than this reference.'},
+    ss316:{label:'316 stainless (annealed)',family:'stainless',yield:205,E:193000,note:'ASSDA annealed flat-product minimum 0.2% proof stress; tube condition and work hardening change the actual bending response.'},
+    ss409:{label:'409 stainless (annealed)',family:'stainless',yield:205,E:200000,note:'ASSDA annealed flat-product reference. Exhaust tubing may have different delivery or work-hardened properties; confirm the material specification.'},
+    al6061t4:{label:'6061-T4 aluminium tube',family:'aluminium',yield:110,E:69000,note:'Minimum 0.2% proof strength for the listed extrusion/tube temper, typically 110 MPa. Aluminium temper and wall thickness must match your actual tube.'},
+    al6061t6:{label:'6061-T6 aluminium tube',family:'aluminium',yield:240,E:69000,note:'Reference 0.2% proof strength for extruded tube up to applicable thickness limits, about 240 MPa. T6 can crack in tight bends; consult forming guidance.'},
+    al6063t5:{label:'6063-T5 aluminium extrusion',family:'aluminium',yield:110,E:69000,note:'Reference minimum 0.2% proof strength for applicable 6063-T5 tube/extrusion dimensions. Check product-specific thickness/temper tables.'}
+  });
   const BENDER_NOTES={
     'rotary-draw':'Rotary draw: use the die centreline radius and check clamping, pressure die and mandrel setup.',
     'hydraulic-ram':'Hydraulic ram: the actual curve and bend radius can vary along the pipe. A single-radius model is especially approximate; measure the finished bend.',
@@ -386,7 +418,7 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
     let loss,command,testSet=null;
     if(source==='material'){
       const grade=$('steel-grade').value;
-      if(!grade)return {ready:false,message:'Select a steel grade to calculate a rough material-based overbend.'};
+      if(!grade)return {ready:false,message:'Select a material grade to calculate a rough material-based overbend.'};
       const fy=num('yield-mpa'),E=num('elastic-mpa');
       if(!Number.isFinite(fy)||fy<=0||fy>3000||!Number.isFinite(E)||E<10000||E>500000)
         return {ready:false,warning:'Enter a valid yield strength (up to 3000 MPa) and elastic modulus (10000–500000 MPa).'};
@@ -410,6 +442,9 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
       if(c.R/c.D<1.5)warnings.push('Tight radius: flattening, thinning and tooling effects could dominate.');
       if($('bender-method').value!=='rotary-draw')
         warnings.push('This bending method may produce a non-uniform radius: measure the real finished CLR.');
+      const family=STANDARD_MATERIALS[grade]?.family;
+      if(family==='stainless')warnings.push('Annealed stainless grade reference does not account for rapid strain hardening or cold-worked tube condition.');
+      if(family==='aluminium')warnings.push('Aluminium temper, cracking limits, work hardening and forming history are not modelled. Confirm allowable bend radius and perform a trial.');
       return {ready:true,source,command,extra:command-c.angle,recovery,warnings};
     }
     if(source==='trial'){
@@ -458,23 +493,28 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
   }
   function updateSteelGrade(){
     const grade=$('steel-grade').value;
-    const data=RACETECH[grade];
-    const select=$('racetech-stock');
-    select.replaceChildren(new Option('Keep current pipe dimensions',''));
-    $('racetech-stock-field').hidden=!data;
-    if(data){
-      $('yield-mpa').value=String(data.yield);
-      $('elastic-mpa').value='205000';
-      data.sizes.forEach((size,index)=>select.add(new Option(size[0]+' × '+size[1]+' mm · '+size[2],String(index))));
-      $('race-tech-reference').textContent=data.label+' — supplier reference: yield '+data.yield+' MPa; tensile '+data.tensile+' MPa; elongation '+data.elongation+'%. E = 205000 MPa is a separate generic steel assumption. Catalogue sizes are not live availability.';
+    const race=RACETECH[grade];
+    const standard=STANDARD_MATERIALS[grade];
+    const sizes=$('racetech-stock');
+    sizes.replaceChildren(new Option('Keep current pipe dimensions',''));
+    $('racetech-stock-field').hidden=!race;
+    if(race){
+      $('yield-mpa').value=String(race.yield);
+      $('elastic-mpa').value='205000'; // generic steel modulus assumption, separate from RaceTech guide
+      race.sizes.forEach((item,index)=>sizes.add(new Option(item[0]+' × '+item[1]+' mm · '+item[2],String(index))));
+      $('material-reference').textContent=race.label+' — RaceTech guide: yield '+race.yield+' MPa, tensile '+race.tensile+' MPa; E 205000 MPa is a generic steel assumption. Supplier stock, temper and lot properties require confirmation.';
+    }else if(standard){
+      $('yield-mpa').value=String(standard.yield);
+      $('elastic-mpa').value=String(standard.E);
+      $('material-reference').textContent=standard.label+' — reference yield/proof '+standard.yield+' MPa; E '+standard.E+' MPa. '+standard.note+' Replace with mill certificate values when known.';
     }else if(grade==='custom'){
       $('yield-mpa').value='';
-      $('elastic-mpa').value='205000';
-      $('race-tech-reference').textContent='Enter measured or specified yield strength for your steel. E = 205000 MPa is a general steel assumption unless you substitute a certified value.';
+      $('elastic-mpa').value='';
+      $('material-reference').textContent='Enter the actual yield/0.2% proof strength and Young’s modulus for the material and temper being bent. No generic steel modulus is assumed for custom material.';
     }else{
       $('yield-mpa').value='';
-      $('elastic-mpa').value='205000';
-      $('race-tech-reference').textContent='Select a grade. RaceTech guide properties are not batch certificates. Use a trial bend for the reliable correction.';
+      $('elastic-mpa').value='';
+      $('material-reference').textContent='Choose a grade to load reference mechanical properties. These are not certificates or validated springback curves. Check the as-supplied condition.';
     }
     render();
   }
@@ -586,7 +626,7 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
   function makeSummary(c){if(!c)return '';const lines=[`DCB ENG Pipe Bend Calculator`,`${c.mode==='smooth'?'Smooth bend':'Segmented elbow'} — ${fmt(c.angle,2)}°`, `OD ${fmt(c.D,2)} mm; wall ${fmt(c.wall,2)} mm${$('profile').value==='NB'&&$('schedule').value!=='custom'?' (Sch '+$('schedule').value+')':''}; CLR ${fmt(c.R,2)} mm`,`Inlet ${fmt(c.inlet,2)} mm; outlet ${fmt(c.outlet,2)} mm; quantity ${c.qty}`,`Centreline per bend: ${fmt(c.perBend,2)} mm`,`Total centreline length: ${fmt(c.total,2)} mm`];if(c.mode==='smooth'){lines.push(`Bend allowance (centreline arc): ${fmt(c.arc,2)} mm`,`Tangent setback: ${c.setback===null?'Not defined':fmt(c.setback,2)+' mm'}`);const sb=springbackEstimate(c);if(sb&&sb.ready)lines.push(`Springback (${sb.source}; ${$('steel-grade').selectedOptions[0].textContent}; ${$('bender-method').selectedOptions[0].textContent}): bend to ${fmt(sb.command,sb.source==='material'?1:2)} degrees (overbend +${fmt(sb.extra,sb.source==='material'?1:2)} degrees)`);}else{lines.push(`Joints ${c.joints}; pieces per bend ${c.partsPerBend}; mitre cut ${fmt(c.mitre,3)}° from square`);c.pieces.forEach(p=>lines.push(`${p.name} x ${p.qty}: centreline ${fmt(p.cl,2)} mm, short ${fmt(p.short,2)} mm, long ${fmt(p.long,2)} mm`));}return lines.join('\n');}
   function csvEscape(s){const t=String(s);return `"${t.replace(/"/g,'""')}"`;}
   function exportCSV(){const c=current;if(!c||c.mode!=='segmented')return;const rows=[['Piece','Qty','Cut angles from square','Centreline mm','Short side mm','Long side mm','OD mm','Wall mm','CLR mm','Bend angle deg','Joint count']];for(const p of c.pieces)rows.push([p.name,p.qty,p.angles,p.cl.toFixed(2),p.short.toFixed(2),p.long.toFixed(2),c.D.toFixed(2),c.wall.toFixed(2),c.R.toFixed(2),c.angle.toFixed(2),c.joints]);const csv='\ufeff'+rows.map(r=>r.map(csvEscape).join(',')).join('\r\n');const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='dcb-pipe-bend-cut-list.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
-  function reset(){mode='smooth';springbackCalibrationSetup=null;$('bender-method').value='rotary-draw';$('bender-id').value='';$('steel-grade').value='';$('yield-mpa').value='';$('elastic-mpa').value='205000';$('racetech-stock-field').hidden=true;updateBenderGuide();$('springback-mode').value='material';$('springback-projection').value='fixed';$('trial-commanded').value='';$('trial-finished').value='';$('springback-loss').value='';savedManualWall=3.2;$('profile').value='CHS';populateSizes(48.3);populateSchedules();$('wall').value='3.2';$('angle').value='90';$('radius').value='150';$('inlet').value='100';$('outlet').value='100';$('qty').value='1';$('joints').value='4';updateSteelGrade();}
+  function reset(){mode='smooth';springbackCalibrationSetup=null;$('bender-method').value='rotary-draw';$('bender-id').value='';$('steel-grade').value='';$('yield-mpa').value='';$('elastic-mpa').value='';$('racetech-stock-field').hidden=true;updateBenderGuide();$('springback-mode').value='material';$('springback-projection').value='fixed';$('trial-commanded').value='';$('trial-finished').value='';$('springback-loss').value='';savedManualWall=3.2;$('profile').value='CHS';populateSizes(48.3);populateSchedules();$('wall').value='3.2';$('angle').value='90';$('radius').value='150';$('inlet').value='100';$('outlet').value='100';$('qty').value='1';$('joints').value='4';updateSteelGrade();}
   document.querySelectorAll('input,select').forEach(el=>{
     if(['profile','size','schedule'].includes(el.id))return;
     el.addEventListener('input',()=>{if(el.id==='wall'&&!el.readOnly)savedManualWall=num('wall');if(['trial-commanded','trial-finished','springback-loss'].includes(el.id))springbackCalibrationSetup=springSetupKey();render();});
