@@ -908,6 +908,122 @@
   return extra;
 }
 
+  function ruleReview(g){
+  const body=$('rulesBody').value||'generic',cls=$('rulesClass').value||'generic',
+    occupants=Number($('occupants').value||1),driver=$('driverSide').value||'right',
+    mass=Number($('vehicleWeight').value),material=$('tubeSpec').value||'unverified';
+  const a=g.addons,ex=a.extras||{},items=[];
+  const push=(kind,code,explanation)=>items.push({kind,code,explanation});
+  if(body==='generic'){push('manual','SELECT RULESET','Generic fabrication layout; no sanctioning-body requirements have been checked.');return {body,cls,items,checks:0,alerts:0};}
+  if(!Number.isFinite(mass)||mass<=0)push('warn','MASS','Enter a valid start-line vehicle mass before relying on tube-size checks.');
+  const has=id=>$(id)?.checked||false;
+  const req=(ok,title,article)=>push(ok?'pass':'warn',title,ok?`Geometry/member is present — inspect the actual joint and ${article}.`:`Required member is absent or geometrically invalid — see ${article}.`);
+  const pair=ex=>Array.isArray(ex)&&ex.length===2;
+  req(!!a.stays,'Two rear stays',body==='aasa'?'AASA 2.5':'Schedule J Article 12/13');
+  if(body==='aasa'){
+    if(cls==='1'||cls==='1a'||cls==='2')req(!!a.brace,'Single primary diagonal','AASA 2.4');
+    if(cls==='3')req(!!ex.cross,'Main-hoop X / cross','AASA 2.13 / SC-14');
+    if(['2','3'].includes(cls)){
+      req(!!a.front&&!a.front.errors.length,'Continuous front legs','AASA 2.7');
+      req(!!a.front?.header,'Windscreen header','AASA 2.8');
+    }
+    if(['1a','2','3'].includes(cls)){
+      req(!!a.door?.members?.some(m=>m.name.toLowerCase()===driver),'Door protection on driver side','AASA 2.9');
+      if(occupants===2)req(!!a.door&&a.door.members.length===2,'Door protection on both sides','AASA 2.9');
+      if(cls==='1a')push('manual','CLASS 1a FRONT SILL','Confirm the front door bar mounts to the sill at the front of the opening (SC-16); this is not modelled as a structural sill joint.');
+    }
+    if(cls==='3'){
+      req(!!ex.hoopHarness,'Main-hoop full-width harness bar','AASA 2.6');
+      req(pair(ex.roof),'Roof V / cross reinforcement','AASA 2.12');
+      req(pair(ex.pillarA),'A-pillar reinforcements','AASA 2.10');
+      req(pair(ex.pillarB),'B-pillar reinforcements','AASA 2.11');
+      req(pair(ex.door2)&&ex.door2.length===(a.door?.members?.length||0),'Double anti-intrusion on selected sides','AASA 2.14');
+      push('manual','JUNCTION GUSSETS','Main-hoop X and crossing door/roof members require junction reinforcement where specified in SC-14, SC-21 and SC-22.');
+    }
+  }else if(body==='ma'){
+    if(cls==='type2'){
+      req(!!a.brace,'Primary diagonal','Schedule J Article 13.1(d)');
+      if(a.front)push('manual','TYPE 2 STRUCTURE','A full cage can be fitted, but Type 2 has its own permitted designs and event limitations (Article 13).');
+    }else if(cls==='type3'){
+      req(!!a.brace||!!ex.cross,'Main hoop/rear diagonal reinforcement','Schedule J Article 12.3');
+      req(!!a.front&&!a.front.errors.length,'Full cage front structure','Schedule J Article 12.1');
+      req(!!a.front?.header,'Transverse windscreen member','Schedule J Article 12.1');
+      push('manual','EVENT-DEPENDENT REINFORCEMENTS','Roof, A-pillar, side intrusion and other reinforcements depend on the event and selected Schedule J drawing: Articles 12.3 and 15. Confirm eligibility manually.');
+    }else push('manual','SELECT TYPE','Select the full or half cage type appropriate to your event.');
+    push('manual','MOTORSPORT AUSTRALIA DESIGN','Cage Type 2/3 labels are not AASA Classes 2/3. Confirm the exact event, registration and drawing set.');
+  }
+  if(a.stays){
+    const angle=Math.atan2(g.v.rearRun,g.v.stayTop-g.v.rearFootHeight)*180/Math.PI;
+    const max=body==='ma'&&cls==='type2'?60:Infinity;
+    push(angle>=30-1e-6&&angle<=max+1e-6?'pass':'warn','REAR STAY SIDE-VIEW ANGLE',
+      `${round(angle,1)}° from vertical (side view); ${body==='ma'&&cls==='type2'?'Type 2 closed car: 30–60°':'AASA 2.5: at least 30°'}. Confirm straight mounting and rear structural reinforcement.`);
+  }
+  if(a.brace){
+    const top=g.v.braceTop,lower=g.v.braceBottom,correctSide=a.brace.upperSide===driver;
+    if(body==='aasa'&&['1','1a','2'].includes(cls)){
+      push(correctSide?'pass':'warn','DRIVER-SIDE DIAGONAL TOP',correctSide?'Primary upper end is on the selected driver side.':'Upper diagonal must be behind the driver; swap upper attachment side.');
+      if(a.stays){
+        const distance=mag3(sub3(a.brace.upper,a.stays[driver]));
+        push(distance<=100?'pass':'warn','DIAGONAL TOP TO REAR-STAY JOINT',
+          `${round(distance,1)} mm straight-line separation; AASA 2.4 requires attachment within 100 mm (confirm distance along tube and actual weld joint).`);
+      }
+      push(lower<=100?'pass':'warn','DIAGONAL LOWER TO MOUNTING PLANE',
+        `${round(lower,1)} mm vertical offset from hoop mounting datum; AASA 2.4 requires within 100 mm of mounting point, not simply floor plane.`);
+    }
+    if(body==='ma'&&cls==='type2')push(correctSide?'pass':'warn','TYPE 2 DIAGONAL DRIVER SIDE',
+      correctSide?'Upper end is on selected driver side.':'Schedule J Type 2 requires upper diagonal end on driver side.');
+  }
+  if(a.door&&body==='aasa'){
+    const H=Number($('doorOpeningHeight').value),sill=Number($('doorSillHeight').value);
+    if(!Number.isFinite(H)||H<=0||!Number.isFinite(sill))push('warn','DOOR OPENING','Enter actual opening H and sill datum before door-height checks.');
+    else{
+      const max=sill+H/2,barEnds=a.door.members.map(m=>({name:m.name,rear:m.rear.y,front:m.front.y}));
+      for(const bar of ex.door2||[])barEnds.push({name:bar.title,rear:bar.near.y,front:bar.far.y});
+      for(const b of barEnds){
+        const within=b.rear<=max&&b.front<=max;
+        push(within?'pass':'warn','DOOR BAR ATTACHMENT HEIGHT',`${b.name}: rear ${round(b.rear,1)} mm, front ${round(b.front,1)} mm; local half-door opening height limit ${round(max,1)} mm (AASA 2.9 / SC-16).`);
+      }
+    }
+  }
+  if(body==='aasa'&&ex.pillarA?.length&&a.front?.header){
+    for(const m of ex.pillarA){
+      const side=m.id.endsWith('left')?'left':'right',d=mag3(sub3(m.near,a.front.header[side]));
+      push(d<=100?'pass':'warn','A-PILLAR UPPER JOINT OFFSET',`${side}: ${round(d,1)} mm 3D separation from windscreen-header/front-leg junction; normal SC-18 allowance 100 mm (SC-19 alternative 200 mm requires its specified reinforcing arrangement).`);
+    }
+  }
+  if(material==='unverified')push('manual','TUBING CERTIFICATION','Tube OD/wall alone cannot establish steel grade, tensile strength, weldability or traceability. Check supplier certificates.');
+  else if(material==='as1163'&&(body==='ma'||body==='aasa'&&cls==='3'))push('warn','AS/NZS 1163 MATERIAL',body==='ma'?'Schedule J Article 8 normally specifies cold-drawn CDS/CDW steel, not AS/NZS 1163 CHS without special certification.':'AASA Section 2.19 authorises AS/NZS 1163 only for Classes 1/1a/2, not Class 3.');
+  else{
+    const od=g.v.od,wall=g.v.wall;
+    if(body==='aasa'){
+      const main=material==='as1163'?(od>=48.25&&wall>=2.3):(mass>1150?od>=44.4&&wall>=2.5:od>=38.05&&wall>=2.4);
+      push(main?'pass':'warn','MAIN-HOOP MINIMUM TUBE SIZE',
+        `${round(od,2)} × ${round(wall,2)} mm; check Table ${material==='as1163'?'ST-4':'ST-3'} and the actual size/grade. Nominal diameter comparisons are advisory.`);
+    }else if(body==='ma'){
+      const main=(od>=44.4&&wall>=2.5)||(od>=50&&wall>=2);
+      push(main?'pass':'warn','MAIN ROLL BAR TUBE SIZE',`${round(od,2)} × ${round(wall,2)} mm; Schedule J Table J-1 nominal main-rollbar options 44.45 × 2.5 or 50 × 2.0 mm.`);
+    }
+  }
+  push('manual','REQUIRED OFFLINE CHECKS','Mounting foot and counterplate details; helmet/seat/harness clearance; door geometry; bend ovalisation; weld and gusset access; full cage inspection and registration. No overall compliance is asserted.');
+  return {body,cls,items,checks:items.filter(x=>x.kind==='pass').length,alerts:items.filter(x=>x.kind==='warn').length};
+}
+
+  function renderRuleReview(g){
+  if(!g||!g.addons){$('rulesSummary').textContent='Invalid hoop: fix geometry before checking selected rules.';$('rulesMessages').innerHTML='';return;}
+  const r=ruleReview(g);g.ruleReview=r;
+  const name=r.body==='aasa'?'AASA 2026 · Class '+r.cls:r.body==='ma'?'Motorsport Australia 2026 · '+r.cls:'Generic workshop layout';
+  $('rulesSummary').textContent=`${name}: ${r.alerts} design alert(s), ${r.checks} individual checks within limits. This is NOT approval, certification or a complete rules audit.`;
+  $('rulesMessages').innerHTML=r.items.map(x=>`<div class="rule-message ${x.kind}"><strong>${x.kind==='pass'?'CHECKED':x.kind==='warn'?'ATTENTION':'VERIFY MANUALLY'} · ${cageSafeHTML(x.code)}</strong> — ${cageSafeHTML(x.explanation)}</div>`).join('');
+}
+
+  function updateRulesClass(){
+  const b=$('rulesBody').value,previous=$('rulesClass').value;
+  const types=b==='aasa'?[['1','Class 1 — half cage'],['1a','Class 1a — side-impact'],['2','Class 2 — full cage'],['3','Class 3 — reinforced full cage']]:
+    b==='ma'?[['type2','Type 2 — half cage'],['type3','Type 3 — full cage']]:[['generic','Not selected']];
+  $('rulesClass').innerHTML=types.map(([k,title])=>`<option value="${k}">${title}</option>`).join('');
+  $('rulesClass').value=types.some(([k])=>k===previous)?previous:types[0][0];
+}
+
   function addonsGeometry(g){
     const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null,front=null;
     const useBrace=$('useBrace').checked,useStays=$('useStays').checked,useHarness=$('useHarness').checked,useDoor=$('useDoor').checked,useFrontLegs=$('useFrontLegs').checked;
@@ -1722,7 +1838,7 @@
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
+    if(g.issues.length){renderRuleReview(null);err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
@@ -1737,6 +1853,7 @@
     renderMemberMarkouts(g);
     renderCageCutList(g);
     renderCageBendList(g);
+    renderRuleReview(g);
   }
   function setMode(n){mode=n;for(const m of [2,4]){$('mode'+m).classList.toggle('active',m===n);$('mode'+m).setAttribute('aria-pressed',String(m===n));}document.querySelectorAll('.tapered').forEach(x=>x.classList.toggle('field-hidden',n!==4));render();}
   function getSheet(){if(!latest)return '';const g=latest,v=g.v;const text=[`ROLL CAGE FABRICATION SHEET — ${g.mode}-bend hoop`, `Measured space: W ${round(v.width,1)} mm × H ${round(v.height,1)} mm`, `Tube OD ${round(v.od,2)} mm | wall ${round(v.wall,2)} mm | bender CLR ${round(v.radius,2)} mm`, `Side clearance ${round(v.sideGap,1)} mm | top clearance ${round(v.topGap,1)} mm`,...(g.mode===4?[`Roof available width ${round(v.roofWidth,1)} mm | shoulder available width ${round(v.shoulderWidth,1)} mm | shoulder corner height ${round(v.shoulder,1)} mm`]:[]),`Developed finished centreline length: ${round(g.total,1)} mm`,`Trim allowance: ${round(v.extra,1)} mm at each end`,`Suggested starting blank: ${round(g.blank,1)} mm`,`BEND MARKS (all measured from same starting blank end / zero datum):`,'Bend | Turn angle | Start of bend | Centre of bend | End of bend',...g.bends.map(b=>`${b.name} | ${round(b.angle,2)}° | ${round(b.start+v.extra,1)} mm | ${round(b.mid+v.extra,1)} mm | ${round(b.end+v.extra,1)} mm`),'STRAIGHT SECTIONS:',...g.sections.map(x=>`${x.label}: ${round(x.length,1)} mm`),'Important: Start and end = geometric tangency points; centre = half bend arc length. These are developed-centreline estimates, not calibrated machine feed marks. Validate bends, growth and springback on a test piece.'];
@@ -1754,6 +1871,10 @@
   function download(filename,data,mime){const blob=new Blob([data],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
   function copy(){const s=getSheet();if(!s)return;const done=()=>{for(const id of ['copy','copyTop']){const b=$(id),old=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=old,1600);}};if(navigator.clipboard?.writeText){navigator.clipboard.writeText(s).then(done).catch(()=>download('main-hoop-bending-sheet.txt',s,'text/plain'));}else download('main-hoop-bending-sheet.txt',s,'text/plain');}
   for(const id of vals)$(id).addEventListener('input',render);
+  $('rulesBody').addEventListener('change',()=>{updateRulesClass();render();});
+  $('rulesClass').addEventListener('change',render);
+  for(const id of ['driverSide','occupants','tubeSpec'])$(id).addEventListener('change',render);
+  for(const id of ['vehicleWeight','doorOpeningHeight','doorSillHeight'])$(id).addEventListener('input',render);
   $('braceUpperSide').addEventListener('change',render);
    $('doorSides').addEventListener('change',render);
    $('frontTubeConfirmed').addEventListener('change',render);
@@ -1895,7 +2016,7 @@
     const payload={schema:'roll-cage-geometry-v3',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays,harness,sideIntrusion:door,frontStructure:front,cutList:g.cutList?{job:g.cutList.job,material:g.cutList.material,parts:g.cutList.rows,groups:g.cutList.groups,totalPrepLength:g.cutList.totalBlank}:null,bendMarkList:g.bendMarkList||null,tubeJoints:(g.tubeJoints||[]).map(j=>({id:j.id,partNumber:j.partNumber,title:j.title,member:j.member,end:j.end,branchOD:j.branchOD,branchWall:j.branchWall,parentOD:j.parentOD,parentName:j.parentName,parentType:j.parentType,axisAngleDeg:j.angle,outer:j.outer?{x:j.outer.x,y:j.outer.y,z:j.outer.z||0}:null,other:j.other?{x:j.other.x,y:j.other.y,z:j.other.z||0}:null,parentAxis:j.parentAxis,branchAxis:j.branchAxis,upReference:j.upReference,quarterReference:j.quarterReference,referenceLabel:j.referenceLabel,quarterLabel:j.quarterLabel,minDepth:j.minDepth,cutDepth:j.cutDepth,profile:j.profile?j.profile.map(p=>({theta:p.theta,s:p.s,depth:p.depth,cut:p.cut})):null,error:j.error||null}))};
     download('roll-cage-geometry-for-future-step.json',JSON.stringify(payload,null,2),'application/json');
   });
-  updateFrontControls();render();
+  updateRulesClass();updateFrontControls();render();
 })();
 </script>
 </body></html>
