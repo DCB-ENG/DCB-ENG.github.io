@@ -43,6 +43,26 @@ try{
   assert.equal(buf[0],0x50,"ZIP local file PK header");
   assert.equal(buf[1],0x4b);
   console.log("Chromium browser imported pinned WASM kernel, created 3 STEP solids and downloaded ZIP:",buf.length,"bytes");
+
+  // Real generator -> lab hand-off: the user should not need to download/reload JSON.
+  const editor=await context.newPage();
+  await editor.goto("http://127.0.0.1:"+PORT+"/roll-cage/",{waitUntil:"load",timeout:60000});
+  await editor.locator("#useFrontLegs").check();
+  await editor.waitForFunction(()=>{
+    const b=document.getElementById("browserStepOpen");
+    return b && b.disabled===false;
+  },{timeout:120000});
+  const popupPromise=context.waitForEvent("page",{timeout:30000});
+  await editor.locator("#browserStepOpen").click();
+  const popup=await popupPromise;
+  await popup.waitForLoadState("load");
+  await popup.waitForFunction(()=>{
+    const status=document.getElementById("exportStatus");
+    return document.getElementById("exportButton")?.disabled===false &&
+      status?.textContent?.includes("Ready:");
+  },{timeout:60000});
+  console.log("Generator-to-lab hand-off passed; current measurements available without JSON upload.");
+
 }catch(error){
   console.error("Browser STEP test error",error);
   throw error;
