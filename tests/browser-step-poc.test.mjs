@@ -47,6 +47,7 @@ const records=await generatePreview(brep,fixture,"left",(msg)=>console.log("[STE
 assert.equal(records.length,3);
 const outDir=process.argv[2]||"/tmp/dcb-browser-step";
 await mkdir(outDir,{recursive:true});
+await fs.writeFile(outDir+'/browser-fixture.json',JSON.stringify(fixture,null,2));
 for(const record of records){
  assert(record.blob.size>2000);
  assert(record.volume>10);
