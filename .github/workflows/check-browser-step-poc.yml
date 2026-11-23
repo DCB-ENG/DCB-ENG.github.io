@@ -31,6 +31,12 @@ jobs:
           node --check tests/browser-step-poc.test.mjs
       - name: Generate 3 real B-rep STEP solids in the JavaScript CAD kernel
         run: node tests/browser-step-poc.test.mjs /tmp/browser-roll-cage-step
+      - name: Install headless browser for real website integration check
+        run: |
+          npm install --no-save --no-package-lock playwright@1.57.0
+          npx playwright install --with-deps chromium
+      - name: Generate three STEP files from the browser page and download ZIP
+        run: node tests/browser-step-ui.test.mjs /tmp/browser-roll-cage-step/browser-fixture.json
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
