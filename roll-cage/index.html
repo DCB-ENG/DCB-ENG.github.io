@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roll Cage Main Hoop &amp; Brace Generator | DCB ENG</title>
+<meta name="description" content="Design roll-cage main hoops, diagonal braces and rear stays. Calculate tube bend marks and lengths, and print labelled 1:1 CHS fishmouth wrap-around templates.">
+<link rel="canonical" href="https://dcb-eng.github.io/roll-cage/">
+<meta property="og:title" content="Roll Cage Main Hoop &amp; Brace Generator | DCB ENG">
+<meta property="og:description" content="Design roll-cage main hoops, diagonal braces and rear stays. Calculate tube bend marks and lengths, and print labelled 1:1 CHS fishmouth wrap-around templates.">
+<meta property="og:url" content="https://dcb-eng.github.io/roll-cage/">
+<style>
+:root{color-scheme:dark;--bg:#101215;--panel:#1a1e22;--panel2:#21262b;--rule:#394046;--text:#edf0f2;--muted:#a4acb2;--orange:#fc912c;--silver:#d3dce1;--bad:#ff796e}
+*{box-sizing:border-box}body{margin:0;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}button,input,select{font:inherit}header{border-bottom:1px solid var(--rule);background:#15191c}header .wrap{max-width:1460px;margin:auto;padding:20px 28px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}h1{font-size:clamp(23px,3vw,34px);margin:0;font-weight:750;letter-spacing:-.035em}h1 span{color:var(--orange)}.subtitle{font-size:13px;color:var(--muted);margin-top:4px}.top-actions{display:flex;gap:8px;flex-wrap:wrap}button,.link-button{background:#2b3036;color:var(--text);border:1px solid #4b535a;border-radius:9px;padding:10px 14px;cursor:pointer;text-decoration:none;font-weight:650}button:hover,.link-button:hover{border-color:var(--orange)}button.primary{background:var(--orange);border-color:var(--orange);color:#171717}button:focus-visible,input:focus-visible{outline:2px solid var(--orange);outline-offset:2px}.wrap-main{max-width:1460px;margin:auto;padding:22px 28px 44px}.intro{max-width:1100px;color:var(--muted);margin:0 0 20px}.layout{display:grid;grid-template-columns:minmax(290px,365px) minmax(0,1fr);gap:18px;align-items:start}.panel{background:var(--panel);border:1px solid var(--rule);border-radius:15px;padding:20px;min-width:0;box-shadow:0 8px 30px #00000020}.panel+.panel{margin-top:16px}h2{font-size:17px;margin:0 0 16px}h3{font-size:13px;text-transform:uppercase;letter-spacing:.09em;color:var(--orange);margin:21px 0 12px}.choose{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:#111417;border-radius:9px;padding:5px;margin:0 0 18px}.choose button{border:1px solid transparent;background:transparent;color:var(--muted);padding:10px 6px;border-radius:7px}.choose button.active{color:#121212;background:var(--orange);font-weight:800}.fields{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:5px;min-width:0}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#c4cbd0;font-weight:620}.field input,.field select{width:100%;background:#111518;border:1px solid #41494e;border-radius:8px;color:var(--text);padding:10px 11px;font-variant-numeric:tabular-nums}.field .hint{color:var(--muted);font-size:11px}.unit{color:var(--muted)}.field-hidden{display:none!important}.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:16px}.metric{border:1px solid var(--rule);background:var(--panel);border-radius:13px;padding:15px 16px}.metric .label{font-size:12px;color:var(--muted)}.metric strong{display:block;font-size:clamp(21px,2.4vw,33px);font-weight:750;line-height:1.15;margin:6px 0 0;letter-spacing:-.03em;font-variant-numeric:tabular-nums}.metric.primary{border-color:#8e5e2b}.metric.primary strong{color:var(--orange)}.metric .sub{font-size:11px;color:var(--muted);margin-top:4px}.drawing{padding:13px 18px 7px}.drawing-header{display:flex;align-items:start;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:3px 4px 8px}svg{width:100%;height:auto;display:block;background:radial-gradient(ellipse at 55% 44%,#20272c 0,#14191c 65%);border:1px solid #303940;border-radius:10px}svg:not(.paper-template) text{font:14px system-ui,Arial,sans-serif;fill:#cbd3d8}svg .dimension{fill:#fb912f;font-weight:650}svg .note{font-size:11px;fill:#a3acb2}svg .bendlabel{font-size:13px;fill:#ffb65e;font-weight:700}.legend{display:flex;gap:16px;flex-wrap:wrap;padding:10px 7px 3px;font-size:12px;color:var(--muted)}.legend i{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:6px}.table-scroll{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;white-space:nowrap}th,td{text-align:right;padding:10px 10px;border-bottom:1px solid var(--rule);font-variant-numeric:tabular-nums}th:first-child,td:first-child{text-align:left}th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:650}td strong{color:var(--orange)}.notes{color:var(--muted);font-size:12px;margin:13px 0 0}.validation{display:none;background:#4c2423;border:1px solid #ab4a43;color:#ffe0de;padding:13px;border-radius:9px;margin-bottom:14px}.row-actions{display:flex;flex-wrap:wrap;gap:8px}.definition{background:#13171a;border:1px solid var(--rule);border-radius:11px;padding:14px 16px;color:var(--muted);font-size:13px;margin-top:16px}.definition strong{color:var(--text)}.caution{border-left:3px solid var(--orange);padding:12px 16px;margin-top:18px;color:#ced4d7;font-size:13px;background:#241f18}.caution strong{color:#fbb86f}
+:root{--mark-start:#ffd06c;--mark-mid:#69d5e8;--mark-end:#bba6ff}
+.mark-start{color:var(--mark-start)}.mark-mid{color:var(--mark-mid)}.mark-end{color:var(--mark-end)}
+.marking-info{color:var(--muted);font-size:13px;line-height:1.6;margin:1px 0 16px}
+.marking-info strong{color:var(--text)}
+.mark-ruler{background:#111518;border:1px solid #3b444b;border-radius:10px;overflow:hidden}
+.mark-ruler svg{border:0;border-radius:0;background:#111518}
+.mark-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:15px}
+.mark-card{border:1px solid #3e474e;background:#14191d;border-radius:10px;padding:13px}
+.mark-card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}
+.mark-card-head strong{color:var(--orange);font-size:15px}
+.mark-card-head span{color:var(--muted);font-size:12px}
+.mark-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+.mark-card-grid>div{min-width:0;border-top:3px solid currentColor;padding:8px 1px 0}
+.mark-card-grid small{display:block;color:var(--muted);font-size:10px;line-height:1.3;margin-bottom:4px}
+.mark-card-grid b{display:block;font-size:clamp(12px,1.25vw,17px);line-height:1.25;font-variant-numeric:tabular-nums;white-space:nowrap}
+.mark-card-grid b span{font-size:10px;color:#b8c1c7;font-weight:400}
+.datum{margin-top:10px;font-size:12px;color:var(--muted)}
+@media print{.mark-card,.mark-ruler{background:white;border-color:#aaa;break-inside:avoid}.mark-card-head strong{color:#111}.mark-card-grid small,.datum,.marking-info{color:#333}.mark-card-grid b{color:#111}.mark-ruler svg{background:white}.mark-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.marking-info strong{color:#111}}
+@media(max-width:950px){.layout{grid-template-columns:1fr}.summary{grid-template-columns:repeat(3,1fr)}}@media(max-width:600px){header .wrap,.wrap-main{padding-left:14px;padding-right:14px}.panel{padding:14px}.summary{gap:6px}.metric{padding:11px 8px}.metric strong{font-size:22px}.metric .label{font-size:11px}th,td{padding:8px 7px;font-size:11px}.top-actions button{padding:8px 10px}}
+@media print{*{color-adjust:exact;print-color-adjust:exact;-webkit-print-color-adjust:exact}body{background:white;color:black;font-size:11px}header{background:white;border:none}header .wrap{padding:0 0 12px}header h1,header h1 span{color:black}.subtitle{color:#555}.top-actions,.controls,.row-actions,.caution,.notes,.definition{display:none!important}.wrap-main{padding:0}.layout{display:block}.panel,.metric{break-inside:avoid;border-color:#bbb;box-shadow:none;background:white}.metric .label,.metric .sub,th,td{color:#333}.metric strong,.metric.primary strong{color:black}.drawing{padding:5px}.drawing svg{background:white;max-height:360px}svg text{fill:black!important}svg .dimension{fill:#c64f00!important}.panel+.panel{margin-top:12px}.intro{margin-bottom:10px;color:#333}.summary{margin-top:10px}.site-header{display:none}h2{color:#111}.print-header{display:block!important;margin:12px 0 6px;font-size:13px}}
+
+/* Main-hoop bracing and rear-stay extension */
+.addon-group{margin-top:20px;border-top:1px solid var(--rule);padding-top:3px}
+.addon-heading{display:flex;align-items:center;gap:10px;margin:19px 0 10px;font-weight:750;font-size:14px}
+.addon-heading input{accent-color:var(--orange);width:19px;height:19px;cursor:pointer}
+.addon-fields.off{opacity:.43;pointer-events:none}
+.addon-hint{font-size:12px;color:var(--muted);margin:8px 0 12px}
+.subviews{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.subview{min-width:0}
+.subview h3{margin:5px 0 9px}
+.subview svg{width:100%}
+.comp-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.comp-metric{padding:12px;background:#111619;border:1px solid #3e474e;border-radius:10px;min-width:0}
+.comp-metric small{display:block;color:var(--muted);font-size:11px}
+.comp-metric b{font-size:clamp(17px,1.65vw,24px);color:var(--orange);display:block;margin:3px 0;font-variant-numeric:tabular-nums}
+.comp-metric em{font-style:normal;color:#b6c0c5;font-size:11px}
+.comp-warning{padding:10px;border:1px solid #a76a3d;background:#2b231c;color:#ffca9b;border-radius:9px;font-size:12px;margin-bottom:12px;display:none}
+.comp-pill{padding:3px 8px;background:#24414a;border:1px solid #438599;color:#a7e8fb;border-radius:30px;white-space:nowrap;font-size:11px}
+.comp-pill.stay{background:#243b32;border-color:#4a9d78;color:#a5edc6}
+#addonsPanel .table-scroll{margin-bottom:8px}
+#addonsPanel td:nth-child(2){text-align:left}
+@media(max-width:650px){.subviews{grid-template-columns:1fr}.comp-metrics{grid-template-columns:1fr 1fr}}
+@media print{.subviews{grid-template-columns:1fr 1fr;gap:7px}.subview{break-inside:avoid}.comp-metric{background:white;border:1px solid #aaa}.comp-metric small,.comp-metric em{color:#333}.comp-metric b{color:#111}.comp-warning{color:#111;background:#fff8e7}.comp-pill,.comp-pill.stay{color:#111;background:white;border-color:#888}#addonsPanel{break-before:auto}#addonsPanel .table-scroll{overflow:visible}#addonsPanel .comp-metrics{grid-template-columns:repeat(3,1fr)}}
+
+/* Straight-CHS fishmouth templates / future CAD geometry */
+.notch-banner{border:1px solid #59636b;background:#121a1e;color:#c6d2d7;padding:11px 13px;border-radius:9px;font-size:12px;margin:4px 0 13px;line-height:1.6}
+.notch-banner.error{border-color:#ad6f42;background:#33251a;color:#f8d0a4}
+.template-preview{background:#e9eaeb;border:1px solid #59636b;border-radius:9px;padding:6px;overflow:hidden}
+.template-preview svg{background:white;border:0;border-radius:3px;display:block;width:100%;height:auto}
+.notch-previews .subview h3{margin:7px 0 8px}
+.notch-explain{font-size:12px;color:var(--muted);line-height:1.6;margin:13px 0}
+.notch-explain strong{color:var(--text)}
+@media print{#notchPanel{break-before:page}#notchPanel .row-actions{display:none}#notchPanel .template-preview{background:white}#notchPanel .notch-explain,#notchPanel .notch-explain strong{color:#333}#notchPanel .notch-banner{color:#111;background:white}}
+
+/* DCB ENG shared workshop navigation */
+.dcb-nav{background:#181b20;border-bottom:1px solid #393e46;color:#f1f3f5;font:14px/1.45 system-ui,"Segoe UI",Arial,sans-serif}
+.dcb-nav__inner{max-width:1300px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dcb-nav__brand{color:#fff!important;text-decoration:none!important;font-size:18px;font-weight:800;white-space:nowrap}.dcb-nav__brand span{color:#ffa726}
+.dcb-nav__links{display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-wrap:wrap}
+.dcb-nav__link{display:inline-flex;align-items:center;justify-content:center;padding:8px 11px;min-height:36px;border:1px solid transparent;border-radius:7px;text-decoration:none!important;color:#c9cdd3!important;font-size:13px;font-weight:650;white-space:nowrap}
+.dcb-nav__link:hover{background:#30343b;border-color:#565c64;color:#fff!important}.dcb-nav__link[aria-current="page"]{background:#3c2d20;border-color:#8d5d2c;color:#ffbe6e!important}
+.dcb-nav__link:focus-visible,.dcb-nav__brand:focus-visible{outline:2px solid #ffa726;outline-offset:3px}
+@media(max-width:760px){.dcb-nav__inner{flex-direction:column;align-items:flex-start;gap:7px;padding:9px 14px}.dcb-nav__link{padding:7px 9px;min-height:32px;font-size:12px}}
+@media print{.dcb-nav{display:none!important}}
+</style>
+</head>
+<body>
+<div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" href="/pipe-branch/">Pipe Branch</a><a class="dcb-nav__link" aria-current="page" href="/roll-cage/">Roll Cage</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
+<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Diagonal brace · Rear stays · Notch templates</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
+<main class="wrap-main"><p class="intro">Measure the <strong>available inside width and height</strong>, then enter your tube size and the <strong>centreline radius (CLR)</strong> of your actual bending die. The live drawing and three-mark layout update as you change the measurements. Optional diagonal brace and paired rear stays have their own straight-tube cut list and rear/plan views. The diagonal now has independent CHS sizing and printable, labelled fishmouth templates for both ends. All dimensions are in millimetres. Marks are geometric positions, independent of bender brand.</p>
+<div class="layout"><aside class="panel controls"><h2>Hoop layout</h2><div class="choose"><button type="button" id="mode2" class="active" aria-pressed="true">2-bend U hoop</button><button type="button" id="mode4" aria-pressed="false">4-bend tapered</button></div>
+<h3>Vehicle measurements</h3><div class="fields"><div class="field"><label for="width">Available width (mm)</label><input type="number" min="1" step="1" id="width" value="1250"><span class="hint">Between side obstacles</span></div><div class="field"><label for="height">Available height (mm)</label><input type="number" min="1" step="1" id="height" value="1300"><span class="hint">Floor / mounting cut to roof</span></div><div class="field field-hidden tapered"><label for="roofWidth">Roof available width (mm)</label><input type="number" min="1" step="1" id="roofWidth" value="1020"><span class="hint">Available width near roof</span></div><div class="field field-hidden tapered"><label for="shoulderWidth">Shoulder available width (mm)</label><input type="number" min="1" step="1" id="shoulderWidth" value="1250"><span class="hint">Between obstacles at shoulder height</span></div><div class="field field-hidden tapered"><label for="shoulder">Shoulder corner height (mm)</label><input type="number" min="0" step="1" id="shoulder" value="750"><span class="hint">Virtual vertical-to-slope corner</span></div><div class="field"><label for="sideGap">Side clearance (each, mm)</label><input type="number" min="0" step="1" id="sideGap" value="12"></div><div class="field"><label for="topGap">Roof clearance (mm)</label><input type="number" min="0" step="1" id="topGap" value="12"></div></div>
+<h3>Pipe + bending die</h3><div class="fields"><div class="field"><label for="od">Tube outside diameter (mm)</label><input type="number" min="1" step="0.01" id="od" value="44.45"></div><div class="field"><label for="wall">Wall thickness (mm)</label><input type="number" min=".1" step=".1" id="wall" value="2.6"></div><div class="field"><label for="radius">Bender CLR (mm)</label><input type="number" min="1" step="1" id="radius" value="150"><span class="hint">Centre of tube to die centre</span></div><div class="field"><label for="extra">Trim stock at each end (mm)</label><input type="number" min="0" step="1" id="extra" value="0"><span class="hint">Optional extra straight stock</span></div></div><div class="definition"><strong>How to measure:</strong> Width is the maximum space at the legs. Height is from the intended tube end/mounting plane to the roof obstacle. For 4 bends, enter the available width at the shoulders and roof, plus the shoulder transition height. Different shoulder and base widths produce angled lower legs. All dimensions describe the <strong>finished centreline geometry</strong>, not an estimated springback amount.</div>
+<div class="addon-group">
+  <h3>Bracing members</h3>
+  <label class="addon-heading"><input type="checkbox" id="useBrace" checked> Add single diagonal brace <span class="comp-pill">front view</span></label>
+  <div class="addon-fields" id="braceFields"><p class="addon-hint">The brace joins the <strong>main hoop tube centrelines</strong>. Heights refer to the brace connection centre, measured above the hoop mounting plane. Choose which side is upper.</p>
+    <div class="fields">
+      <div class="field"><label for="braceTop">Upper joint height (mm)</label><input type="number" id="braceTop" value="1050" min="1" step="1"></div>
+      <div class="field"><label for="braceBottom">Lower joint height (mm)</label><input type="number" id="braceBottom" value="180" min="0" step="1"></div>
+      <div class="field"><label for="braceOD">Brace CHS outside diameter (mm)</label><input type="number" id="braceOD" list="braceODPresets" value="38.1" min="1" step="0.01"><datalist id="braceODPresets"><option value="25.4"><option value="31.75"><option value="33.7"><option value="38.1"><option value="42.4"><option value="44.45"><option value="48.3"><option value="50.8"><option value="60.3"><option value="63.5"><option value="76.1"><option value="88.9"></datalist><span class="hint">Standard sizes or type custom OD</span></div>
+      <div class="field"><label for="braceWall">Brace wall thickness (mm)</label><input type="number" id="braceWall" value="2.6" min="0.1" step="0.1"><span class="hint">Recorded for future 3D modelling</span></div>
+      <div class="field full"><label for="braceUpperSide">Upper attachment side</label><select id="braceUpperSide"><option value="right" selected>Right upper → left lower</option><option value="left">Left upper → right lower</option></select></div>
+    </div>
+  </div>
+  <label class="addon-heading"><input type="checkbox" id="useStays" checked> Add two rear stays <span class="comp-pill stay">side + plan</span></label>
+  <div class="addon-fields" id="stayFields"><p class="addon-hint">Both rear stays start on the hoop at the chosen height. Their lower mounts are behind the hoop, with adjustable spacing and height.</p>
+    <div class="fields">
+      <div class="field"><label for="stayTop">Upper joint height (mm)</label><input type="number" id="stayTop" value="1150" min="1" step="1"></div>
+      <div class="field"><label for="rearRun">Rearward distance (mm)</label><input type="number" id="rearRun" value="900" min="1" step="1"><span class="hint">Hoop plane → rear mounts</span></div>
+      <div class="field"><label for="rearFootHeight">Rear mount height (mm)</label><input type="number" id="rearFootHeight" value="100" min="0" step="1"><span class="hint">Above hoop mounting plane</span></div>
+      <div class="field"><label for="rearFootWidth">Rear mount spacing (mm)</label><input type="number" id="rearFootWidth" value="900" min="1" step="1"><span class="hint">Centre-to-centre, both mounts</span></div>
+    </div>
+  </div>
+  <h3>Tube preparation</h3>
+  <div class="fields"><div class="field full"><label for="fitExtra">Extra material for coping, at each end (mm)</label><input type="number" id="fitExtra" value="20" min="0" step="1"><span class="hint">Added to each straight brace/stay span as a rough prep blank allowance. Trim/cope to fit.</span></div></div>
+  <div class="definition"><strong>Important:</strong> Brace/stay lengths are measured between the <strong>intersection of member centrelines</strong>, not from the finished fishmouth tips. The prep length is a suggested oversized straight blank, <em>not</em> a calculated cope contour or an engineered cage joint.</div>
+</div>
+</aside><div class="results"><div id="validation" class="validation" role="alert"></div><div class="summary"><div class="metric primary"><div class="label">Developed tube length</div><strong id="developed">–</strong><div class="sub">Centreline, finished hoop</div></div><div class="metric"><div class="label">Cut blank</div><strong id="blank">–</strong><div class="sub">Includes end allowances</div></div><div class="metric"><div class="label">Bends / radius</div><strong id="bendCount">–</strong><div class="sub" id="radiusRatio">Die radius ÷ OD</div></div></div>
+<section class="panel drawing"><div class="drawing-header"><h2 style="margin:0">Live main-hoop drawing</h2><span class="unit">Front view · Not to scale for printing</span></div><svg id="drawingSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 570" role="img" aria-label="Dimensioned roll cage main hoop front-view outline and tangent marks"></svg><div class="legend"><span><i style="background:#d3dce1;height:8px"></i>Tube OD</span><span><i style="background:#fc912c"></i>Tube centreline</span><span><i style="background:#ffd06c;height:8px"></i>Start</span><span><i style="background:#69d5e8;height:8px"></i>Centre</span><span><i style="background:#bba6ff;height:8px"></i>End</span><span><i style="background:#74838c"></i>Measured space</span><span><i style="background:#69d5e8;height:6px"></i>Diagonal</span><span><i style="background:#a7efc8;height:8px"></i>Rear stay attach</span></div></section>
+<section class="panel" id="addonsPanel">
+  <div class="drawing-header" style="padding:0 0 9px"><h2 style="margin:0">Diagonal brace & rear stays</h2><span class="unit">Straight tubes · geometric centreline spans</span></div>
+  <div id="addonsWarning" class="comp-warning" role="status"></div>
+  <div class="comp-metrics">
+    <div class="comp-metric"><small>Single diagonal · centreline span</small><b id="braceSpan">—</b><em id="braceAngle">—</em></div>
+    <div class="comp-metric"><small>Each rear stay · 3D centreline span</small><b id="staySpan">—</b><em id="stayAngle">—</em></div>
+    <div class="comp-metric"><small>Rear stay upper spacing</small><b id="stayUpperWidth">—</b><em>Between hoop attachment centrelines</em></div>
+  </div>
+  <div class="subviews">
+    <div class="subview"><h3>Rear stay side view</h3><svg id="staySideSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" role="img" aria-label="Dimensioned rear stay side view"></svg></div>
+    <div class="subview"><h3>Rear stay plan view</h3><svg id="stayPlanSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" role="img" aria-label="Rear stay plan view showing tube splay"></svg></div>
+  </div>
+  <h3>Brace / stay cutting list</h3>
+  <p class="marking-info" id="addonsDetail" style="margin-bottom:9px"></p>
+  <div class="table-scroll"><table><thead><tr><th>Qty</th><th>Member</th><th>Centreline span</th><th>Prep blank*</th><th>Angle / direction</th></tr></thead><tbody id="addonsBody"></tbody></table></div>
+  <p class="notes" id="addonsNote">* Prep length = joint-centre span plus allowance at both ends. Actual cut length at a coped tube end depends on fishmouth geometry, joint orientation and weld gap. These tubes have no bends in this version. Side view is a projection; true rear stay length includes any lateral splay shown in plan.</p>
+  <div class="row-actions"><button id="addonsSvgDownload">Save views SVG</button><button id="addonsCsvDownload">Save cut list CSV</button></div>
+</section>
+<section class="panel" id="notchPanel">
+  <div class="drawing-header" style="padding:0 0 10px"><h2 style="margin:0">Diagonal brace · printable fishmouth templates</h2><span class="unit">Developed CHS OD · true scale on paper</span></div>
+  <div class="notch-banner" id="notchStatus"></div>
+  <div class="comp-metrics">
+    <div class="comp-metric"><small>Brace CHS</small><b id="notchSize">—</b><em>Independent of hoop OD</em></div>
+    <div class="comp-metric"><small>Upper / lower joint angles</small><b id="notchAngles">—</b><em>Angle between tube axes</em></div>
+    <div class="comp-metric"><small>Theoretical tip-to-tip square blank</small><b id="notchSquare">—</b><em>Before coping · verify physically</em></div>
+  </div>
+  <div class="subviews notch-previews">
+    <div class="subview"><h3>UPPER END — TOP connection</h3><div class="template-preview" id="upperNotchPreview"></div></div>
+    <div class="subview"><h3>LOWER END — BOTTOM connection</h3><div class="template-preview" id="lowerNotchPreview"></div></div>
+  </div>
+  <p class="notch-explain">Cut lines are developed from the intersection of two <strong>straight CHS cylinders</strong> using the actual brace-to-hoop angle and both outside diameters. Align each template's <strong>UP</strong> reference with the upper-facing side of the installed brace, then wrap toward the <strong>FRONT</strong> side of the car. The upper and lower patterns are different and must not be swapped.</p>
+  <div class="row-actions"><button class="primary" id="printNotches">Print both ends · 1:1</button><button id="upperNotchSVG">Save UPPER SVG · 1:1</button><button id="lowerNotchSVG">Save LOWER SVG · 1:1</button><button id="modelJSON">Save geometry JSON · for future STEP</button></div>
+  <p class="notes">Printing opens a separate two-page sheet with a <strong>100 mm calibration line</strong> on each page. Select actual size / 100%, not “fit to page”; check with a ruler before cutting. Templates require a straight parent tube at the connection and brace OD ≤ parent OD. This version does <strong>not</strong> generate a STEP file or account for weld gaps or manufacturing tolerances.</p>
+</section>
+<section class="panel" id="marksPanel"><div class="drawing-header" style="padding:0 0 8px"><h2 style="margin:0">Straight-tube mark-out</h2><span class="unit">All measurements from ONE datum end</span></div>
+<p class="marking-info"><strong>Mark each bend three times:</strong> <span class="mark-start">● Start</span> = where the curve begins; <span class="mark-mid">● Centre</span> = halfway through the curved length; <span class="mark-end">● End</span> = where the curve finishes. Use the same tube end for every tape measurement. <strong>Centre means arc midpoint, not the intersection of the straight legs.</strong></p>
+<div class="mark-ruler"><svg id="markingSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 170" role="img" aria-label="Developed straight tube showing the three marks for every bend"></svg></div>
+<div class="mark-cards" id="markCards"></div>
+<div class="datum">All marks include the optional extra length at the beginning of the blank. This is a geometric layout; follow your bender's own reference-mark method and compensate for actual bend growth and springback using a test piece.</div>
+</section>
+<section class="panel"><h2>Bend schedule</h2><div class="table-scroll"><table><thead><tr><th>Bend</th><th>Turn angle</th><th>Start of bend¹</th><th>Centre of bend¹</th><th>End of bend¹</th></tr></thead><tbody id="bendsBody"></tbody></table></div><p class="notes">¹ Distance from the <strong>left-hand tube end</strong> along the straightened tube. If extra trim stock is entered, it is added to each mark. Start and end are geometric tangency points; centre is halfway along the developed bend arc. These are <em>not automatically your bender’s feed/clamp marks</em>. Verify with a test bend.</p>
+<h3>Straight sections between bends</h3><div class="table-scroll"><table><thead><tr><th>Section</th><th>Finished length (mm)</th></tr></thead><tbody id="segmentsBody"></tbody></table></div><p class="notes" id="summaryNote"></p><div class="row-actions"><button class="primary" id="copy">Copy fabrication sheet</button><button id="print">Print layout</button><button id="svgDownload">Save drawing SVG</button><button id="markSvgDownload">Save mark-out SVG</button><button id="csvDownload">Save bend CSV</button></div></section>
+<div class="caution"><strong>Fabrication and safety check:</strong> This is an ideal geometric centreline layout, not a certified cage design, calibrated bend program or structural analysis. The brace/stay dimensions do not account for notched joints or weld gaps. Confirm tube grade/size, bends, clearance, mounting and design against your applicable motorsport rules. Check the bender's minimum straight/clamp lengths, run a test bend to establish springback and marking offsets, and verify with a physical template before bending the final hoop.</div>
+</div></div></main>
+<script>
+(()=>{
+  'use strict';
+  const $=id=>document.getElementById(id);
+  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall'];
+  let mode=2, latest=null;
+  const round=(x,places=1)=>Number(x).toFixed(places);
+  const dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
+  const unit=(a,b)=>{const d=dist(a,b);return {x:(b.x-a.x)/d,y:(b.y-a.y)/d}};
+  const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+  function geometry(v){
+    const {width:W,height:H,roofWidth:roof,shoulderWidth:shoulderW,shoulder:B,sideGap:gs,topGap:gt,od:d,wall:t,radius:r,extra:e}=v;
+    const issues=[];
+    if(![W,H,d,t,r,gs,gt,e].every(Number.isFinite)||[W,H,d,t,r].some(x=>x<=0)||gs<0||gt<0||e<0)issues.push('Enter valid positive measurements, radius and wall thickness; clearances and trim stock cannot be negative.');
+    if(t>=d/2)issues.push('The wall thickness must be less than half the tube OD.');
+    const Wc=W-d-2*gs, Hc=H-gt-d/2;
+    if(Wc<=0||Hc<=0)issues.push('Not enough space for the selected OD and clearances.');
+    let p, segmentNames;
+    if(mode===2){p=[{x:0,y:0},{x:0,y:Hc},{x:Wc,y:Hc},{x:Wc,y:0}];segmentNames=['Left leg','Roof straight','Right leg'];}
+    else{
+      if(!Number.isFinite(roof)||!Number.isFinite(shoulderW)||!Number.isFinite(B)||roof<=0||shoulderW<=0)issues.push('Enter valid roof and shoulder available widths.');
+      if(roof>=shoulderW)issues.push('For a tapered 4-bend hoop, roof available width must be narrower than shoulder available width.');
+      if(B<=0||B>=Hc)issues.push('Shoulder height must lie between the mounting plane and the tube roof centreline.');
+      if(roof-d-2*gs<=0||shoulderW-d-2*gs<=0)issues.push('Roof and shoulder widths must each fit the selected tube OD and side clearance.');
+      // All three horizontal dimensions refer to AVAILABLE space, not tube centreline.
+      // Each virtual corner is inset by the same side clearance and half the tube OD.
+      const shoulderInset=(W-shoulderW)/2;
+      const roofInset=(W-roof)/2;
+      p=[{x:0,y:0},{x:shoulderInset,y:B},{x:roofInset,y:Hc},{x:Wc-roofInset,y:Hc},{x:Wc-shoulderInset,y:B},{x:Wc,y:0}];
+      segmentNames=['Left lower leg','Left upper shoulder','Roof straight','Right upper shoulder','Right lower leg'];
+    }
+    if(issues.length)return {issues};
+    const joins=[];
+    for(let i=1;i<p.length-1;i++){
+      const incoming=unit(p[i-1],p[i]),outgoing=unit(p[i],p[i+1]);
+      const dot=clamp(incoming.x*outgoing.x+incoming.y*outgoing.y,-1,1);
+      const angle=Math.acos(dot);
+      const trim=r*Math.tan(angle/2);
+      const cross=incoming.x*outgoing.y-incoming.y*outgoing.x;
+      const entry={x:p[i].x-incoming.x*trim,y:p[i].y-incoming.y*trim};
+      const exit={x:p[i].x+outgoing.x*trim,y:p[i].y+outgoing.y*trim};
+      const side=cross>=0?1:-1, half=angle/2;
+      const normal={x:-incoming.y*side,y:incoming.x*side};
+      const midPoint={x:entry.x+r*(Math.sin(half)*incoming.x+(1-Math.cos(half))*normal.x),y:entry.y+r*(Math.sin(half)*incoming.y+(1-Math.cos(half))*normal.y)};
+      joins.push({angle,trim,cross,vertex:p[i],entry,exit,midPoint,incoming,normal});
+    }
+    const sectionLengths=[];
+    for(let i=0;i<p.length-1;i++){
+      const takenBefore=i===0?0:joins[i-1].trim;
+      const takenAfter=i===p.length-2?0:joins[i].trim;
+      const length=dist(p[i],p[i+1])-takenBefore-takenAfter;
+      sectionLengths.push({label:segmentNames[i],length});
+      if(length<-.0001)issues.push(`${segmentNames[i]} is too short for the selected ${round(r,0)} mm bend radius. Increase the section, change shoulder height, or use a smaller permitted die.`);
+    }
+    if(issues.length)return {issues};
+    let running=0;const bends=[];
+    for(let i=0;i<joins.length;i++){
+      running+=sectionLengths[i].length;
+      const arc=r*joins[i].angle;
+      bends.push({name:`B${i+1}`,angle:joins[i].angle*180/Math.PI,start:running,mid:running+arc/2,end:running+arc,arc,entry:joins[i].entry,exit:joins[i].exit,midPoint:joins[i].midPoint,vertex:joins[i].vertex,cross:joins[i].cross,incoming:joins[i].incoming,normal:joins[i].normal,angleRad:joins[i].angle});
+      running+=arc;
+    }
+    running+=sectionLengths.at(-1).length;
+    return {issues,points:p,bends,sections:sectionLengths,total:running,blank:running+2*e,Wc,Hc,v,mode};
+  }
+  // Exact evaluation on the straight and circular-arc portions of the finished hoop centreline.
+  // The chosen attachment height intersects left and right hoop sides independently.
+  function hoopAtHeight(g,y,side){
+    const pieces=[];let prev=g.points[0];const r=g.v.radius;
+    const line=(a,b)=>({a,b,isBend:false,point:t=>({x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t}),tangent:t=>unit(a,b)});
+    for(const b of g.bends){
+      if(dist(prev,b.entry)>1e-7)pieces.push(line(prev,b.entry));
+      pieces.push({a:b.entry,b:b.exit,isBend:true,bend:b.name,point:t=>{
+        const alpha=b.angleRad*t;
+        return {x:b.entry.x+r*(Math.sin(alpha)*b.incoming.x+(1-Math.cos(alpha))*b.normal.x),y:b.entry.y+r*(Math.sin(alpha)*b.incoming.y+(1-Math.cos(alpha))*b.normal.y)};
+      },tangent:t=>{const alpha=b.angleRad*t;return {x:Math.cos(alpha)*b.incoming.x+Math.sin(alpha)*b.normal.x,y:Math.cos(alpha)*b.incoming.y+Math.sin(alpha)*b.normal.y};}});
+      prev=b.exit;
+    }
+    if(dist(prev,g.points.at(-1))>1e-7)pieces.push(line(prev,g.points.at(-1)));
+    const hits=[];
+    for(const p of pieces){
+      if(Math.abs(p.a.y-p.b.y)<1e-8||y<Math.min(p.a.y,p.b.y)-1e-6||y>Math.max(p.a.y,p.b.y)+1e-6)continue;
+      let lo=0,hi=1;const ascending=p.b.y>p.a.y;
+      for(let i=0;i<52;i++){
+        const mid=(lo+hi)/2;
+        if((p.point(mid).y<y)===ascending)lo=mid;else hi=mid;
+      }
+      const t=(lo+hi)/2;hits.push({...p.point(t),tangent:p.tangent(t),isBend:p.isBend,bend:p.bend||null});
+    }
+    if(!hits.length)return null;
+    hits.sort((a,b)=>a.x-b.x);
+    return side==='left'?hits[0]:hits[hits.length-1];
+  }
+  // Branch CHS-to-straight-parent CHS external saddle. The branch axis points OUTWARD
+  // from the interior toward each joint. Theta=0 is the roof-facing surface of the
+  // installed diagonal; +90deg is the vehicle-front-facing surface on BOTH ends.
+  // The parent centreline is locally treated as an infinite straight cylinder.
+  // All computed depths are axial distance backward from the theoretical parent
+  // centreline intersection: no weld gap, material springback or kerf is assumed.
+  function createFishmouth(outer,other,braceLength,parentOD,branchOD,label){
+    const O={x:(outer.x-other.x)/braceLength,y:(outer.y-other.y)/braceLength};
+    // Perpendicular in front-view plane with a positive upward component.
+    const U={x:-O.y*(O.x<0?-1:1),y:Math.abs(O.x)};
+    const parent=outer.tangent;
+    const tx=parent.x*U.x+parent.y*U.y;
+    const tz=parent.x*O.x+parent.y*O.y;
+    const angle=Math.asin(clamp(Math.abs(tx),0,1))*180/Math.PI;
+    const result={label,angle,axis:O,upReference:U,parentTangent:parent,kind:outer.isBend?'bend':'straight',point:{x:outer.x,y:outer.y}};
+    if(outer.isBend){result.error=`${label} joint lies on hoop bend ${outer.bend||''}. The straight-cylinder wrap profile would be inaccurate. Move the joint to a straight section.`;return result;}
+    if(branchOD>parentOD+1e-7){result.error=`Brace OD ${round(branchOD,2)} mm exceeds hoop OD ${round(parentOD,2)} mm; a complete single-curve saddle profile is not available in this tool.`;return result;}
+    if(angle<12){result.error=`${label} tube axes intersect at only ${round(angle,1)}°. The fishmouth is too shallow for this template model (minimum 12°).`;return result;}
+    const R=parentOD/2,r=branchOD/2,C=Math.PI*branchOD;
+    const data=[];
+    for(let i=0;i<=720;i++){
+      const theta=2*Math.PI*i/720;
+      const cs=Math.cos(theta),sn=Math.sin(theta);
+      const radicand=R*R-r*r*sn*sn;
+      const depth=(Math.sqrt(Math.max(0,radicand))-r*cs*tz*Math.sign(tx))/Math.abs(tx);
+      data.push({s:C*i/720,theta,depth});
+    }
+    const low=Math.min(...data.map(p=>p.depth));
+    const high=Math.max(...data.map(p=>p.depth));
+    return {...result,circumference:C,minDepth:low,maxDepth:high,cutDepth:high-low,
+      profile:data.map(p=>({...p,cut:p.depth-low}))};
+  }
+  function deriveBraceNotches(g,brace){
+    const OD=g.v.braceOD,wall=g.v.braceWall;
+    if(!Number.isFinite(OD)||OD<=0||!Number.isFinite(wall)||wall<=0||wall>=OD/2)
+      return {errors:['Brace CHS OD and wall must be positive, with wall less than half the OD.']};
+    const upper=createFishmouth(brace.upper,brace.lower,brace.length,g.v.od,OD,'UPPER');
+    const lower=createFishmouth(brace.lower,brace.upper,brace.length,g.v.od,OD,'LOWER');
+    const errors=[...new Set([upper.error,lower.error].filter(Boolean))];
+    if(errors.length)return {upper,lower,errors};
+    const nominalSquare=brace.length-upper.minDepth-lower.minDepth;
+    if(nominalSquare<=0)errors.push('Notch setback exceeds the available member length.');
+    // Each end is 1:1 on a separate landscape sheet, including 100mm scale check.
+    const C=Math.PI*OD;
+    const maxCut=Math.max(upper.cutDepth,lower.cutDepth);
+    const paper=(C<=247&&maxCut<=82)?{w:297,h:210,label:'A4 landscape'}:{w:420,h:297,label:'A3 landscape'};
+    if(C>paper.w-50||maxCut>paper.h-121)errors.push(`Template exceeds ${paper.label} paper dimensions. Reduce OD/adjust angles or use larger paper.`);
+    return {upper,lower,nominalSquare,paper,errors};
+  }
+  function addonsGeometry(g){
+    const v=g.v,errors=[];let brace=null,stays=null;
+    const useBrace=$('useBrace').checked,useStays=$('useStays').checked;
+    const fit=v.fitExtra;
+    if((useBrace||useStays)&&(!Number.isFinite(fit)||fit<0))errors.push('Fit-up allowance must be zero or greater.');
+    if(useBrace){
+      if(!Number.isFinite(v.braceTop)||!Number.isFinite(v.braceBottom)||v.braceBottom<0||v.braceBottom>=v.braceTop||v.braceTop>=g.Hc-.01){errors.push(`Diagonal: enter lower and upper joint heights between 0 and ${round(g.Hc,1)} mm, with upper above lower.`);}
+      else{
+        const upperSide=$('braceUpperSide').value,lowerSide=upperSide==='right'?'left':'right';
+        const upper=hoopAtHeight(g,v.braceTop,upperSide),lower=hoopAtHeight(g,v.braceBottom,lowerSide);
+        if(!upper||!lower)errors.push('Diagonal: unable to locate the joints on the selected main hoop.');
+        else{
+          const length=dist(upper,lower);
+          brace={upper,lower,upperSide,lowerSide,length,blank:length+2*Math.max(0,fit),angle:Math.atan2(Math.abs(upper.y-lower.y),Math.abs(upper.x-lower.x))*180/Math.PI};
+          brace.notches=deriveBraceNotches(g,brace);
+        }
+      }
+    }
+    if(useStays){
+      if(![v.stayTop,v.rearRun,v.rearFootHeight,v.rearFootWidth].every(Number.isFinite)||v.stayTop<=0||v.stayTop>=g.Hc-.01||v.rearRun<=0||v.rearFootHeight<0||v.rearFootHeight>=v.stayTop||v.rearFootWidth<=0){errors.push(`Rear stays: top joint must be below ${round(g.Hc,1)} mm; rearward distance and mount spacing must be positive; rear mounts must be below top joints.`);}
+      else{
+        const left=hoopAtHeight(g,v.stayTop,'left'),right=hoopAtHeight(g,v.stayTop,'right');
+        if(!left||!right)errors.push('Rear stays: unable to locate the upper joints on the hoop.');
+        else{
+          const cx=g.Wc/2;
+          const lf={x:cx-v.rearFootWidth/2,y:v.rearFootHeight},rf={x:cx+v.rearFootWidth/2,y:v.rearFootHeight};
+          const lateral=Math.abs(lf.x-left.x),vertical=v.stayTop-v.rearFootHeight;
+          const length=Math.hypot(v.rearRun,lateral,vertical);
+          const projectedLength=Math.hypot(v.rearRun,vertical);
+          const angle=Math.atan2(vertical,Math.hypot(v.rearRun,lateral))*180/Math.PI;
+          const sideAngle=Math.atan2(vertical,v.rearRun)*180/Math.PI;
+          const splayAngle=Math.atan2(lateral,v.rearRun)*180/Math.PI;
+          stays={left,right,leftFoot:lf,rightFoot:rf,upperWidth:right.x-left.x,lowerWidth:v.rearFootWidth,lateral,vertical,run:v.rearRun,footHeight:v.rearFootHeight,topHeight:v.stayTop,length,blank:length+2*Math.max(0,fit),angle,sideAngle,splayAngle,projectedLength};
+        }
+      }
+    }
+    return {brace,stays,errors};
+  }
+  function renderStayViews(g){
+    const stay=g.addons.stays;
+    if(!stay){const msg='<text x="300" y="165" text-anchor="middle" fill="#aab4bc" font-size="17">Enable rear stays and enter valid dimensions</text>'; $('staySideSvg').innerHTML=msg;$('stayPlanSvg').innerHTML=msg;return;}
+    const {v}=g;
+    // SIDE VIEW: drawing is a projection, so 3D (splayed) tube length differs.
+    const sideS=Math.min(270/stay.run,210/Math.max(g.Hc,stay.topHeight));
+    const x0=130, y0=284,XX=n=>x0+n*sideS,YY=n=>y0-n*sideS;
+    const xa=XX(0),xt=XX(stay.run),yt=YY(stay.topHeight),yf=YY(stay.footHeight);
+    $('staySideSvg').innerHTML=`
+      <line x1="${xa}" y1="${YY(g.Hc)}" x2="${xa}" y2="${YY(0)}" stroke="#89969e" stroke-width="10" stroke-linecap="round"/>
+      <line x1="${xa}" y1="${yt}" x2="${xt}" y2="${yf}" stroke="#6fe5ab" stroke-width="5" stroke-linecap="round"/>
+      <circle cx="${xa}" cy="${yt}" r="6" fill="#a7efc8" stroke="#111" stroke-width="2"/>
+      <circle cx="${xt}" cy="${yf}" r="6" fill="#a7efc8" stroke="#111" stroke-width="2"/>
+      <line x1="${xa}" y1="315" x2="${xt}" y2="315" stroke="#ed9949" stroke-width="1.4"/>
+      <path d="M${xa+7} 311 L${xa} 315 L${xa+7} 319 M${xt-7} 311 L${xt} 315 L${xt-7} 319" stroke="#ed9949" fill="none"/>
+      <text x="${(xa+xt)/2}" y="333" text-anchor="middle" font-size="13" fill="#f8a95b">Rearward ${round(stay.run,0)} mm</text>
+      <text x="${(xa+xt)/2+12}" y="${(yt+yf)/2-10}" fill="#b1e7cd" font-size="13" text-anchor="middle">Side angle ${round(stay.sideAngle,1)}°</text>
+      <text x="${(xa+xt)/2+12}" y="${(yt+yf)/2+10}" fill="#f6f2e5" font-size="14" text-anchor="middle">True stay ${round(stay.length,1)} mm</text>
+      <text x="${xa-13}" y="${yt-11}" fill="#d0d8de" font-size="12" text-anchor="end">Top ${round(stay.topHeight,0)}</text>
+      <text x="${xt+8}" y="${yf+6}" fill="#d0d8de" font-size="12">Mount ${round(stay.footHeight,0)}</text>
+      <text x="${xa-12}" y="${YY(g.Hc)-10}" fill="#aeb9c0" font-size="12" text-anchor="end">Hoop</text>
+      <text x="300" y="21" font-size="12" fill="#9ba7ae" text-anchor="middle">Looking across vehicle · projection of both stays</text>`;
+    // PLAN VIEW: true 3D stay length includes any lateral offset shown here.
+    const planSpan=Math.max(g.Wc,stay.upperWidth,stay.lowerWidth,200);
+    const planS=Math.min(470/planSpan,180/stay.run);
+    const cx=300,py=80,XP=n=>cx+(n-g.Wc/2)*planS,YP=n=>py+n*planS;
+    const pyl=YP(stay.run);
+    $('stayPlanSvg').innerHTML=`
+      <line x1="${XP(0)}" y1="${py}" x2="${XP(g.Wc)}" y2="${py}" stroke="#8f9ca4" stroke-width="8" stroke-linecap="round"/>
+      <line x1="${cx}" y1="${py-22}" x2="${cx}" y2="${pyl+31}" stroke="#68767e" stroke-width="1.2" stroke-dasharray="6 6"/>
+      <line x1="${XP(stay.left.x)}" y1="${py}" x2="${XP(stay.leftFoot.x)}" y2="${pyl}" stroke="#6fe5ab" stroke-width="5"/>
+      <line x1="${XP(stay.right.x)}" y1="${py}" x2="${XP(stay.rightFoot.x)}" y2="${pyl}" stroke="#6fe5ab" stroke-width="5"/>
+      ${[[stay.left.x,py],[stay.right.x,py],[stay.leftFoot.x,pyl],[stay.rightFoot.x,pyl]].map(([x,y])=>`<circle cx="${XP(x)}" cy="${y}" r="5" fill="#a7efc8" stroke="#111" stroke-width="2"/>`).join('')}
+      <text x="300" y="${py-25}" font-size="13" text-anchor="middle" fill="#d4dce0">Upper ${round(stay.upperWidth,1)} mm</text>
+      <line x1="${XP(stay.leftFoot.x)}" y1="${pyl+26}" x2="${XP(stay.rightFoot.x)}" y2="${pyl+26}" stroke="#ed9949" stroke-width="1.4"/>
+      <text x="300" y="${pyl+47}" text-anchor="middle" font-size="13" fill="#f8a95b">Rear mounts ${round(stay.lowerWidth,0)} mm</text>
+      <text x="300" y="${Math.min(pyl+73,319)}" font-size="12" text-anchor="middle" fill="#a8b7b9">Lateral splay ${round(stay.lateral,1)} mm per side · ${round(stay.splayAngle,1)}° in plan</text>
+      <text x="300" y="21" font-size="12" fill="#9ba7ae" text-anchor="middle">Looking down · main hoop at front / rear mounts below</text>`;
+  }
+  function templateSVG(g,notch,paper){
+    const brace=g.addons.brace,ns=brace.notches;
+    const w=paper.w,h=paper.h,C=notch.circumference,left=20,y0=88;
+    const xs=x=>left+x;
+    const yy=x=>y0+x;
+    const path=notch.profile.map((p,i)=>`${i?'L':'M'} ${round(xs(p.s),4)} ${round(yy(p.cut),4)}`).join(' ');
+    const side=notch.label==='UPPER'?brace.upperSide.toUpperCase():brace.lowerSide.toUpperCase();
+    const htext=`${notch.label} END / ${side} MAIN HOOP`;
+    const step=[0,.25,.5,.75,1];
+    const alignLabels=['UP — 0°','FRONT — 90°','DOWN — 180°','REAR — 270°','UP — 360°'];
+    const ticks=step.map((f,i)=>{
+      const x=xs(C*f);
+      return `<path d="M ${round(x,3)} ${y0-4} V ${y0+2}" stroke="#777" stroke-width="0.3"/><text x="${round(x,3)}" y="${y0-9}" text-anchor="${i===0?'start':i===4?'end':'middle'}" font-size="3.4" fill="#222">${alignLabels[i]}</text>`;
+    }).join('');
+    const boxHeight=notch.cutDepth+5;
+    const widthLine=`<path d="M ${left} 51 H ${left+100} M ${left} 47 V 55 M ${left+100} 47 V 55" fill="none" stroke="#111" stroke-width="0.6"/><text x="${left+50}" y="45" text-anchor="middle" font-size="4.1" fill="#111" font-weight="bold">100 mm CALIBRATION — measure with ruler</text>`;
+    const overlap=9;
+    return `<svg class="paper-template" xmlns="http://www.w3.org/2000/svg" width="${w}mm" height="${h}mm" viewBox="0 0 ${w} ${h}" role="img" aria-label="${htext} full scale wraparound fishmouth pattern">
+      <rect width="${w}" height="${h}" fill="white"/>
+      <text x="${left}" y="14" font-family="Arial,sans-serif" font-size="7" font-weight="bold" fill="#111">${htext}</text>
+      <text x="${left}" y="22" font-family="Arial,sans-serif" font-size="4.3" fill="#111">Brace CHS ${round(g.v.braceOD,2)} × ${round(g.v.braceWall,2)} mm  →  Hoop CHS ${round(g.v.od,2)} mm</text>
+      <text x="${left}" y="29" font-family="Arial,sans-serif" font-size="4.3" fill="#111">Axes angle ${round(notch.angle,2)}°  |  Circumference ${round(C,2)} mm  |  Saddle max cut depth ${round(notch.cutDepth,2)} mm</text>
+      <text x="${left}" y="36" font-family="Arial,sans-serif" font-size="3.6" fill="#333">${paper.label} · print ACTUAL SIZE (100%) · disable fit-to-page / scaling</text>
+      ${widthLine}
+      <text x="${left}" y="66" font-family="Arial,sans-serif" font-size="4.5" font-weight="bold" fill="#111">REFERENCE: align zero-cut line with square end of tube</text>
+      <text x="${left}" y="73" font-family="Arial,sans-serif" font-size="3.8" fill="#333">Wrap FROM UP toward FRONT. Cut ON bold curved line; remove material toward this edge.</text>
+      <line x1="${left}" y1="${y0}" x2="${round(left+C,4)}" y2="${y0}" stroke="#555" stroke-width="0.28" stroke-dasharray="2,2"/>
+      <path d="${path}" stroke="#111" fill="none" stroke-width="0.65" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="${left}" x2="${left}" y1="${y0}" y2="${round(yy(boxHeight),4)}" stroke="#666" stroke-width="0.3" stroke-dasharray="2 1"/>
+      <line x1="${round(left+C,4)}" x2="${round(left+C,4)}" y1="${y0}" y2="${round(yy(boxHeight),4)}" stroke="#666" stroke-width="0.3" stroke-dasharray="2 1"/>
+      <path d="M ${round(left+C,4)} ${y0} H ${round(left+C+overlap,4)} V ${round(yy(boxHeight),4)} H ${round(left+C,4)}" stroke="#aaa" stroke-width="0.3" fill="none" stroke-dasharray="1.5 1.5"/>
+      <text x="${round(left+C+overlap/2,4)}" y="${round(y0+8,4)}" text-anchor="middle" transform="rotate(90 ${round(left+C+overlap/2,4)} ${round(y0+8,4)})" font-family="Arial,sans-serif" font-size="2.7" fill="#777">TAPE OVERLAP</text>
+      ${ticks}
+      <text x="${left}" y="${round(yy(boxHeight+12),4)}" font-family="Arial,sans-serif" font-size="4" font-weight="bold" fill="#111">${notch.label} — DO NOT SWAP ENDS</text>
+      <text x="${left}" y="${round(yy(boxHeight+19),4)}" font-family="Arial,sans-serif" font-size="3.5" fill="#333">Theoretical: no kerf, weld gap, or bend-zone correction. Test-fit before final cut.</text>
+      <text x="${left}" y="${h-11}" font-family="Arial,sans-serif" font-size="3.5" fill="#666">The reference line represents the longest tip plane of this saddle. Both ends use the same UP/FRONT orientation.</text>
+    </svg>`;
+  }
+  function renderNotches(g){
+    const b=g.addons.brace,n=b?.notches;
+    const valid=n&&!n.errors.length;
+    $('notchSize').textContent=b?`${round(g.v.braceOD,2)} × ${round(g.v.braceWall,2)} mm`:'—';
+    $('notchAngles').textContent=valid?`${round(n.upper.angle,1)}° / ${round(n.lower.angle,1)}°`:'—';
+    $('notchSquare').textContent=valid?`${round(n.nominalSquare,1)} mm`:'—';
+    $('notchStatus').classList.toggle('error',!valid);
+    $('notchStatus').textContent=!b?'Enable the diagonal brace to generate the two end templates.':!valid?n.errors.join(' '):`Templates ready: ${n.paper.label} · both ends are separately labelled. Upper setback ${round(n.upper.minDepth,1)} mm / lower ${round(n.lower.minDepth,1)} mm from parent centreline. Nominal tip-to-tip square length ${round(n.nominalSquare,1)} mm is theoretical; cut oversize and verify a test fit.`;
+    $('upperNotchPreview').innerHTML=valid?templateSVG(g,n.upper,n.paper):'<p style="color:#333;text-align:center;padding:30px">Upper template unavailable</p>';
+    $('lowerNotchPreview').innerHTML=valid?templateSVG(g,n.lower,n.paper):'<p style="color:#333;text-align:center;padding:30px">Lower template unavailable</p>';
+    for(const id of ['printNotches','upperNotchSVG','lowerNotchSVG'])$(id).disabled=!valid;
+  }
+  function getNotchPrintHTML(g){
+    const b=g.addons.brace,n=b.notches,p=n.paper;
+    return `<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><title>Diagonal brace — upper + lower fishmouth templates</title>
+    <style>body{margin:0;font:15px system-ui,Arial,sans-serif;background:#e6e8ea;color:#171717}.toolbar{position:sticky;top:0;padding:12px 16px;background:#21262b;color:white;text-align:center;z-index:1}.toolbar button{font:700 16px system-ui;padding:10px 18px;background:#fc912c;border:0;border-radius:8px;cursor:pointer}.toolbar span{margin-left:12px}.sheet{width:${p.w}mm;height:${p.h}mm;margin:15px auto;box-shadow:0 6px 28px #0005;background:#fff;overflow:hidden;break-after:page}.sheet svg{display:block;width:${p.w}mm;height:${p.h}mm}@page{size:${p.w}mm ${p.h}mm;margin:0}@media print{body{background:white}.toolbar{display:none}.sheet{margin:0;box-shadow:none;break-after:page}.sheet:last-child{break-after:auto}}</style></head><body>
+    <div class="toolbar"><button onclick="window.print()">PRINT BOTH ENDS — ACTUAL SIZE</button><span>${p.label} · two pages · disable fit to page · check 100mm line</span></div>
+    <div class="sheet">${templateSVG(g,n.upper,p)}</div><div class="sheet">${templateSVG(g,n.lower,p)}</div>
+    </body></html>`;
+  }
+  function renderAddons(g){
+    const a=g.addons;
+    $('addonsWarning').style.display=a.errors.length?'block':'none';
+    $('addonsWarning').textContent=a.errors.join(' ');
+    $('braceSpan').textContent=a.brace?`${round(a.brace.length,1)} mm`:'—';
+    $('braceAngle').textContent=a.brace?`${round(a.brace.angle,1)}° to horizontal · straight tube`:'Disabled or invalid';
+    $('staySpan').textContent=a.stays?`${round(a.stays.length,1)} mm`:'—';
+    $('stayAngle').textContent=a.stays?`${round(a.stays.angle,1)}° below horizontal · includes splay`:'Disabled or invalid';
+    $('stayUpperWidth').textContent=a.stays?`${round(a.stays.upperWidth,1)} mm`:'—';
+    const detail=[];
+    if(a.brace)detail.push(`Diagonal: <strong>${a.brace.upperSide} upper ${round(g.v.braceTop,1)} mm</strong> → <strong>${a.brace.lowerSide} lower ${round(g.v.braceBottom,1)} mm</strong> above hoop base.`);
+    if(a.stays)detail.push(`Rear stays: upper joints <strong>${round(g.v.stayTop,1)} mm</strong> above base, lower mounts <strong>${round(g.v.rearFootHeight,1)} mm</strong> above base, <strong>${round(g.v.rearRun,1)} mm</strong> behind hoop.`);
+    $('addonsDetail').innerHTML=detail.join(' ');
+    const rows=[];
+    if(a.brace)rows.push([1,'Diagonal brace',a.brace.length,a.brace.blank,`${round(a.brace.angle,1)}° to horizontal · CHS ${round(g.v.braceOD,2)} × ${round(g.v.braceWall,2)}`]);
+    if(a.stays){rows.push([1,'Left rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);rows.push([1,'Right rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);}
+    $('addonsBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${round(r[2],1)} mm</td><td><strong>${round(r[3],1)} mm</strong></td><td>${r[4]}</td></tr>`).join(''):'<tr><td colspan="5">Enable a component and enter valid dimensions to see the cut list.</td></tr>';
+    renderStayViews(g);
+    renderNotches(g);
+  }
+  function renderDrawing(g){
+    const {v}=g,{width:W,height:H,sideGap:gs,topGap:gt,od:d,radius:r}=v;
+    // Fit the widest of the three measurement stations within the drawing.
+    const maxWidth=g.mode===4?Math.max(W,v.shoulderWidth,v.roofWidth):W;
+    const s=Math.min(540/maxWidth,360/H);
+    const xwall=(760-W*s)/2, floorY=456, topY=floorY-H*s;
+    const xy=p=>({x:xwall+(gs+d/2+p.x)*s,y:floorY-p.y*s});
+    const fmt=p=>`${round(p.x,3)} ${round(p.y,3)}`;
+    const joints=g.bends;
+    let path=`M ${fmt(xy(g.points[0]))} `;
+    for(const b of joints){const a=xy(b.entry),z=xy(b.exit);const sweep=b.cross<0?1:0;path+=`L ${fmt(a)} A ${round(r*s,3)} ${round(r*s,3)} 0 0 ${sweep} ${fmt(z)} `;}
+    path+=`L ${fmt(xy(g.points.at(-1)))}`;
+    const dx=xwall+W*s;
+    const station=(availableW,cy)=>({left:380-availableW*s/2,right:380+availableW*s/2,y:cy});
+    const baseStation=station(W,floorY);
+    const shoulderStation=g.mode===4?station(v.shoulderWidth,floorY-v.shoulder*s):null;
+    const roofStation=g.mode===4?station(v.roofWidth,topY):null;
+    const boundary=g.mode===4
+      ?`<path d="M${round(baseStation.left,3)} ${round(baseStation.y,3)} L${round(shoulderStation.left,3)} ${round(shoulderStation.y,3)} L${round(roofStation.left,3)} ${round(roofStation.y,3)} L${round(roofStation.right,3)} ${round(roofStation.y,3)} L${round(shoulderStation.right,3)} ${round(shoulderStation.y,3)} L${round(baseStation.right,3)} ${round(baseStation.y,3)} Z" fill="none" stroke="#74838c" stroke-width="1.4" stroke-dasharray="9 7"/>`
+      :`<rect x="${round(xwall,3)}" y="${round(topY,3)}" width="${round(W*s,3)}" height="${round(H*s,3)}" rx="1" fill="none" stroke="#74838c" stroke-width="1.4" stroke-dasharray="9 7"/>`;
+    const dimWidth=`<line x1="${xwall}" y1="491" x2="${dx}" y2="491" stroke="#e38a32" stroke-width="1"/><path d="M${xwall+8} 487 L${xwall} 491 L${xwall+8} 495 M${dx-8} 487 L${dx} 491 L${dx-8} 495" stroke="#e38a32" fill="none"/><text x="380" y="516" text-anchor="middle" class="dimension">Width: ${round(W,0)} mm</text>`;
+    const hx=xwall-28, hy=topY+H*s/2;
+    const dimHeight=`<line x1="${hx}" y1="${round(topY,3)}" x2="${hx}" y2="${round(floorY,3)}" stroke="#e38a32"/><path d="M${hx-4} ${topY+8} L${hx} ${topY} L${hx+4} ${topY+8} M${hx-4} ${floorY-8} L${hx} ${floorY} L${hx+4} ${floorY-8}" stroke="#e38a32" fill="none"/><text x="${hx-13}" y="${hy}" class="dimension" text-anchor="middle" transform="rotate(-90 ${hx-13} ${hy})">Height: ${round(H,0)} mm</text>`;
+    const dot=b=>{const p=xy(b.entry),c=xy(b.midPoint),q=xy(b.exit),vert=xy(b.vertex);let y=vert.y-19;
+      if(y<20)y=vert.y+29;
+      return `<circle cx="${p.x}" cy="${p.y}" r="4.7" fill="#ffd06c" stroke="#171c20" stroke-width="1.2"/><circle cx="${c.x}" cy="${c.y}" r="5.0" fill="#69d5e8" stroke="#171c20" stroke-width="1.2"/><circle cx="${q.x}" cy="${q.y}" r="4.7" fill="#bba6ff" stroke="#171c20" stroke-width="1.2"/><text x="${vert.x}" y="${y}" class="bendlabel" text-anchor="middle">${b.name} · ${round(b.angle,1)}°</text>`};
+    const legendTop=`<text x="380" y="30" class="note" text-anchor="middle">Tube OD ${round(d,2)} mm · CLR ${round(r,1)} mm · roof clearance ${round(gt,1)} mm</text>`;
+    const roofGuide=g.mode===4?`<text x="380" y="49" text-anchor="middle" class="note">Roof width ${round(v.roofWidth,0)} mm · shoulder corner ${round(v.shoulder,0)} mm above base</text>`:'';
+    const shoulderDimension=g.mode===4?(()=>{
+      // Width is measured at the virtual shoulder corners, outside-to-outside available space.
+      // The guide height is offset to clear the bend markers and labels.
+      const st=shoulderStation,dimY=clamp(st.y+43,topY+115,floorY-43);
+      const lx=Number(round(st.left,2)),rx=Number(round(st.right,2)),yy=Number(round(dimY,2)),sy=Number(round(st.y,2));
+      return `<g class="shoulder-dimension" aria-label="Shoulder available width ${round(v.shoulderWidth,0)} millimetres">
+       <line x1="${lx}" y1="${sy}" x2="${lx}" y2="${yy+8}" stroke="#e38a32" stroke-width="1" stroke-dasharray="3 4" opacity=".8"/>
+       <line x1="${rx}" y1="${sy}" x2="${rx}" y2="${yy+8}" stroke="#e38a32" stroke-width="1" stroke-dasharray="3 4" opacity=".8"/>
+       <line x1="${lx}" y1="${yy}" x2="${rx}" y2="${yy}" stroke="#e38a32" stroke-width="1.6"/>
+       <path d="M${round(st.left+8,2)} ${yy-4} L${lx} ${yy} L${round(st.left+8,2)} ${yy+4} M${round(st.right-8,2)} ${yy-4} L${rx} ${yy} L${round(st.right-8,2)} ${yy+4}" stroke="#e38a32" fill="none" stroke-width="1.5"/>
+       <rect x="281" y="${yy+7}" width="198" height="23" rx="4" fill="#171d21" opacity=".94"/>
+       <text x="380" y="${yy+23}" class="dimension" text-anchor="middle">Shoulder: ${round(v.shoulderWidth,0)} mm</text></g>`;
+    })():'';
+    // Front view additions: diagonal is in the hoop plane, while stay attachment
+    // circles mark only the two rear stays' connections (the stays run backwards).
+    const brace=g.addons.brace,stays=g.addons.stays;
+    const braceOverlay=brace?(()=>{const a=xy(brace.lower),b=xy(brace.upper);return `<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#69d5e8" stroke-width="6"/><line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="#104356" stroke-width="1.7" stroke-dasharray="5 5"/><circle cx="${a.x}" cy="${a.y}" r="6" fill="#69d5e8" stroke="#111" stroke-width="2"/><circle cx="${b.x}" cy="${b.y}" r="6" fill="#69d5e8" stroke="#111" stroke-width="2"/><text x="${(a.x+b.x)/2+13}" y="${(a.y+b.y)/2-12}" fill="#9fecf6" font-size="15" font-weight="700">Diagonal ${round(brace.length,0)} mm</text><text x="${b.x+(brace.upperSide==='right'?20:-20)}" y="${b.y+9}" text-anchor="${brace.upperSide==='right'?'start':'end'}" fill="#9fecf6" font-size="12">Upper ${round(g.v.braceTop,0)} mm</text><text x="${a.x+(brace.lowerSide==='right'?20:-20)}" y="${a.y+5}" text-anchor="${brace.lowerSide==='right'?'start':'end'}" fill="#9fecf6" font-size="12">Lower ${round(g.v.braceBottom,0)} mm</text>`;})():'';
+    const stayOverlay=stays?[stays.left,stays.right].map(p=>{const q=xy(p);return `<circle cx="${q.x}" cy="${q.y}" r="7.5" fill="#a7efc8" stroke="#123d2b" stroke-width="3"/>`;}).join(''):'';
+    const overlayLabels=stays?`<text x="380" y="72" class="note" text-anchor="middle">Green dots = rear stay upper mounts (stays extend behind hoop)</text>`:'';
+    const inner=`${boundary}${dimWidth}${dimHeight}${legendTop}${roofGuide}${shoulderDimension}${overlayLabels}${braceOverlay}<path d="${path}" stroke="#d3dce1" stroke-width="${round(Math.max(d*s,3),3)}" stroke-linecap="butt" stroke-linejoin="round" fill="none"/><path d="${path}" stroke="#fc912c" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round" fill="none"/>${joints.map(dot).join('')}${stayOverlay}<text x="${round(xwall+10,1)}" y="${round(floorY+24,1)}" class="note">Tube start</text><text x="${round(dx-10,1)}" y="${round(floorY+24,1)}" class="note" text-anchor="end">Tube end</text><text x="380" y="549" class="note" text-anchor="middle">Finished front profile · dashed envelope connects measured widths</text>`;
+    $('drawingSvg').innerHTML=inner;
+  }
+  function renderMarkOut(g){
+    // This is an UNFOLDED (straight) centreline, showing absolute distances
+    // measured from the chosen physical datum end of the unbent blank.
+    const x0=42,x1=920,scale=(x1-x0)/g.blank, X=n=>x0+n*scale;
+    const tick=(x,colour,name)=>`<line x1="${round(x,3)}" y1="69" x2="${round(x,3)}" y2="132" stroke="${colour}" stroke-width="2"/><circle cx="${round(x,3)}" cy="100" r="3.5" fill="${colour}"/><title>${name}</title>`;
+    const bed=`<rect x="${x0}" y="85" width="${x1-x0}" height="30" rx="3" fill="#374149" stroke="#cbd2d8" stroke-width="1.5"/>`;
+    const arcs=g.bends.map(b=>{const a=X(b.start+g.v.extra),z=X(b.end+g.v.extra),c=X(b.mid+g.v.extra);
+      const band=`<rect x="${round(a,3)}" y="85" width="${round(z-a,3)}" height="30" fill="#fc912c" opacity=".38"/>`;
+      const short=z-a<64;
+      return `<g>${band}<text x="${round(c,3)}" y="43" fill="#ffb65e" font-size="16" font-weight="700" text-anchor="middle">${b.name}</text><text x="${round(c,3)}" y="60" fill="#9eabb5" font-size="12" text-anchor="middle">${round(b.angle,1)}°</text>${tick(a,'#ffd06c',`${b.name} start ${round(b.start+g.v.extra,1)} mm`)}${tick(c,'#69d5e8',`${b.name} centre ${round(b.mid+g.v.extra,1)} mm`)}${tick(z,'#bba6ff',`${b.name} end ${round(b.end+g.v.extra,1)} mm`)}${short?'':`<text x="${round(a,3)}" y="146" fill="#ffd06c" font-size="11" text-anchor="middle">S</text><text x="${round(c,3)}" y="146" fill="#69d5e8" font-size="11" text-anchor="middle">C</text><text x="${round(z,3)}" y="146" fill="#bba6ff" font-size="11" text-anchor="middle">E</text>`}</g>`;
+    }).join('');
+    const extra=g.v.extra>0?`<rect x="${x0}" y="85" width="${round(g.v.extra*scale,3)}" height="30" fill="none" stroke="#aeb8be" stroke-width="1" stroke-dasharray="3 3"/><rect x="${round(X(g.blank-g.v.extra),3)}" y="85" width="${round(g.v.extra*scale,3)}" height="30" fill="none" stroke="#aeb8be" stroke-width="1" stroke-dasharray="3 3"/>`:'';
+    $('markingSvg').innerHTML=`<text x="${x0}" y="22" font-size="13" fill="#dce4e8">DATUM END / 0 mm</text><text x="${x1}" y="22" font-size="13" fill="#dce4e8" text-anchor="end">BLANK ${round(g.blank,1)} mm</text>${bed}${arcs}${extra}<line x1="${x0}" y1="77" x2="${x0}" y2="133" stroke="#fff" stroke-width="3"/><line x1="${x1}" y1="77" x2="${x1}" y2="133" stroke="#fff" stroke-width="3"/><text x="480" y="165" text-anchor="middle" font-size="11" fill="#94a0a8">Visual layout only • use exact millimetre values in the cards or table</text>`;
+    $('markCards').innerHTML=g.bends.map(b=>{
+      const three=[['Start','mark-start',b.start],['Centre','mark-mid',b.mid],['End','mark-end',b.end]];
+      return `<div class="mark-card"><div class="mark-card-head"><strong>${b.name}</strong><span>${round(b.angle,2)}° bend · ${round(b.arc,1)} mm arc</span></div><div class="mark-card-grid">${three.map(([label,cls,num])=>`<div class="${cls}"><small>${label}</small><b>${round(num+g.v.extra,1)} <span>mm</span></b></div>`).join('')}</div></div>`;
+    }).join('');
+  }
+  function render(){
+    const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
+    const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
+    const err=$('validation');
+    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('upperNotchPreview').innerHTML='';$('lowerNotchPreview').innerHTML='';return;}
+    err.style.display='none';
+    $('developed').textContent=`${round(g.total,1)} mm`;
+    $('blank').textContent=`${round(g.blank,1)} mm`;
+    $('bendCount').textContent=`${g.bends.length} × ${round(v.radius,0)} mm`;
+    $('radiusRatio').textContent=`CLR/OD ${round(v.radius/v.od,2)} · wall ${round(v.wall,2)} mm`;
+    $('bendsBody').innerHTML=g.bends.map(b=>`<tr><td><strong>${b.name}</strong></td><td>${round(b.angle,2)}°</td><td class="mark-start">${round(b.start+v.extra,1)}</td><td class="mark-mid">${round(b.mid+v.extra,1)}</td><td class="mark-end">${round(b.end+v.extra,1)}</td></tr>`).join('');
+    $('segmentsBody').innerHTML=g.sections.map(a=>`<tr><td>${a.label}</td><td>${round(a.length,1)}</td></tr>`).join('');
+    $('summaryNote').textContent=`Total direction change: ${round(g.bends.reduce((s,b)=>s+b.angle,0),1)}°. Total arc length: ${round(g.bends.reduce((s,b)=>s+b.arc,0),1)} mm. Developed length is measured along the finished tube centreline.`;
+    renderDrawing(g);
+    renderMarkOut(g);
+    renderAddons(g);
+  }
+  function setMode(n){mode=n;for(const m of [2,4]){$('mode'+m).classList.toggle('active',m===n);$('mode'+m).setAttribute('aria-pressed',String(m===n));}document.querySelectorAll('.tapered').forEach(x=>x.classList.toggle('field-hidden',n!==4));render();}
+  function getSheet(){if(!latest)return '';const g=latest,v=g.v;const text=[`ROLL CAGE FABRICATION SHEET — ${g.mode}-bend hoop`, `Measured space: W ${round(v.width,1)} mm × H ${round(v.height,1)} mm`, `Tube OD ${round(v.od,2)} mm | wall ${round(v.wall,2)} mm | bender CLR ${round(v.radius,2)} mm`, `Side clearance ${round(v.sideGap,1)} mm | top clearance ${round(v.topGap,1)} mm`,...(g.mode===4?[`Roof available width ${round(v.roofWidth,1)} mm | shoulder available width ${round(v.shoulderWidth,1)} mm | shoulder corner height ${round(v.shoulder,1)} mm`]:[]),`Developed finished centreline length: ${round(g.total,1)} mm`,`Trim allowance: ${round(v.extra,1)} mm at each end`,`Suggested starting blank: ${round(g.blank,1)} mm`,`BEND MARKS (all measured from same starting blank end / zero datum):`,'Bend | Turn angle | Start of bend | Centre of bend | End of bend',...g.bends.map(b=>`${b.name} | ${round(b.angle,2)}° | ${round(b.start+v.extra,1)} mm | ${round(b.mid+v.extra,1)} mm | ${round(b.end+v.extra,1)} mm`),'STRAIGHT SECTIONS:',...g.sections.map(x=>`${x.label}: ${round(x.length,1)} mm`),'Important: Start and end = geometric tangency points; centre = half bend arc length. These are developed-centreline estimates, not calibrated machine feed marks. Validate bends, growth and springback on a test piece.'];
+    const a=g.addons;if(a.brace){text.push('DIAGONAL BRACE:',`Upper: ${a.brace.upperSide} at ${round(v.braceTop,1)} mm | lower: ${a.brace.lowerSide} at ${round(v.braceBottom,1)} mm`,`Centreline joint-to-joint ${round(a.brace.length,1)} mm | prep blank ${round(a.brace.blank,1)} mm (includes ${round(v.fitExtra,1)} mm each end)`,`In-plane angle ${round(a.brace.angle,1)}° to horizontal`,`Brace CHS ${round(v.braceOD,2)} × ${round(v.braceWall,2)} mm`);if(a.brace.notches&&!a.brace.notches.errors.length){const n=a.brace.notches;text.push(`UPPER notch joint angle ${round(n.upper.angle,2)}°, max notch depth ${round(n.upper.cutDepth,2)} mm`,`LOWER notch joint angle ${round(n.lower.angle,2)}°, max notch depth ${round(n.lower.cutDepth,2)} mm`,`Theoretical tip-to-tip square length before notching ${round(n.nominalSquare,1)} mm (check fit, not production cut length).`);}}
+    if(a.stays){text.push('TWO REAR STAYS:',`Top joint height ${round(v.stayTop,1)} mm, upper joint spacing ${round(a.stays.upperWidth,1)} mm`,`Rearward run ${round(v.rearRun,1)} mm, rear mount height ${round(v.rearFootHeight,1)} mm, rear mount spacing ${round(v.rearFootWidth,1)} mm`,`Each true 3D joint-to-joint ${round(a.stays.length,1)} mm | prep blank ${round(a.stays.blank,1)} mm (includes ${round(v.fitExtra,1)} mm each end)`,`Inclination ${round(a.stays.angle,1)}° below horizontal, side-view projection ${round(a.stays.sideAngle,1)}°, plan-view splay ${round(a.stays.splayAngle,1)}°`);}
+    text.push('Brace/stay lengths are centreline intersection spans, NOT exact fishmouth tip-to-tip cut lengths. Oversized prep stock must be coped and fitted. Check the final structural design against applicable cage rules.');
+    return text.join('\n');}
+  function download(filename,data,mime){const blob=new Blob([data],{type:mime});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+  function copy(){const s=getSheet();if(!s)return;const done=()=>{for(const id of ['copy','copyTop']){const b=$(id),old=b.textContent;b.textContent='Copied';setTimeout(()=>b.textContent=old,1600);}};if(navigator.clipboard?.writeText){navigator.clipboard.writeText(s).then(done).catch(()=>download('main-hoop-bending-sheet.txt',s,'text/plain'));}else download('main-hoop-bending-sheet.txt',s,'text/plain');}
+  for(const id of vals)$(id).addEventListener('input',render);
+  $('braceUpperSide').addEventListener('change',render);
+  for(const [toggle,fields] of [['useBrace','braceFields'],['useStays','stayFields']])$(toggle).addEventListener('change',()=>{$(fields).classList.toggle('off',!$(toggle).checked);render();});
+  $('mode2').addEventListener('click',()=>setMode(2));$('mode4').addEventListener('click',()=>setMode(4));
+  $('copy').addEventListener('click',copy);$('copyTop').addEventListener('click',copy);
+  $('print').addEventListener('click',()=>window.print());$('printTop').addEventListener('click',()=>window.print());
+  $('svgDownload').addEventListener('click',()=>{if(!latest)return;const svg=$('drawingSvg').cloneNode(true);svg.setAttribute('width','760');svg.setAttribute('height','570');const css=`<style>text{font:14px system-ui,Arial,sans-serif;fill:#cbd3d8}.dimension{fill:#fb912f;font-weight:650}.note{font-size:11px;fill:#a3acb2}.bendlabel{font-size:13px;fill:#ffb65e;font-weight:700}
+/* Main-hoop bracing and rear-stay extension */
+.addon-group{margin-top:20px;border-top:1px solid var(--rule);padding-top:3px}
+.addon-heading{display:flex;align-items:center;gap:10px;margin:19px 0 10px;font-weight:750;font-size:14px}
+.addon-heading input{accent-color:var(--orange);width:19px;height:19px;cursor:pointer}
+.addon-fields.off{opacity:.43;pointer-events:none}
+.addon-hint{font-size:12px;color:var(--muted);margin:8px 0 12px}
+.subviews{display:grid;grid-template-columns:1fr 1fr;gap:13px}
+.subview{min-width:0}
+.subview h3{margin:5px 0 9px}
+.subview svg{width:100%}
+.comp-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 16px}
+.comp-metric{padding:12px;background:#111619;border:1px solid #3e474e;border-radius:10px;min-width:0}
+.comp-metric small{display:block;color:var(--muted);font-size:11px}
+.comp-metric b{font-size:clamp(17px,1.65vw,24px);color:var(--orange);display:block;margin:3px 0;font-variant-numeric:tabular-nums}
+.comp-metric em{font-style:normal;color:#b6c0c5;font-size:11px}
+.comp-warning{padding:10px;border:1px solid #a76a3d;background:#2b231c;color:#ffca9b;border-radius:9px;font-size:12px;margin-bottom:12px;display:none}
+.comp-pill{padding:3px 8px;background:#24414a;border:1px solid #438599;color:#a7e8fb;border-radius:30px;white-space:nowrap;font-size:11px}
+.comp-pill.stay{background:#243b32;border-color:#4a9d78;color:#a5edc6}
+#addonsPanel .table-scroll{margin-bottom:8px}
+#addonsPanel td:nth-child(2){text-align:left}
+@media(max-width:650px){.subviews{grid-template-columns:1fr}.comp-metrics{grid-template-columns:1fr 1fr}}
+@media print{.subviews{grid-template-columns:1fr 1fr;gap:7px}.subview{break-inside:avoid}.comp-metric{background:white;border:1px solid #aaa}.comp-metric small,.comp-metric em{color:#333}.comp-metric b{color:#111}.comp-warning{color:#111;background:#fff8e7}.comp-pill,.comp-pill.stay{color:#111;background:white;border-color:#888}#addonsPanel{break-before:auto}#addonsPanel .table-scroll{overflow:visible}#addonsPanel .comp-metrics{grid-template-columns:repeat(3,1fr)}}
+</style>`;svg.innerHTML=css+svg.innerHTML;download('main-hoop-layout.svg',new XMLSerializer().serializeToString(svg),'image/svg+xml');});
+  $('markSvgDownload').addEventListener('click',()=>{if(!latest)return;const svg=$('markingSvg').cloneNode(true);svg.setAttribute('width','960');svg.setAttribute('height','170');download('main-hoop-straight-tube-marks.svg',new XMLSerializer().serializeToString(svg),'image/svg+xml');});
+  $('addonsSvgDownload').addEventListener('click',()=>{
+    if(!latest)return;
+    const front=$('drawingSvg').innerHTML,side=$('staySideSvg').innerHTML,plan=$('stayPlanSvg').innerHTML;
+    const out=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1220 1120" width="1220" height="1120"><rect width="1220" height="1120" fill="#14191c"/><style>text{font:14px system-ui,Arial,sans-serif;fill:#cbd3d8}.dimension{fill:#fb912f;font-weight:650}.note{font-size:11px;fill:#a3acb2}.bendlabel{font-size:13px;fill:#ffb65e;font-weight:700}</style><text x="40" y="40" fill="#fc912c" font-size="24" font-weight="700">MAIN HOOP + DIAGONAL + REAR STAYS</text><svg x="10" y="55" width="900" height="675" viewBox="0 0 760 570">${front}</svg><text x="38" y="780" font-size="19">REAR STAY SIDE VIEW</text><svg x="0" y="800" width="600" height="320" viewBox="0 0 600 340">${side}</svg><text x="650" y="780" font-size="19">REAR STAY PLAN VIEW</text><svg x="610" y="800" width="600" height="320" viewBox="0 0 600 340">${plan}</svg></svg>`;
+    download('roll-cage-bracing-views.svg',out,'image/svg+xml');
+  });
+  $('addonsCsvDownload').addEventListener('click',()=>{
+    if(!latest)return;
+    const a=latest.addons, v=latest.v;
+    const rows=[['Qty','Member','Centreline node span (mm)','Suggested prep blank (mm)','Notes']];
+    if(a.brace)rows.push([1,`Diagonal brace CHS ${round(v.braceOD,2)}x${round(v.braceWall,2)}`,round(a.brace.length,1),round(a.brace.blank,1),`${round(a.brace.angle,1)} deg to horizontal${a.brace.notches&&!a.brace.notches.errors.length?` | upper cope ${round(a.brace.notches.upper.angle,1)} deg | lower cope ${round(a.brace.notches.lower.angle,1)} deg`:''}`]);
+    if(a.stays){rows.push([1,'Left rear stay',round(a.stays.length,1),round(a.stays.blank,1),`${round(a.stays.angle,1)} deg below horizontal`]);rows.push([1,'Right rear stay',round(a.stays.length,1),round(a.stays.blank,1),`${round(a.stays.angle,1)} deg below horizontal`]);}
+    rows.push(['','Notes','','',`Centreline spans only; cope to fit; extra stock ${round(v.fitExtra,1)} mm per end`]);
+    if(a.brace?.notches&&!a.brace.notches.errors.length)rows.push(['','Theoretical square tip-to-tip before coping',round(a.brace.notches.nominalSquare,1),'',`Verify with test fit; upper setback ${round(a.brace.notches.upper.minDepth,2)} lower ${round(a.brace.notches.lower.minDepth,2)}`]);
+    const csv=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
+    download('roll-cage-bracing-cut-list.csv','\ufeff'+csv,'text/csv;charset=utf-8');
+  });
+  $('csvDownload').addEventListener('click',()=>{if(!latest)return;const v=latest.v;const lines=['Bend,Turn angle (deg),Start of bend from datum end (mm),Centre of bend from datum end (mm),End of bend from datum end (mm)',...latest.bends.map(b=>[b.name,round(b.angle,2),round(b.start+v.extra,1),round(b.mid+v.extra,1),round(b.end+v.extra,1)].join(','))];download('main-hoop-bend-schedule.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8');});
+  function notchReady(){const b=latest?.addons?.brace,n=b?.notches;return latest&&b&&n&&!n.errors.length;}
+  $('printNotches').addEventListener('click',()=>{
+    if(!notchReady())return;
+    const win=window.open('','_blank');
+    if(!win){alert('Your browser blocked the print sheet. Allow pop-ups for this file, then retry.');return;}
+    win.document.open();win.document.write(getNotchPrintHTML(latest));win.document.close();
+  });
+  for(const [id,which] of [['upperNotchSVG','upper'],['lowerNotchSVG','lower']])$(id).addEventListener('click',()=>{
+    if(!notchReady())return;
+    const n=latest.addons.brace.notches;
+    download(`diagonal-brace-${which}-wraparound-1to1.svg`,templateSVG(latest,n[which],n.paper),'image/svg+xml');
+  });
+  $('modelJSON').addEventListener('click',()=>{
+    if(!latest)return;
+    const g=latest,brace=g.addons.brace,stays=g.addons.stays;
+    const payload={schema:'roll-cage-geometry-v1',units:'mm',note:'Geometric reference for future CAD STEP solid modeller; this file is NOT a STEP model or CNC cutting program.',hoop:{mode:g.mode,OD:g.v.od,wall:g.v.wall,CLR:g.v.radius,centerlineVertices:g.points,bends:g.bends.map(b=>({angleDeg:b.angle,entry:b.entry,midPoint:b.midPoint,exit:b.exit,cross:b.cross})),totalCenterlineLength:g.total},brace:brace?{OD:g.v.braceOD,wall:g.v.braceWall,upper:brace.upper,lower:brace.lower,centrelineSpan:brace.length,notches:brace.notches?.errors?.length?{errors:brace.notches.errors}:{upper:{angle:brace.notches.upper.angle,profile:brace.notches.upper.profile},lower:{angle:brace.notches.lower.angle,profile:brace.notches.lower.profile},nominalSquare:brace.notches.nominalSquare}}:null,stays};
+    download('roll-cage-geometry-for-future-step.json',JSON.stringify(payload,null,2),'application/json');
+  });
+  render();
+})();
+</script>
+</body></html>
