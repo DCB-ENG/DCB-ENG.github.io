@@ -11,7 +11,7 @@ This repository hosts the [DCB ENG website](https://dcb-eng.github.io/), featuri
 | [Steel weight calculator](https://dcb-eng.github.io/steel-weight/) | Calculate Australian structural steel section weights, material take-offs and quantities for RHS, SHS, CHS, beams, channels, angles and plates. |
 | [Pipe bend calculator](https://dcb-eng.github.io/pipe-bend/) | Calculate bend geometry, bend allowance, bend start/end marks, springback estimates and segmented elbows. |
 | [Pipe branch & fishmouth template calculator](https://dcb-eng.github.io/pipe-branch/) | Make CHS saddle/fishmouth and main-pipe opening templates, with 3D preview and print-scale wrap templates. |
-| [Roll cage main hoop & brace generator](https://dcb-eng.github.io/roll-cage/) | Calculate 2- and 4-bend hoops, bend marks, diagonal brace, rear stays, harness crossbar and side intrusion bars, plus labelled 1:1 diagonal fishmouth templates. STEP export is planned, not yet available. |
+| [Roll cage main hoop & brace generator](https://dcb-eng.github.io/roll-cage/) | Calculate 2- and 4-bend hoops, bend marks, diagonal brace, rear stays, harness crossbar and side intrusion bars, plus individually labelled 1:1 fishmouth templates for supported tube joints, with front tube measurements required for side-bar front ends. STEP export is planned, not yet available. |
 | [Triangle & frame diagonal calculator](https://dcb-eng.github.io/triangle-calculator/) | Find missing angles and lengths, check frame diagonals and set out 3-4-5 squareness. |
 
 These are free web tools intended to assist fabrication planning. Confirm calculations, print scale, geometry and machine compatibility before production, cutting or load-rated use.
