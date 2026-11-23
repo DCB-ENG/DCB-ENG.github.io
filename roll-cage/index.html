@@ -401,6 +401,7 @@
   const sep=v=>sub3(v,axisPoint);
   const distance=j.parentHoop?
     point=>centrelineDistance(point,j.parentHoop):
+    j.parentPath?point=>centrelineDistance3D(point,j.parentPath):
     point=>{const dv=sep(point),p=dot3(dv,tangent);return Math.hypot(dv.x-p*tangent.x,dv.y-p*tangent.y,dv.z-p*tangent.z);};
   const profile=[];
   const steps=720;
@@ -472,6 +473,144 @@
   }
   return joins;
 }
+
+
+  // A continuous formed tube through four measured 3D centreline stations:
+  // rear main-hoop joint -> top A-pillar -> lower windscreen -> mounting foot.
+  // Each bend is an exact circular fillet in the local 3D bending plane.
+  function makeFrontLeg(points,radius,endTrim,side){
+    const errors=[],R=radius,vertices=points.map(v3);
+    if(!Number.isFinite(R)||R<=0||!Number.isFinite(endTrim)||endTrim<0)
+      return {errors:['Front-leg CLR must be positive and end trim non-negative.']};
+    const fillets=[];
+    for(let i=1;i<vertices.length-1;i++){
+      const before=vertices[i-1],vertex=vertices[i],after=vertices[i+1];
+      const incoming=norm3(sub3(vertex,before)),outgoing=norm3(sub3(after,vertex));
+      if(!incoming||!outgoing){errors.push('Front-leg stations are coincident.');continue;}
+      const c=clamp(dot3(incoming,outgoing),-1,1),theta=Math.acos(c);
+      if(theta<Math.PI/180||theta>=170*Math.PI/180){errors.push('Front-leg bend '+i+' is outside the supported 1–170° range.');continue;}
+      const trim=R*Math.tan(theta/2),normal=norm3(sub3(outgoing,{x:incoming.x*c,y:incoming.y*c,z:incoming.z*c}));
+      if(!normal){errors.push('Front leg cannot resolve a bend plane.');continue;}
+      const entry={x:vertex.x-incoming.x*trim,y:vertex.y-incoming.y*trim,z:vertex.z-incoming.z*trim};
+      const exit={x:vertex.x+outgoing.x*trim,y:vertex.y+outgoing.y*trim,z:vertex.z+outgoing.z*trim};
+      const unitAxis=norm3(cross3(incoming,outgoing));
+      const midpoint=(angle)=>({x:entry.x+R*(Math.sin(angle)*incoming.x+(1-Math.cos(angle))*normal.x),y:entry.y+R*(Math.sin(angle)*incoming.y+(1-Math.cos(angle))*normal.y),z:entry.z+R*(Math.sin(angle)*incoming.z+(1-Math.cos(angle))*normal.z)});
+      fillets.push({entry,exit,midPoint:midpoint(theta/2),incoming,outgoing,normal,axis:unitAxis,angleRad:theta,angle:theta*180/Math.PI,trim,vertex,name:'B'+i,arc:R*theta});
+    }
+    if(errors.length)return {errors};
+    const sections=[];
+    for(let i=0;i<vertices.length-1;i++){
+      const previous=i?fillets[i-1].trim:0,next=i<fillets.length?fillets[i].trim:0;
+      const length=mag3(sub3(vertices[i+1],vertices[i]))-previous-next;
+      if(length<=1e-5)errors.push(side+' front leg section '+(i+1)+' is too short for the chosen CLR.');
+      sections.push({label:['Roof/side rail','A-pillar slope','Lower leg'][i],length});
+    }
+    if(errors.length)return {errors};
+    let running=0;
+    for(let i=0;i<fillets.length;i++){
+      running+=sections[i].length;
+      fillets[i].start=running;fillets[i].mid=running+fillets[i].arc/2;fillets[i].end=running+fillets[i].arc;
+      running=fillets[i].end;
+    }
+    running+=sections.at(-1).length;
+    const axis=norm3(sub3(fillets[1].entry,fillets[0].exit));
+    const n1=fillets[0].axis,n2=fillets[1].axis;
+    const signedClock=Math.atan2(dot3(axis,cross3(n1,n2)),dot3(n1,n2))*180/Math.PI;
+    return {side,points:vertices,bends:fillets,sections,radius:R,total:running,blank:running+2*endTrim,trimExtra:endTrim,clock:signedClock,errors};
+  }
+  function frontLegPieces(leg){
+    if(!leg||leg.errors.length)return [];
+    const result=[],radius=leg.radius;let prev=leg.points[0];
+    const line=(start,end)=>({start,end,point:t=>({x:start.x+(end.x-start.x)*t,y:start.y+(end.y-start.y)*t,z:start.z+(end.z-start.z)*t}),tangent:()=>norm3(sub3(end,start)),isBend:false});
+    for(const b of leg.bends){
+      if(mag3(sub3(b.entry,prev))>1e-6)result.push(line(prev,b.entry));
+      result.push({start:b.entry,end:b.exit,isBend:true,bend:b.name,point:t=>{
+        const angle=t*b.angleRad;
+        return {x:b.entry.x+radius*(Math.sin(angle)*b.incoming.x+(1-Math.cos(angle))*b.normal.x),y:b.entry.y+radius*(Math.sin(angle)*b.incoming.y+(1-Math.cos(angle))*b.normal.y),z:b.entry.z+radius*(Math.sin(angle)*b.incoming.z+(1-Math.cos(angle))*b.normal.z)};
+      },tangent:t=>{const angle=t*b.angleRad;return {x:Math.cos(angle)*b.incoming.x+Math.sin(angle)*b.normal.x,y:Math.cos(angle)*b.incoming.y+Math.sin(angle)*b.normal.y,z:Math.cos(angle)*b.incoming.z+Math.sin(angle)*b.normal.z}}});
+      prev=b.exit;
+    }
+    if(mag3(sub3(leg.points.at(-1),prev))>1e-6)result.push(line(prev,leg.points.at(-1)));
+    return result;
+  }
+  // At a specified height find the *frontmost* intersection with the bent
+  // front leg. On an arc there can be two crossings, so sample + bisect.
+  function frontLegAtHeight(leg,height,requireAPillar=true){
+    const hits=[];
+    for(const seg of frontLegPieces(leg)){
+      let last=seg.point(0);
+      for(let i=1;i<=60;i++){
+        const t=i/60,p=seg.point(t),a=last.y-height,b=p.y-height;
+        if(a*b<=0 && (Math.abs(a)>1e-7||Math.abs(b)>1e-7)){
+          let lo=(i-1)/60,hi=t,v=seg.point(lo).y-height;
+          for(let j=0;j<36;j++){let m=(lo+hi)/2,w=seg.point(m).y-height;if(v*w>0){lo=m;v=w;}else hi=m;}
+          const tt=(lo+hi)/2,hit={...seg.point(tt),tangent:seg.tangent(tt),isBend:seg.isBend,bend:seg.bend||null};
+          if(!requireAPillar||hit.z<-0.5*Math.abs(leg.points[1].z))hits.push(hit);
+        }
+        last=p;
+      }
+    }
+    hits.sort((a,b)=>a.z-b.z);
+    return hits[0]||null;
+  }
+  function centrelineDistance3D(point,leg){
+    let best=Infinity,prev=leg.points[0],radius=leg.radius;
+    const lineDist=(a,b)=>{
+      const v=sub3(b,a),w=sub3(point,a),d=dot3(v,v),t=d?clamp(dot3(w,v)/d,0,1):0;
+      return mag3(sub3(point,{x:a.x+v.x*t,y:a.y+v.y*t,z:a.z+v.z*t}));
+    };
+    for(const b of leg.bends){
+      best=Math.min(best,lineDist(prev,b.entry),mag3(sub3(point,b.entry)),mag3(sub3(point,b.exit)));
+      const center={x:b.entry.x+radius*b.normal.x,y:b.entry.y+radius*b.normal.y,z:b.entry.z+radius*b.normal.z};
+      const w=sub3(point,center),theta=Math.atan2(dot3(w,b.incoming),-dot3(w,b.normal));
+      if(theta>=0&&theta<=b.angleRad){
+        const q={x:b.entry.x+radius*(Math.sin(theta)*b.incoming.x+(1-Math.cos(theta))*b.normal.x),y:b.entry.y+radius*(Math.sin(theta)*b.incoming.y+(1-Math.cos(theta))*b.normal.y),z:b.entry.z+radius*(Math.sin(theta)*b.incoming.z+(1-Math.cos(theta))*b.normal.z)};
+        best=Math.min(best,mag3(sub3(point,q)));
+      }
+      prev=b.exit;
+    }
+    return Math.min(best,lineDist(prev,leg.points.at(-1)));
+  }
+  function makeFrontStructure(g){
+    const v=g.v,errors=[];
+    const numeric=['frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim'];
+    if(!numeric.every(k=>Number.isFinite(v[k]))||v.frontOD<=0||v.frontWall<=0||v.frontWall>=v.frontOD/2||v.frontCLR<=0||v.frontTrim<0)
+      return {errors:['Enter valid front-leg CHS, wall, CLR, trim and measured positions.']};
+    if(v.frontTieHeight<=0||v.frontTieHeight>=g.Hc||v.frontWindBaseHeight<=0||v.frontRoofTopHeight<=v.frontWindBaseHeight||v.frontRoofTopHeight>=g.Hc+60||v.frontRoofRun<=0||v.frontFootRun<=v.frontRoofRun)
+      return {errors:['Front legs: attachment, A-pillar roof and windscreen base heights or forward distances are invalid. Roof-top height should remain near the main hoop height.']};
+    if([v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth].some(x=>x<=v.frontOD))
+      return {errors:['Front legs: spacing must be larger than the selected CHS OD.']};
+    const cx=g.Wc/2,result={errors,OD:v.frontOD,wall:v.frontWall,CLR:v.frontCLR,frontRun:v.frontFootRun,roofRun:v.frontRoofRun};
+    for(const side of ['left','right']){
+      const attach=hoopAtHeight(g,v.frontTieHeight,side);
+      if(!attach){errors.push('Front leg '+side+': cannot find main-hoop attachment point.');continue;}
+      const sign=side==='left'?-1:1;
+      const points=[
+        {x:attach.x,y:attach.y,z:0},
+        {x:cx+sign*v.frontHeaderWidth/2,y:v.frontRoofTopHeight,z:-v.frontRoofRun},
+        {x:cx+sign*v.frontBaseWidth/2,y:v.frontWindBaseHeight,z:-v.frontFootRun},
+        {x:cx+sign*v.frontFootWidth/2,y:0,z:-v.frontFootRun}
+      ];
+      result[side]=makeFrontLeg(points,v.frontCLR,v.frontTrim,side);
+      errors.push(...result[side].errors);
+      result[side].hoopAttach=attach;
+    }
+    if(errors.length)return result;
+    if($('useHeader').checked){
+      if(![v.headerHeight,v.headerOD,v.headerWall].every(Number.isFinite)||v.headerHeight<=v.frontWindBaseHeight||v.headerHeight>=v.frontRoofTopHeight||v.headerOD<=0||v.headerWall<=0||v.headerWall>=v.headerOD/2){
+        errors.push('Windscreen header height must lie on the A-pillars, with valid CHS OD/wall.');
+      }else{
+        const left=frontLegAtHeight(result.left,v.headerHeight),right=frontLegAtHeight(result.right,v.headerHeight);
+        if(!left||!right||Math.abs(left.z-right.z)>.5)errors.push('Windscreen header cannot locate both matching A-pillar joints at this height.');
+        else{
+          const length=mag3(sub3(right,left));
+          if(length<=v.headerOD)errors.push('Windscreen header has insufficient span.');
+          else result.header={left,right,height:v.headerHeight,length,blank:length+2*Math.max(0,v.fitExtra),OD:v.headerOD,wall:v.headerWall};
+        }
+      }
+    }
+    return result;
+  }
 
   function addonsGeometry(g){
     const v=g.v,errors=[];let brace=null,stays=null,harness=null,door=null;
