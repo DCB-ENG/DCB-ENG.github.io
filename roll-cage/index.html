@@ -97,12 +97,30 @@
 #frontPanel .table-scroll{margin:10px 0}
 #frontPanel .subview{overflow:hidden}
 @media print{.fl-station-intro{background:white!important;border-color:#333;color:#111}}
+
+/* Developed tube marking schedule for every independent cage tube */
+.member-markout-list{display:grid;grid-template-columns:1fr;gap:14px;margin-top:16px}
+.member-markout-card{border:1px solid #3d4a53;border-radius:11px;background:#13191c;padding:14px;min-width:0}
+.member-markout-heading{display:flex;justify-content:space-between;align-items:start;gap:14px;flex-wrap:wrap;margin-bottom:7px}
+.member-markout-heading h3{margin:0;font-size:16px;color:#ffa441}
+.member-markout-heading .mark-subtitle{font-size:12px;color:#aebcc4;white-space:normal}
+.member-mark-ruler{border:1px solid #3a4851;background:#0f1519;border-radius:9px;padding:5px;overflow:hidden}
+.member-mark-ruler svg{width:100%;height:auto;display:block;background:#0f1519}
+.member-mark-summary{font-size:12px;color:#c2cbd2;line-height:1.55;margin:10px 0 6px}
+.member-mark-summary strong{color:#ffd09a}
+.member-mark-bends{display:flex;flex-wrap:wrap;gap:9px 17px;padding-top:5px}
+.member-mark-bends span{font-size:12px;color:#c9d2da;white-space:nowrap}
+.member-mark-bends b{color:#ffb76b}
+.member-markout-card .row-actions{margin-top:12px;gap:8px}
+.member-markout-card .row-actions button{font-size:12px}
+.member-markout-card .row-actions a{color:#a9d5f5;font-size:12px}
+@media print{#allMemberMarksPanel{break-before:page}.member-markout-card{break-inside:avoid;background:#fff!important;border-color:#bbb}.member-mark-ruler,.member-mark-ruler svg{background:#fff!important}.member-markout-heading h3,.member-markout-heading .mark-subtitle,.member-mark-summary,.member-mark-summary strong,.member-mark-bends span,.member-mark-bends b{color:#111!important}.member-markout-card .row-actions{display:none!important}}
 </style>
 </head>
 <body>
 <div class="dcb-nav"><div class="dcb-nav__inner"><a class="dcb-nav__brand" href="/">DCB <span>ENG</span></a><nav class="dcb-nav__links" aria-label="Workshop tools"><a class="dcb-nav__link" href="/">Home</a><a class="dcb-nav__link" href="/steel-nesting/">Steel Nesting</a><a class="dcb-nav__link" href="/steel-weight/">Steel Weight</a><a class="dcb-nav__link" href="/bolt-torque/">Bolt Torque</a><a class="dcb-nav__link" href="/triangle-calculator/">Triangle</a><a class="dcb-nav__link" href="/pipe-bend/">Pipe Bends</a><a class="dcb-nav__link" href="/pipe-branch/">Pipe Branch</a><a class="dcb-nav__link" aria-current="page" href="/roll-cage/">Roll Cage</a><a class="dcb-nav__link" href="/step-dstv-converter/">STEP → DSTV</a></nav></div></div>
-<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Front legs · Windscreen header · Stays · Intrusion · 3D fishmouths · v1.7</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><a class="link-button" href="#frontPanel">Front legs</a><a class="link-button" href="#notchPanel">Wrap-around templates</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
-<main class="wrap-main"><p class="intro">Measure the <strong>available inside width and height</strong>, then enter your tube size and the <strong>centreline radius (CLR)</strong> of your actual bending die. The live drawing and three-mark layout update as you change the measurements. Optional diagonal brace and paired rear stays have their own straight-tube cut list and rear/plan views. Each member has its own CHS sizing. Harness bars connect the rear stays, optional continuous front legs follow the roof and A-pillars, and a windscreen header joins their upper sections. With front legs enabled, side intrusion bars connect to their actual 3D centreline rather than an approximate front reference. Supported tube-to-tube ends generate individually labelled 1:1 fishmouth wrap-arounds. All dimensions are in millimetres. Marks are geometric positions, independent of bender brand.</p>
+<header><div class="wrap"><div><h1><span>ROLL CAGE</span> GENERATOR</h1><div class="subtitle">Main hoop · Front legs · Individual tube mark-outs · Bracing · 3D fishmouths · v1.9</div></div><div class="top-actions"><a class="link-button" href="/">← Back</a><a class="link-button" href="#frontPanel">Front legs</a><a class="link-button" href="#allMemberMarksPanel">All tube marks</a><a class="link-button" href="#notchPanel">Wrap-around templates</a><button id="copyTop">Copy bend sheet</button><button class="primary" id="printTop">Print layout</button></div></div></header>
+<main class="wrap-main"><p class="intro">Measure the <strong>available inside width and height</strong>, then enter your tube size and the <strong>centreline radius (CLR)</strong> of your actual bending die. The live drawing and three-mark layout update as you change the measurements. Optional diagonal brace and paired rear stays have their own straight-tube cut list and rear/plan views. Each member has its own CHS sizing. Harness bars connect the rear stays, optional continuous front legs follow the roof and A-pillars, and a windscreen header joins their upper sections. With front legs enabled, side intrusion bars connect to their actual 3D centreline rather than an approximate front reference. Supported tube-to-tube ends generate individually labelled 1:1 fishmouth wrap-arounds. Every enabled tube also has its own straight-blank marking diagram with bent-tube start/centre/end marks or straight-tube joint-centre reference stations, plus individual print and SVG export. All dimensions are in millimetres. Marks are geometric positions, independent of bender brand.</p>
 <div class="layout"><aside class="panel controls"><h2>Hoop layout</h2><div class="choose"><button type="button" id="mode2" class="active" aria-pressed="true">2-bend U hoop</button><button type="button" id="mode4" aria-pressed="false">4-bend tapered</button></div>
 <h3>Vehicle measurements</h3><div class="fields"><div class="field"><label for="width">Available width (mm)</label><input type="number" min="1" step="1" id="width" value="1250"><span class="hint">Between side obstacles</span></div><div class="field"><label for="height">Available height (mm)</label><input type="number" min="1" step="1" id="height" value="1300"><span class="hint">Floor / mounting cut to roof</span></div><div class="field field-hidden tapered"><label for="roofWidth">Roof available width (mm)</label><input type="number" min="1" step="1" id="roofWidth" value="1020"><span class="hint">Available width near roof</span></div><div class="field field-hidden tapered"><label for="shoulderWidth">Shoulder available width (mm)</label><input type="number" min="1" step="1" id="shoulderWidth" value="1250"><span class="hint">Between obstacles at shoulder height</span></div><div class="field field-hidden tapered"><label for="shoulder">Shoulder corner height (mm)</label><input type="number" min="0" step="1" id="shoulder" value="750"><span class="hint">Virtual vertical-to-slope corner</span></div><div class="field"><label for="sideGap">Side clearance (each, mm)</label><input type="number" min="0" step="1" id="sideGap" value="12"></div><div class="field"><label for="topGap">Roof clearance (mm)</label><input type="number" min="0" step="1" id="topGap" value="12"></div></div>
 <h3>Pipe + bending die</h3><div class="fields"><div class="field"><label for="od">Tube outside diameter (mm)</label><input type="number" min="1" step="0.01" id="od" value="44.45"></div><div class="field"><label for="wall">Wall thickness (mm)</label><input type="number" min=".1" step=".1" id="wall" value="2.6"></div><div class="field"><label for="radius">Bender CLR (mm)</label><input type="number" min="1" step="1" id="radius" value="150"><span class="hint">Centre of tube to die centre</span></div><div class="field"><label for="extra">Trim stock at each end (mm)</label><input type="number" min="0" step="1" id="extra" value="0"><span class="hint">Optional extra straight stock</span></div></div><div class="definition"><strong>How to measure:</strong> Width is the maximum space at the legs. Height is from the intended tube end/mounting plane to the roof obstacle. For 4 bends, enter the available width at the shoulders and roof, plus the shoulder transition height. Different shoulder and base widths produce angled lower legs. All dimensions describe the <strong>finished centreline geometry</strong>, not an estimated springback amount.</div>
@@ -242,6 +260,20 @@
 <div class="mark-ruler"><svg id="markingSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 170" role="img" aria-label="Developed straight tube showing the three marks for every bend"></svg></div>
 <div class="mark-cards" id="markCards"></div>
 <div class="datum">All marks include the optional extra length at the beginning of the blank. This is a geometric layout; follow your bender's own reference-mark method and compensate for actual bend growth and springback using a test piece.</div>
+</section>
+<section class="panel" id="allMemberMarksPanel">
+  <div class="drawing-header">
+    <h2 style="margin:0">Individual tube mark-outs</h2>
+    <span class="unit">One straight-blank diagram for every enabled tube</span>
+  </div>
+  <p class="marking-info">Each diagram uses <strong>one square-blank datum end (0 mm)</strong> and shows the <strong>full preparation-blank length</strong>. Bent members show <span class="mark-start">start</span>, <span class="mark-mid">centre</span> and <span class="mark-end">end</span> of each developed bend. Straight members show the theoretical <strong>joint-centre/reference stations</strong> and end allowances instead. These reference stations are <strong>not finished fishmouth cut edges</strong>.</p>
+  <div class="row-actions">
+    <button class="primary" type="button" id="printMemberMarkouts">Print every tube mark-out</button>
+    <button type="button" id="saveMemberMarkoutsSVG">Save all mark-outs SVG</button>
+    <span class="unit" id="memberMarkoutCount">—</span>
+  </div>
+  <div id="memberMarkoutCards" class="member-markout-list"></div>
+  <p class="datum">Diagrams are <strong>not 1:1</strong> and are not a bend-machine feed program. Use the numeric millimetre dimensions, verify tube end orientation, test-bend CLR/springback, and check the separate labelled 1:1 fishmouth wrap-arounds. Cutting/prep blanks include allowances but do not account for the final fishmouth tip-to-tip profile.</p>
 </section>
 <section class="panel"><h2>Bend schedule</h2><div class="table-scroll"><table><thead><tr><th>Bend</th><th>Turn angle</th><th>Start of bend¹</th><th>Centre of bend¹</th><th>End of bend¹</th></tr></thead><tbody id="bendsBody"></tbody></table></div><p class="notes">¹ Distance from the <strong>left-hand tube end</strong> along the straightened tube. If extra trim stock is entered, it is added to each mark. Start and end are geometric tangency points; centre is halfway along the developed bend arc. These are <em>not automatically your bender’s feed/clamp marks</em>. Verify with a test bend.</p>
 <h3>Straight sections between bends</h3><div class="table-scroll"><table><thead><tr><th>Section</th><th>Finished length (mm)</th></tr></thead><tbody id="segmentsBody"></tbody></table></div><p class="notes" id="summaryNote"></p><div class="row-actions"><button class="primary" id="copy">Copy fabrication sheet</button><button id="print">Print layout</button><button id="svgDownload">Save drawing SVG</button><button id="markSvgDownload">Save mark-out SVG</button><button id="csvDownload">Save bend CSV</button></div></section>
@@ -1100,6 +1132,138 @@
     const inner=`${boundary}${dimWidth}${dimHeight}${legendTop}${roofGuide}${shoulderDimension}${overlayLabels}${braceOverlay}${harnessOverlay}<path d="${path}" stroke="#d3dce1" stroke-width="${round(Math.max(d*s,3),3)}" stroke-linecap="butt" stroke-linejoin="round" fill="none"/><path d="${path}" stroke="#fc912c" stroke-width="2.2" stroke-linecap="butt" stroke-linejoin="round" fill="none"/>${joints.map(dot).join('')}${stayOverlay}${doorOverlay}<text x="${round(xwall+10,1)}" y="${round(floorY+24,1)}" class="note">Tube start</text><text x="${round(dx-10,1)}" y="${round(floorY+24,1)}" class="note" text-anchor="end">Tube end</text><text x="380" y="549" class="note" text-anchor="middle">Finished front profile · dashed envelope connects measured widths</text>`;
     $('drawingSvg').innerHTML=inner;
   }
+  function memberMarkoutSpecs(g){
+  const v=g.v,a=g.addons,fit=Math.max(0,v.fitExtra),list=[];
+  const push=(member)=>{if(Number.isFinite(member.blank)&&member.blank>0&&Number.isFinite(member.span)&&member.span>0)list.push(member);};
+  push({id:'main-hoop',title:'Main hoop',kind:'bent',od:v.od,wall:v.wall,span:g.total,blank:g.blank,extra:v.extra,
+    datum:'LEFT FOOT',farEnd:'RIGHT FOOT',startDescription:'Left floor mounting end',endDescription:'Right floor mounting end',
+    bends:g.bends.map(b=>({id:b.name,angle:b.angle,start:b.start+v.extra,mid:b.mid+v.extra,end:b.end+v.extra})),
+    notes:`${g.bends.length} bends · CLR ${round(v.radius,1)} mm · start from LEFT foot datum`,jointStart:null,jointEnd:null});
+  if(a.front&&!a.front.errors.length){
+    for(const side of ['left','right']){
+      const leg=a.front[side],key=side.toUpperCase();
+      push({id:`front-leg-${side}`,title:`${key} continuous front leg`,kind:'bent',od:v.frontOD,wall:v.frontWall,span:leg.total,blank:leg.blank,extra:v.frontTrim,
+        datum:'FL5 / REAR HOOP',farEnd:'FL1 / FRONT FOOT',startDescription:`${key} FL5 main-hoop connection`,endDescription:`${key} FL1 floor mounting foot`,
+        bends:leg.bends.map(b=>({id:`${b.name} (${b.name==='B1'?'FL3':'FL2'})`,angle:b.angle,start:b.start+v.frontTrim,mid:b.mid+v.frontTrim,end:b.end+v.frontTrim})),
+        notes:`2 bends · CLR ${round(v.frontCLR,1)} mm · B1→B2 signed plane clock ${round(leg.clock,1)}°`,jointStart:`front-leg-${side}-rear`,jointEnd:null});
+    }
+    if(a.front.header){
+      const h=a.front.header;
+      push({id:'windscreen-header',title:'Windscreen header',kind:'straight',od:h.OD,wall:h.wall,span:h.length,blank:h.blank,extra:fit,
+        datum:'LEFT FRONT LEG',farEnd:'RIGHT FRONT LEG',startDescription:'Left A-pillar CHS joint',endDescription:'Right A-pillar CHS joint',
+        bends:[],notes:`WH1 at ${round(h.height,1)} mm high · no bends`,jointStart:'windscreen-header-left',jointEnd:'windscreen-header-right'});
+    }
+  }
+  if(a.brace){
+    const b=a.brace;
+    push({id:'diagonal-brace',title:'Main-hoop diagonal brace',kind:'straight',od:v.braceOD,wall:v.braceWall,span:b.length,blank:b.blank,extra:fit,
+      datum:'UPPER HOOP JOINT',farEnd:'LOWER HOOP JOINT',startDescription:`Upper ${b.upperSide} main-hoop joint`,endDescription:`Lower ${b.lowerSide} main-hoop joint`,
+      bends:[],notes:`Centreline span ${round(b.length,1)} mm · no bends · both ends coped`,jointStart:'diagonal-upper',jointEnd:'diagonal-lower'});
+  }
+  if(a.stays){
+    for(const side of ['left','right']){
+      const st=a.stays;
+      push({id:`rear-stay-${side}`,title:`${side.toUpperCase()} rear stay`,kind:'straight',od:v.stayOD,wall:v.stayWall,span:st.length,blank:st.blank,extra:fit,
+        datum:'UPPER / MAIN HOOP',farEnd:'REAR MOUNT FOOT',startDescription:`Upper ${side} hoop-to-stay joint`,endDescription:`${side} rear foot mounting point`,
+        bends:[],notes:`3D length includes rearward run and lateral splay · no bends`,jointStart:`stay-${side}-upper`,jointEnd:null});
+    }
+  }
+  if(a.harness){
+    const h=a.harness;
+    push({id:'harness-bar',title:'Harness crossbar between rear stays',kind:'straight',od:h.OD,wall:h.wall,span:h.length,blank:h.blank,extra:fit,
+      datum:'LEFT REAR STAY',farEnd:'RIGHT REAR STAY',startDescription:'Left stay tube joint',endDescription:'Right stay tube joint',
+      bends:[],notes:`Straight crossbar at ${round(h.height,1)} mm high · both ends coped`,jointStart:'harness-left',jointEnd:'harness-right'});
+  }
+  if(a.door){
+    for(const m of a.door.members){
+      const side=m.name.toLowerCase();
+      push({id:`side-intrusion-${side}`,title:`${m.name.toUpperCase()} side intrusion bar`,kind:'straight',od:v.doorOD,wall:v.doorWall,span:m.length,blank:m.blank,extra:fit,
+        datum:'REAR / MAIN HOOP',farEnd:'FRONT / A-PILLAR',startDescription:'Rear main-hoop tube joint',endDescription:a.door.frontIsModelled?'Front modelled A-pillar joint':'Front measured reference joint',
+        bends:[],notes:`True 3D length incl. lateral offset ${round(Math.abs(m.lateral),1)} mm · no bends`,
+        jointStart:`door-${side}-rear`,jointEnd:`door-${side}-front`});
+    }
+  }
+  return list;
+}
+
+  function memberMarkSVG(m,light=false){
+  const C={bg:light?'#fff':'#0f1519',body:light?'#e5eaed':'#374149',outline:light?'#48525a':'#c2cbd2',
+    primary:light?'#202b31':'#dae4e9',muted:light?'#44515c':'#a9b8c2',accent:light?'#aa5300':'#ffa846'};
+  const x0=35,x1=925,bedY=88,bedH=29,scale=(x1-x0)/m.blank,X=n=>x0+n*scale;
+  const tick=(x,color,label)=>`<line x1="${round(x,3)}" y1="71" x2="${round(x,3)}" y2="134" stroke="${color}" stroke-width="2.25"/><circle cx="${round(x,3)}" cy="102" r="3.6" fill="${color}"><title>${label}</title></circle>`;
+  const extras=m.extra>0?`<rect x="${x0}" y="${bedY}" width="${round(m.extra*scale,3)}" height="${bedH}" fill="none" stroke="#9facb8" stroke-width="1.2" stroke-dasharray="4 3"/><rect x="${round(X(m.blank-m.extra),3)}" y="${bedY}" width="${round(m.extra*scale,3)}" height="${bedH}" fill="none" stroke="#9facb8" stroke-width="1.2" stroke-dasharray="4 3"/>`:'';
+  const bendMarks=m.bends.length?m.bends.map((b,i)=>{
+    const lo=X(b.start),mid=X(b.mid),hi=X(b.end),tiny=(hi-lo)<62;
+    const row=i%2===0?35:41;
+    return `<g><rect x="${round(lo,3)}" y="${bedY}" width="${round(hi-lo,3)}" height="${bedH}" fill="#f8952b" opacity=".38"/><text x="${round(mid,3)}" y="${row}" fill="${C.accent}" font-size="14" font-weight="700" text-anchor="middle">${b.id}</text><text x="${round(mid,3)}" y="57" fill="${C.muted}" font-size="12" text-anchor="middle">${round(b.angle,1)}°</text>${tick(lo,'#ffd06c',`${b.id} start ${round(b.start,1)} mm`)}${tick(mid,'#69d5e8',`${b.id} centre ${round(b.mid,1)} mm`)}${tick(hi,'#bba6ff',`${b.id} end ${round(b.end,1)} mm`)}${tiny?'':`<text x="${round(lo,3)}" y="148" fill="#ca861a" font-size="10" text-anchor="middle">S</text><text x="${round(mid,3)}" y="148" fill="#2688a4" font-size="10" text-anchor="middle">C</text><text x="${round(hi,3)}" y="148" fill="#866bb8" font-size="10" text-anchor="middle">E</text>`}</g>`;
+  }).join(''):tick(X(m.extra),'#4dcad6',`Near joint-centre reference ${round(m.extra,1)} mm`)+tick(X(m.blank-m.extra),'#4dcad6',`Far joint-centre reference ${round(m.blank-m.extra,1)} mm`);
+  const spanText=m.bends.length?`DEVELOPED CENTRELINE ${round(m.span,1)} mm`:`THEORETICAL JOINT-CENTRE SPAN ${round(m.span,1)} mm`;
+  const footer=m.bends.length?'START / CENTRE / END = bend arc positions (geometric only)':'CYAN END MARKS = joint-centre positions, NOT finished fishmouth ends';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 205" width="960" height="205" role="img" aria-label="${m.title} — straight blank mark-out">
+  <rect width="960" height="205" rx="6" fill="${C.bg}"/>
+  <text x="${x0}" y="21" fill="${C.primary}" font-size="12.5">DATUM / 0 mm</text>
+  <text x="${x1}" y="21" fill="${C.primary}" font-size="12.5" text-anchor="end">PREP BLANK ${round(m.blank,1)} mm</text>
+  <rect x="${x0}" y="${bedY}" width="${x1-x0}" height="${bedH}" rx="2" fill="${C.body}" stroke="${C.outline}" stroke-width="1.3"/>
+  ${extras}${bendMarks}
+  <line x1="${x0}" y1="79" x2="${x0}" y2="135" stroke="${C.outline}" stroke-width="3"/>
+  <line x1="${x1}" y1="79" x2="${x1}" y2="135" stroke="${C.outline}" stroke-width="3"/>
+  <text x="${x0}" y="164" fill="${C.accent}" font-size="11.5">${m.datum}</text>
+  <text x="${x1}" y="164" fill="${C.accent}" font-size="11.5" text-anchor="end">${m.farEnd}</text>
+  <text x="480" y="183" fill="${C.primary}" font-size="12" text-anchor="middle">${spanText} · ALLOWANCE ${round(m.extra,1)} mm / END</text>
+  <text x="480" y="198" fill="${C.muted}" font-size="10.5" text-anchor="middle">${footer} · DIAGRAM NOT TO SCALE FOR PRINTING</text>
+  </svg>`;
+}
+
+  function memberMarkPrintHTML(members){
+  const sheets=members.map(m=>{
+    const bends=m.bends.length?`<table><thead><tr><th>Bend</th><th>Angle</th><th>Start</th><th>Centre</th><th>End</th></tr></thead><tbody>${m.bends.map(b=>`<tr><td>${b.id}</td><td>${round(b.angle,2)}°</td><td>${round(b.start,1)} mm</td><td>${round(b.mid,1)} mm</td><td>${round(b.end,1)} mm</td></tr>`).join('')}</tbody></table>`:
+      `<p class="reference">Near joint-centre reference: ${round(m.extra,1)} mm · Far joint-centre reference: ${round(m.blank-m.extra,1)} mm from datum. Both are theoretical, not cut edges.</p>`;
+    return `<section class="sheet"><h2>${m.title} — ${round(m.od,2)} × ${round(m.wall,2)} CHS</h2><p>Start datum: ${m.startDescription} · Far end: ${m.endDescription}</p>
+    ${memberMarkSVG(m,true)}
+    <p>Developed/centreline span: <b>${round(m.span,1)} mm</b> · Prep blank: <b>${round(m.blank,1)} mm</b> · End allowance: <b>${round(m.extra,1)} mm per end</b></p>
+    ${bends}<p>${m.notes}</p>
+    <p class="warning">NOT 1:1. Square-blank dimensions only. Bend arcs are theoretical; validate machine references. Joint-centre marks are NOT notched tube ends. Verify fit and fishmouth templates before final fabrication.</p></section>`;
+  }).join('');
+  return `<!doctype html><html lang="en-AU"><head><meta charset="utf-8"><title>Roll cage individual tube marking sheets</title><style>
+  @page{size:A4 landscape;margin:10mm}*{box-sizing:border-box}body{margin:0;background:#e6eaed;color:#17232a;font:12px Arial,sans-serif}
+  .toolbar{position:sticky;top:0;background:#1b2328;color:white;text-align:center;padding:10px;z-index:1}.toolbar button{padding:9px 18px;background:#fc912c;border:0;border-radius:7px;font-weight:700;cursor:pointer}
+  .sheet{width:277mm;min-height:190mm;background:white;margin:14px auto;padding:12px 18px;break-after:page;box-shadow:0 3px 14px #0002}
+  .sheet:last-child{break-after:auto}h2{font-size:19px;margin:0 0 8px}.sheet>p{margin:7px 0}.sheet svg{display:block;width:100%;max-height:80mm}
+  table{border-collapse:collapse;font-size:11px;width:100%}td,th{text-align:left;border-bottom:1px solid #bbb;padding:4px 8px}.reference{font-weight:700}.warning{font-size:10px;color:#555;margin-top:10px}
+  @media print{body{background:white}.toolbar{display:none}.sheet{margin:0;padding:0;box-shadow:none;width:auto;height:auto;min-height:0;break-after:page}.sheet:last-child{break-after:auto}}
+  </style></head><body><div class="toolbar"><button onclick="window.print()">Print ${members.length} individual tube sheets — A4 LANDSCAPE</button> One diagram per member · dimensions, not 1:1 templates</div>${sheets}</body></html>`;
+}
+
+  function renderMemberMarkouts(g){
+  const members=memberMarkoutSpecs(g);g.memberMarkouts=members;
+  $('memberMarkoutCount').textContent=`${members.length} individual tube${members.length===1?'':'s'}`;
+  $('printMemberMarkouts').disabled=!members.length;
+  $('saveMemberMarkoutsSVG').disabled=!members.length;
+  const byId=Object.fromEntries((g.tubeJoints||[]).map(j=>[j.id,j]));
+  $('memberMarkoutCards').innerHTML=members.map((m,i)=>{
+    const refEnd=(name,id)=>{if(!id)return `${name}: square mounting/foot reference`;
+      const j=byId[id];return `${name}: ${j?.error?`fishmouth needs checking (${j.error})`:j?'1:1 fishmouth available':'fishmouth status unavailable'}`;};
+    const bendList=m.bends.length?m.bends.map(b=>`<span><b>${b.id}</b> ${round(b.angle,2)}° · <span class="mark-start">S ${round(b.start,1)}</span> / <span class="mark-mid">C ${round(b.mid,1)}</span> / <span class="mark-end">E ${round(b.end,1)}</span> mm</span>`).join(''):
+      `<span><b>NO BENDS.</b> Joint-centre positions measured from datum: ${round(m.extra,1)} mm and ${round(m.blank-m.extra,1)} mm. Prep stock extends beyond the theoretical centres.</span>`;
+    return `<article class="member-markout-card"><div class="member-markout-heading"><h3>${m.title}</h3><span class="mark-subtitle">CHS ${round(m.od,2)} × ${round(m.wall,2)} mm · ${round(m.blank,1)} mm blank</span></div>
+    <div class="member-mark-ruler">${memberMarkSVG(m)}</div>
+    <p class="member-mark-summary"><strong>Datum:</strong> ${m.startDescription} → <strong>Far end:</strong> ${m.endDescription}. ${m.notes}.<br/>${refEnd('Datum end',m.jointStart)} · ${refEnd('Far end',m.jointEnd)}</p>
+    <div class="member-mark-bends">${bendList}</div>
+    <div class="row-actions"><button type="button" data-member-mark-action="svg" data-member-mark-index="${i}">Save this tube SVG</button><button type="button" data-member-mark-action="print" data-member-mark-index="${i}">Print this tube</button>${m.jointStart||m.jointEnd?'<a href="#notchPanel">Fishmouth templates</a>':''}</div>
+    </article>`;
+  }).join('');
+}
+
+  function allMemberMarkSVG(members){
+  const h=54+members.length*240;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="960" height="${h}" viewBox="0 0 960 ${h}">
+  <rect width="960" height="${h}" fill="#13191c"/>
+  <text x="30" y="29" font-size="22" font-weight="700" font-family="Arial,sans-serif" fill="#ffa63e">ROLL CAGE — INDIVIDUAL TUBE MARK-OUTS</text>
+  ${members.map((m,i)=>`<g transform="translate(0,${46+i*240})"><text x="35" y="16" font-family="Arial,sans-serif" font-size="15" font-weight="700" fill="#ffa63e">${m.title} · CHS ${round(m.od,2)} × ${round(m.wall,2)} mm</text>
+  <svg x="0" y="23" width="960" height="205" viewBox="0 0 960 205">${memberMarkSVG(m).replace(/^<svg[^>]+>/,'').replace(/<\/svg>$/,'')}</svg></g>`).join('')}
+  </svg>`;
+}
+
   function renderMarkOut(g){
     // This is an UNFOLDED (straight) centreline, showing absolute distances
     // measured from the chosen physical datum end of the unbent blank.
@@ -1122,7 +1286,7 @@
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
+    if(g.issues.length){err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
@@ -1134,6 +1298,7 @@
     renderDrawing(g);
     renderMarkOut(g);
     renderAddons(g);
+    renderMemberMarkouts(g);
   }
   function setMode(n){mode=n;for(const m of [2,4]){$('mode'+m).classList.toggle('active',m===n);$('mode'+m).setAttribute('aria-pressed',String(m===n));}document.querySelectorAll('.tapered').forEach(x=>x.classList.toggle('field-hidden',n!==4));render();}
   function getSheet(){if(!latest)return '';const g=latest,v=g.v;const text=[`ROLL CAGE FABRICATION SHEET — ${g.mode}-bend hoop`, `Measured space: W ${round(v.width,1)} mm × H ${round(v.height,1)} mm`, `Tube OD ${round(v.od,2)} mm | wall ${round(v.wall,2)} mm | bender CLR ${round(v.radius,2)} mm`, `Side clearance ${round(v.sideGap,1)} mm | top clearance ${round(v.topGap,1)} mm`,...(g.mode===4?[`Roof available width ${round(v.roofWidth,1)} mm | shoulder available width ${round(v.shoulderWidth,1)} mm | shoulder corner height ${round(v.shoulder,1)} mm`]:[]),`Developed finished centreline length: ${round(g.total,1)} mm`,`Trim allowance: ${round(v.extra,1)} mm at each end`,`Suggested starting blank: ${round(g.blank,1)} mm`,`BEND MARKS (all measured from same starting blank end / zero datum):`,'Bend | Turn angle | Start of bend | Centre of bend | End of bend',...g.bends.map(b=>`${b.name} | ${round(b.angle,2)}° | ${round(b.start+v.extra,1)} mm | ${round(b.mid+v.extra,1)} mm | ${round(b.end+v.extra,1)} mm`),'STRAIGHT SECTIONS:',...g.sections.map(x=>`${x.label}: ${round(x.length,1)} mm`),'Important: Start and end = geometric tangency points; centre = half bend arc length. These are developed-centreline estimates, not calibrated machine feed marks. Validate bends, growth and springback on a test piece.'];
@@ -1234,6 +1399,22 @@
   });
   $('csvDownload').addEventListener('click',()=>{if(!latest)return;const v=latest.v;const lines=['Bend,Turn angle (deg),Start of bend from datum end (mm),Centre of bend from datum end (mm),End of bend from datum end (mm)',...latest.bends.map(b=>[b.name,round(b.angle,2),round(b.start+v.extra,1),round(b.mid+v.extra,1),round(b.end+v.extra,1)].join(','))];download('main-hoop-bend-schedule.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8');});
 
+  function printMemberMarkouts(members){
+  if(!members?.length)return;
+  const w=window.open('','_blank');
+  if(!w){alert('Your browser blocked the mark-out print sheet. Allow pop-ups and retry.');return;}
+  w.document.open();w.document.write(memberMarkPrintHTML(members));w.document.close();
+}
+  $('printMemberMarkouts').addEventListener('click',()=>{if(latest?.memberMarkouts)printMemberMarkouts(latest.memberMarkouts);});
+  $('saveMemberMarkoutsSVG').addEventListener('click',()=>{if(!latest?.memberMarkouts?.length)return;download('roll-cage-all-tube-markouts.svg',allMemberMarkSVG(latest.memberMarkouts),'image/svg+xml');});
+  $('memberMarkoutCards').addEventListener('click',event=>{
+    const button=event.target.closest('[data-member-mark-action]');
+    if(!button||!latest?.memberMarkouts)return;
+    const member=latest.memberMarkouts[Number(button.dataset.memberMarkIndex)];
+    if(!member)return;
+    if(button.dataset.memberMarkAction==='print')printMemberMarkouts([member]);
+    else if(button.dataset.memberMarkAction==='svg')download('roll-cage-'+member.id+'-markout.svg',memberMarkSVG(member),'image/svg+xml');
+  });
   function printJointTemplates(list){
     const available=list.filter(j=>!j.error&&j.paper&&j.profile);
     if(!available.length)return;

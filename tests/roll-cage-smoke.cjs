@@ -21,16 +21,42 @@ assert.notEqual(injected,scripts[0],'Test probe injection must match script tail
 vm.runInContext(injected,ctx,{timeout:12000,filename:'roll-cage/index.html'});
 function isSpan(id){assert.match(els.get(id).textContent,/^\d+[.]?\d* mm$/,'Missing computed span for '+id);}
 isSpan('developed');isSpan('braceSpan');isSpan('staySpan');isSpan('harnessSpan');isSpan('doorSpan');
+const initialMarkouts=ctx.window.__inspectRollCage().memberMarkouts;
+assert.equal(initialMarkouts.length,7,'Default enabled set: main hoop, diagonal, two rear stays, harness and two intrusion bars');
+assert.deepEqual(Array.from(initialMarkouts,m=>m.id),[
+  'main-hoop','diagonal-brace','rear-stay-left','rear-stay-right','harness-bar','side-intrusion-left','side-intrusion-right'
+]);
+assert.equal(initialMarkouts[0].bends.length,2,'Main hoop is a two-bend tube in default mode');
+assert.equal(initialMarkouts[1].bends.length,0,'Diagonal brace is straight and has no invented bend marks');
+for(const m of initialMarkouts){
+  assert(m.blank>=m.span&&m.span>0,'Blank and span must be finite positive for '+m.id);
+  assert(Math.abs(m.blank-m.span-2*m.extra)<0.01,'Blank must equal theoretical span plus two end allowances for '+m.id);
+  for(const b of m.bends)assert(b.start<=b.mid&&b.mid<=b.end&&b.end<=m.blank,'Bend marks stay within blank for '+m.id);
+}
+assert.match(els.get('memberMarkoutCount').textContent,/7 individual tubes/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/DATUM \/ 0 mm/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/Main-hoop diagonal brace/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/REAR \/ MAIN HOOP/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/THEORETICAL JOINT-CENTRE SPAN/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/Save this tube SVG/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/Print this tube/);
+assert.match(html,/A4 landscape/,'Dedicated mark-out print sheet uses landscape pages');
+
 assert.match(els.get('stayPlanSvg').innerHTML,/Harness/);
 assert.match(els.get('doorSideSvg').innerHTML,/Forward/);
 assert.match(els.get('doorPlanSvg').innerHTML,/Front joints/);
 assert.match(els.get('addonsBody').innerHTML,/Harness crossbar/);
 assert.match(els.get('addonsBody').innerHTML,/side intrusion/);
 assert.match(els.get('drawingSvg').innerHTML,/Harness/);
-els.get('mode4').events.click();isSpan('harnessSpan');isSpan('doorSpan');assert.match(els.get('drawingSvg').innerHTML,/Shoulder/);
+els.get('mode4').events.click();isSpan('harnessSpan');isSpan('doorSpan');
+assert.equal(ctx.window.__inspectRollCage().memberMarkouts.find(m=>m.id==='main-hoop').bends.length,4,
+  'Four bend tapered hoop has four bend-mark triples in its individual sheet');
+assert.match(els.get('drawingSvg').innerHTML,/Shoulder/);
 els.get('doorSides').value='left';els.get('doorSides').events.change();
 assert.match(els.get('addonsBody').innerHTML,/Left side intrusion/);
 assert.doesNotMatch(els.get('addonsBody').innerHTML,/Right side intrusion/);
+assert.equal(ctx.window.__inspectRollCage().memberMarkouts.length,6,'Left-only intrusion produces one tube sheet');
+
 els.get('harnessHeight').value='1600';els.get('harnessHeight').events.input();
 assert.match(els.get('addonsWarning').textContent,/Harness bar height/);
 els.get('harnessHeight').value='600';els.get('harnessHeight').events.input();isSpan('harnessSpan');
@@ -79,6 +105,7 @@ assert(!g.tubeJoints.find(j=>j.id==='diagonal-upper').error,'Actual bent-hoop ce
 els.get('width').value='10';els.get('width').events.input();
 assert.match(els.get('validation').innerHTML,/Not enough space/);
 assert.equal(els.get('jointNotchCards').innerHTML,'','Invalid hoop clears output without referencing legacy DOM IDs');
+assert.equal(els.get('memberMarkoutCards').innerHTML,'','Invalid hoop also clears all per-member diagrams');
 
 
 // Front leg and windscreen header regression tests. Preserve manual mode separately.
@@ -94,6 +121,25 @@ assert(Number.isFinite(g.addons.front.left.clock),'Left bend plane clock must be
 assert(Math.abs(g.addons.front.left.clock+g.addons.front.right.clock)<.01,'Clocking is mirrored for symmetric front legs');
 assert(g.addons.front.left.total>0&&g.addons.front.left.blank>0,'Positive centreline and stock length');
 assert(g.addons.front.header?.length>0,'Header between modelled front legs');
+assert.equal(g.memberMarkouts.length,10,'Whole cage includes ten physical individual member mark-outs');
+for(const id of ['front-leg-left','front-leg-right','windscreen-header']){
+  assert(g.memberMarkouts.some(m=>m.id===id),'Whole cage includes '+id);
+}
+for(const side of ['left','right']){
+  const leg=g.memberMarkouts.find(m=>m.id==='front-leg-'+side);
+  assert.equal(leg.bends.length,2,'Front leg must show both bend triples');
+  assert.match(leg.datum,/FL5/,'Front leg datum is named FL5 rear connection');
+  assert.match(leg.farEnd,/FL1/,'Front leg far end is FL1 floor mount');
+  for(let i=0;i<leg.bends.length;i++){
+    assert(Math.abs(leg.bends[i].start-(g.addons.front[side].bends[i].start+g.v.frontTrim))<.001,
+      'Front leg mark offset matches existing bend schedule');
+  }
+}
+assert.equal(g.memberMarkouts.find(m=>m.id==='windscreen-header').bends.length,0);
+assert.match(els.get('memberMarkoutCount').textContent,/10 individual tubes/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/FL5 \/ REAR HOOP/);
+assert.match(els.get('memberMarkoutCards').innerHTML,/2 bends/);
+
 assert(g.addons.door.frontIsModelled,'Door ends reference modelled front leg, not manual input');
 assert(Math.abs(g.addons.door.left.front.z+Number(els.get('frontFootRun').value))<1,'Door front joint follows front leg foot line');
 assert.match(els.get('frontSideSvg').innerHTML,/Roof joint/);
@@ -154,5 +200,6 @@ els.get('useFrontLegs').checked=false;els.get('useFrontLegs').events.change();
 g=ctx.window.__inspectRollCage();
 assert.equal(g.addons.front,null,'Manual front mode preserved when front legs disabled');
 assert.equal(g.tubeJoints.length,10,'Original ten joint inventory restored');
+assert.equal(g.memberMarkouts.length,7,'Disabling front legs also removes both leg sheets and header sheet');
 
 console.log('Roll cage geometry, views, controls and invalid-input smoke tests passed');
