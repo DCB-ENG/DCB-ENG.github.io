@@ -170,7 +170,7 @@
         <div class="field"><label for="headerWall">Header wall thickness (mm)</label><input type="number" id="headerWall" value="2.6" min=".1" step=".1"></div>
       </div>
     </div>
-    <div class="definition"><strong>Layout only:</strong> Front-leg geometry is a measured centreline fit, not a cage approval. Confirm the front leg follows the A-pillar, leaves occupant clearances and meets the permitted bend and mounting requirements. The AASA SC-1 illustration shows separate front legs and a windscreen header; it does not establish safe dimensions for a particular vehicle.</div>
+    <div class="definition"><strong>Layout only:</strong> Front-leg geometry is a measured centreline fit, not a cage approval. Confirm the front leg follows the A-pillar, leaves occupant clearances and meets the permitted bend and mounting requirements. The AASA SC-1 illustration shows separate front legs and a windscreen header; it does not establish safe dimensions for a particular vehicle. Check your cage class and the <a href="https://www.aasa.com.au/ncr-appendices" target="_blank" rel="noopener noreferrer">current AASA safety cage requirements</a>, including header location, mounting, occupant clearance and tube specifications.</div>
   </div>
   <h3>Tube preparation</h3>
   <div class="fields"><div class="field full"><label for="fitExtra">Extra material for coping, at each end (mm)</label><input type="number" id="fitExtra" value="20" min="0" step="1"><span class="hint">Added to each straight brace/stay span as a rough prep blank allowance. Trim/cope to fit.</span></div></div>
@@ -214,7 +214,7 @@
   <div class="table-scroll"><table><thead><tr><th>Leg</th><th>Bend</th><th>Turn</th><th>Start (mm)</th><th>Centre (mm)</th><th>End (mm)</th></tr></thead><tbody id="frontBendsBody"></tbody></table></div>
   <h3>Front-leg straight sections</h3>
   <div class="table-scroll"><table><thead><tr><th>Member</th><th>Section</th><th>Finished length (mm)</th></tr></thead><tbody id="frontSectionsBody"></tbody></table></div>
-  <p class="notes">Sections and bend marks are theoretical centreline dimensions; they are not bender clamp/feed reference marks or production-ready compensated machine instructions. The front-leg rear end joins the main hoop; floor mounting feet are not tube-to-tube joints.</p>
+  <p class="notes">Sections and bend marks are theoretical centreline dimensions; they are not bender clamp/feed reference marks or production-ready compensated machine instructions. The front-leg rear end joins the main hoop; floor mounting feet are not tube-to-tube joints. The front legs are each one continuous tube, not assembled from individual straight sections. Validate bend-plane rotation against your bender and test tube.</p>
   <div class="row-actions"><button id="frontSvgDownload">Save front-structure views SVG</button><button id="frontBendCsvDownload">Save front-leg bend CSV</button></div>
 </section>
 <section class="panel" id="notchPanel">
@@ -414,7 +414,7 @@
     while(f(hi)<=0&&grow++<16)hi*=2;
     if(grow>=16)return fail("No single saddle boundary could be found along this tube axis.");
     let lo=0;
-    for(let n=0;n<38;n++){const m=(lo+hi)*0.5;if(f(m)>0)hi=m;else lo=m;}
+    for(let n=0;n<24;n++){const m=(lo+hi)*0.5;if(f(m)>0)hi=m;else lo=m;}
     const depth=(lo+hi)*.5;
     if(!Number.isFinite(depth)||depth>10000)return fail("Joint intersection is outside the supported calculation range.");
     profile.push({s:C*i/steps,theta,depth});
@@ -599,8 +599,8 @@
     const numeric=['frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim'];
     if(!numeric.every(k=>Number.isFinite(v[k]))||v.frontOD<=0||v.frontWall<=0||v.frontWall>=v.frontOD/2||v.frontCLR<=0||v.frontTrim<0)
       return {errors:['Enter valid front-leg CHS, wall, CLR, trim and measured positions.']};
-    if(v.frontTieHeight<=0||v.frontTieHeight>=g.Hc||v.frontWindBaseHeight<=0||v.frontRoofTopHeight<=v.frontWindBaseHeight||v.frontRoofTopHeight>=g.Hc+60||v.frontRoofRun<=0||v.frontFootRun<=v.frontRoofRun)
-      return {errors:['Front legs: attachment, A-pillar roof and windscreen base heights or forward distances are invalid. Roof-top height should remain near the main hoop height.']};
+    if(v.frontTieHeight<=0||v.frontTieHeight>=g.Hc||v.frontWindBaseHeight<=0||v.frontRoofTopHeight<=v.frontWindBaseHeight||v.frontRoofRun<=0||v.frontFootRun<=v.frontRoofRun)
+      return {errors:['Front legs: attachment, A-pillar roof and windscreen base heights or forward distances are invalid. Measure roof clearance at both hoops.']};
     if([v.frontHeaderWidth,v.frontBaseWidth,v.frontFootWidth].some(x=>x<=v.frontOD))
       return {errors:['Front legs: spacing must be larger than the selected CHS OD.']};
     const cx=g.Wc/2,result={errors,OD:v.frontOD,wall:v.frontWall,CLR:v.frontCLR,frontRun:v.frontFootRun,roofRun:v.frontRoofRun};
