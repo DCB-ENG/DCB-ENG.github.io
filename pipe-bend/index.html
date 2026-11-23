@@ -79,9 +79,25 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
   <section id="springback-section" class="panel" aria-labelledby="springback-title" style="margin-top:18px">
     <h2 id="springback-title" style="margin-bottom:6px">Springback / overbend</h2>
     <p class="muted" style="margin:0 0 16px">Calculate the extra machine angle to bend so the released pipe finishes at your selected bend angle.</p>
+
+    <div class="field-grid" style="margin-bottom:16px">
+      <div class="field"><label for="bender-method">Bending machine type</label><select id="bender-method"><option value="rotary-draw">Rotary draw</option><option value="hydraulic-ram">Hydraulic ram / press bender</option><option value="compression">Compression bender</option></select></div>
+      <div class="field"><label for="bender-id" title="Optional name to keep different machines and dies separate in the calibration">Machine / die ID (optional) ⓘ</label><input id="bender-id" type="text" maxlength="70" placeholder="e.g. Pro Tools 105"></div>
+      <div class="field span2"><label for="steel-grade">Steel / material grade</label><select id="steel-grade">
+        <option value="">Select a material / grade</option>
+        <option value="rt1020">RaceTech RT350 · 1020 CDS / CDW / DOM mild steel</option>
+        <option value="rt1026">RaceTech RT350 · 1026 CDS / DOM mild steel</option>
+        <option value="rt4130">RaceTech RT650 · 4130 Condition N chromoly</option>
+        <option value="custom">Other steel · enter material properties</option>
+      </select></div>
+      <div class="field span2" id="racetech-stock-field" hidden><label for="racetech-stock">RaceTech catalogue size (optional)</label><select id="racetech-stock"><option value="">Keep current pipe dimensions</option></select><p class="hint">Choose a listed sample to fill OD and wall automatically. Historical catalogue, not live stock.</p></div>
+      <div class="field"><label for="yield-mpa" title="Yield strength. RaceTech technical page supplies approximate guide values; change if you have a mill certificate.">Yield strength (MPa) ⓘ</label><input id="yield-mpa" type="number" step="any" min="1" max="3000" inputmode="decimal" placeholder="e.g. 415"></div>
+      <div class="field"><label for="elastic-mpa" title="Elastic modulus. 205000 MPa is a general engineering assumption for steel, NOT a RaceTech-measured batch value.">Elastic modulus (MPa) ⓘ</label><input id="elastic-mpa" type="number" step="any" min="10000" max="500000" value="205000" inputmode="decimal"></div>
+      <div class="field span2"><p id="race-tech-reference" class="hint" style="margin:0">Choose a grade for material properties. RaceTech reference values are guides, not material certificates.</p></div>
+    </div>
     <div class="sb-grid">
       <div class="sb-form">
-        <div class="field"><label for="springback-mode">Correction input</label><select id="springback-mode"><option value="trial">Measured trial bend (recommended)</option><option value="manual">Known measured springback (°)</option></select></div>
+        <div class="field"><label for="springback-mode">Correction input</label><select id="springback-mode"><option value="material">Material-based rough estimate</option><option value="trial">Measured trial bend (recommended for accuracy)</option><option value="manual">Known measured springback (°)</option></select></div>
         <div id="springback-trial" class="field-grid" style="margin-top:14px">
           <div class="field"><label for="trial-commanded" title="Bender's indicated direction-change angle before releasing the pipe">Test: bender setting (°) ⓘ</label><input id="trial-commanded" type="number" min="0.01" max="270" step="any" inputmode="decimal" placeholder="e.g. 90"></div>
           <div class="field"><label for="trial-finished" title="Direction-change angle measured on the pipe after releasing the bending tool">Test: released angle (°) ⓘ</label><input id="trial-finished" type="number" min="0.01" max="270" step="any" inputmode="decimal" placeholder="e.g. 87"></div>
@@ -148,6 +164,28 @@ summary{cursor:pointer;font-weight:780}details p{font-size:.85rem;color:#c4cbd4;
     if(locked)$('wall').value=String(pipe.sch[code]);
     else if($('profile').value==='NB')$('wall').value=String(savedManualWall);
   }
+
+  // Supplier's *guide* properties, not measured properties of a particular tube.
+  // From https://racetechsteel.com.au/technical/ ; 205 GPa E is a separate generic steel assumption.
+  // Selected round-tube examples from Racetech catalogue v1.171 (2021), NOT a current stock list.
+  const RACETECH = Object.freeze({
+    rt1020:{label:'RT350 · 1020 CDS/CDW/DOM',yield:415,tensile:540,elongation:23,standard:'ASTM A519 / A513 depending on product',sizes:[
+      [25.4,2.6,'CD2525'],[31.8,3,'CD3031'],[38.1,2.4,'CD2438'],[44.45,2.4,'CD2444'],[38.1,2.6,'CD2538'],[38.1,3.3,'CD3338'],[44.45,2.6,'CD2544'],[40,2,'CD2040'],[50,2,'CD2050'],[44.45,3,'CD3044'],[50.8,3,'CD3050']
+    ]},
+    rt1026:{label:'RT350 · 1026 CDS/DOM',yield:615,tensile:705,elongation:23,standard:'ASTM A519',sizes:[[38.1,2.6,'CDS2538'],[44.4,2.6,'CDS2544']]},
+    rt4130:{label:'RT650 · 4130 chromoly (Condition N)',yield:720,tensile:900,elongation:20,standard:'AMS-T-6736 / Mil-T-6736B Cond N',sizes:[
+      [6.35,0.7,'RT0706'],[6.35,1.2,'RT1206'],[9.5,0.9,'RT0909'],
+      [12.7,1.2,'RT1212'],[15.95,1.6,'RT1616'],[19.05,1.6,'RT1619'],
+      [22.2,1.6,'RT1622'],[22.2,2.4,'RT2422'],[22.2,3,'RT3022'],
+      [25.4,1.2,'RT1225'],[25.4,2.4,'RT2425'],[25.4,3,'RT3025'],
+      [31.8,1.2,'Catalogue size'],[41.3,1.2,'RT1241'],[101.6,6.3,'Website listing']
+    ]}
+  });
+  const BENDER_NOTES={
+    'rotary-draw':'Rotary draw: use the die centreline radius and check clamping, pressure die and mandrel setup.',
+    'hydraulic-ram':'Hydraulic ram: the actual curve and bend radius can vary along the pipe. A single-radius model is especially approximate; measure the finished bend.',
+    'compression':'Compression: the achieved radius and slip can vary with tooling. Calibrate with a matching test bend.'
+  };
   let mode = 'smooth';
   let current = null;
   let springbackCalibrationSetup = null;
