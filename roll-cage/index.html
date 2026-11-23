@@ -76,6 +76,19 @@
 .dcb-nav__link:focus-visible,.dcb-nav__brand:focus-visible{outline:2px solid #ffa726;outline-offset:3px}
 @media(max-width:760px){.dcb-nav__inner{flex-direction:column;align-items:flex-start;gap:7px;padding:9px 14px}.dcb-nav__link{padding:7px 9px;min-height:32px;font-size:12px}}
 @media print{.dcb-nav{display:none!important}}
+
+/* Universal notch cards */
+.joint-cards{margin-top:16px;align-items:start}
+.joint-card{border:1px solid #48535d;border-radius:11px;padding:13px;background:#151b1e;min-width:0}
+.joint-card .template-preview{margin-top:10px}
+.joint-card .row-actions{gap:7px}
+.joint-card .row-actions button{font-size:12px;flex:1}
+.joint-card h3{font-size:15px;margin:0 0 6px}
+.joint-meta{font-size:12px;color:var(--muted);margin:4px 0 10px}
+.joint-error{border:1px solid #ad7547;color:#f6d6af;background:#32251b;border-radius:8px;padding:12px;margin-top:10px;font-size:12px;line-height:1.5}
+.inline-toggle{display:flex;align-items:center;gap:8px}
+.inline-toggle input{width:18px;min-height:auto;flex:none;accent-color:#fc912c}
+@media print{.joint-card{break-inside:avoid}.joint-card .row-actions,#printNotches{display:none}}
 </style>
 </head>
 <body>
@@ -104,6 +117,8 @@
       <div class="field"><label for="rearRun">Rearward distance (mm)</label><input type="number" id="rearRun" value="900" min="1" step="1"><span class="hint">Hoop plane → rear mounts</span></div>
       <div class="field"><label for="rearFootHeight">Rear mount height (mm)</label><input type="number" id="rearFootHeight" value="100" min="0" step="1"><span class="hint">Above hoop mounting plane</span></div>
       <div class="field"><label for="rearFootWidth">Rear mount spacing (mm)</label><input type="number" id="rearFootWidth" value="900" min="1" step="1"><span class="hint">Centre-to-centre, both mounts</span></div>
+<div class="field"><label for="stayOD">Rear stay CHS outside diameter (mm)</label><input type="number" id="stayOD" list="braceODPresets" value="44.45" min="1" step=".01"></div>
+<div class="field"><label for="stayWall">Rear stay wall thickness (mm)</label><input type="number" id="stayWall" value="2.6" min=".1" step=".1"></div>
     </div>
   </div>
 <label class="addon-heading"><input type="checkbox" id="useHarness" checked> Harness crossbar <span class="comp-pill">rear stays</span></label>
@@ -121,6 +136,10 @@
 <div class="field"><label for="doorOD">Side bar CHS OD (mm)</label><input type="number" id="doorOD" list="braceODPresets" value="38.1" min="1" step=".01"></div>
 <div class="field"><label for="doorWall">Side bar CHS wall (mm)</label><input type="number" id="doorWall" value="2.6" min=".1" step=".1"></div>
 <div class="field full"><label for="doorSides">Side intrusion arrangement</label><select id="doorSides"><option value="both">Both sides (2 bars)</option><option value="left">Left only</option><option value="right">Right only</option></select></div>
+<div class="field full"><label for="frontTubeOD">Front/A-pillar parent CHS OD (mm)</label><input type="number" id="frontTubeOD" list="braceODPresets" value="44.45" min="1" step=".01"><span class="hint">Tube receiving the FRONT end of each side intrusion bar</span></div>
+<div class="field"><label for="frontTubeSideLean">Front tube outward lean (degrees)</label><input type="number" id="frontTubeSideLean" value="0" min="-80" max="80" step=".5"><span class="hint">+ outward at the roof; mirror left/right</span></div>
+<div class="field"><label for="frontTubeRearLean">Front tube rearward lean (degrees)</label><input type="number" id="frontTubeRearLean" value="0" min="-80" max="80" step=".5"><span class="hint">+ rearward at roof, − forward</span></div>
+<div class="field full"><label class="inline-toggle"><input type="checkbox" id="frontTubeConfirmed"> I measured the front parent tube OD and lean angles</label><span class="hint">Required before generating front-end fishmouth templates. The front hoop is not yet modelled, so these are local reference-cylinder measurements.</span></div>
 </div></div>
   <h3>Tube preparation</h3>
   <div class="fields"><div class="field full"><label for="fitExtra">Extra material for coping, at each end (mm)</label><input type="number" id="fitExtra" value="20" min="0" step="1"><span class="hint">Added to each straight brace/stay span as a rough prep blank allowance. Trim/cope to fit.</span></div></div>
@@ -147,20 +166,12 @@
   <div class="row-actions"><button id="addonsSvgDownload">Save views SVG</button><button id="addonsCsvDownload">Save cut list CSV</button></div>
 </section>
 <section class="panel" id="notchPanel">
-  <div class="drawing-header" style="padding:0 0 10px"><h2 style="margin:0">Diagonal brace · printable fishmouth templates</h2><span class="unit">Developed CHS OD · true scale on paper</span></div>
-  <div class="notch-banner" id="notchStatus"></div>
-  <div class="comp-metrics">
-    <div class="comp-metric"><small>Brace CHS</small><b id="notchSize">—</b><em>Independent of hoop OD</em></div>
-    <div class="comp-metric"><small>Upper / lower joint angles</small><b id="notchAngles">—</b><em>Angle between tube axes</em></div>
-    <div class="comp-metric"><small>Theoretical tip-to-tip square blank</small><b id="notchSquare">—</b><em>Before coping · verify physically</em></div>
-  </div>
-  <div class="subviews notch-previews">
-    <div class="subview"><h3>UPPER END — TOP connection</h3><div class="template-preview" id="upperNotchPreview"></div></div>
-    <div class="subview"><h3>LOWER END — BOTTOM connection</h3><div class="template-preview" id="lowerNotchPreview"></div></div>
-  </div>
-  <p class="notch-explain">Cut lines are developed from the intersection of two <strong>straight CHS cylinders</strong> using the actual brace-to-hoop angle and both outside diameters. Align each template's <strong>UP</strong> reference with the upper-facing side of the installed brace, then wrap toward the <strong>FRONT</strong> side of the car. The upper and lower patterns are different and must not be swapped.</p>
-  <div class="row-actions"><button class="primary" id="printNotches">Print both ends · 1:1</button><button id="upperNotchSVG">Save UPPER SVG · 1:1</button><button id="lowerNotchSVG">Save LOWER SVG · 1:1</button><button id="modelJSON">Save geometry JSON · for future STEP</button></div>
-  <p class="notes">Printing opens a separate two-page sheet with a <strong>100 mm calibration line</strong> on each page. Select actual size / 100%, not “fit to page”; check with a ruler before cutting. Templates require a straight parent tube at the connection and brace OD ≤ parent OD. This version does <strong>not</strong> generate a STEP file or account for weld gaps or manufacturing tolerances.</p>
+  <div class="drawing-header" style="padding:0 0 10px"><h2 style="margin:0">All tube-to-tube joints · printable wrap-arounds</h2><span class="unit">1:1 CHS developed OD · individual end labels</span></div>
+  <p class="notch-explain">Each separate tube end is calculated against its actual <strong>3D parent tube axis</strong> or the finished main-hoop centreline, including bends where a single cope contour is valid. Upper and lower ends, left and right sides, and harness ends are individually labelled. Rear stay footplates are <strong>not</strong> tube-to-tube joints.</p>
+  <div class="notch-banner" id="notchStatus" role="status">Calculating joints…</div>
+  <div class="row-actions"><button class="primary" id="printNotches">Print all available · 1:1</button><span class="unit" id="notchCount">—</span></div>
+  <div id="jointNotchCards" class="subviews notch-previews joint-cards"></div>
+  <p class="notes">Every sheet includes a <strong>100 mm calibration line</strong>. Print at actual size / 100% with no fit-to-page scaling; measure the line before cutting. The reference UP/FRONT directions are defined for <em>each tube end</em> and may not match when the tube is reversed. Mark reference lines on the physical tube first. Templates represent ideal external-cylinder intersection without weld gap, kerf, tube deflection or coating. Treat the front end of a side bar as unverified until you enter and confirm the actual front/A-pillar tube OD and both lean angles. Use a test fit before cutting final cage components.</p>
 </section>
 <section class="panel" id="marksPanel"><div class="drawing-header" style="padding:0 0 8px"><h2 style="margin:0">Straight-tube mark-out</h2><span class="unit">All measurements from ONE datum end</span></div>
 <p class="marking-info"><strong>Mark each bend three times:</strong> <span class="mark-start">● Start</span> = where the curve begins; <span class="mark-mid">● Centre</span> = halfway through the curved length; <span class="mark-end">● End</span> = where the curve finishes. Use the same tube end for every tape measurement. <strong>Centre means arc midpoint, not the intersection of the straight legs.</strong></p>
@@ -176,7 +187,7 @@
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall'];
+  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean'];
   let mode=2, latest=null;
   const round=(x,places=1)=>Number(x).toFixed(places);
   const dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
