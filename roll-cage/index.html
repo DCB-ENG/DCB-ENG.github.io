@@ -388,18 +388,20 @@
     return {brace,stays,harness,door,errors};
   }
   function renderStayViews(g){
-    const stay=g.addons.stays;
+    const stay=g.addons.stays,harness=g.addons.harness;
     if(!stay){const msg='<text x="300" y="165" text-anchor="middle" fill="#aab4bc" font-size="17">Enable rear stays and enter valid dimensions</text>'; $('staySideSvg').innerHTML=msg;$('stayPlanSvg').innerHTML=msg;return;}
     const {v}=g;
     // SIDE VIEW: drawing is a projection, so 3D (splayed) tube length differs.
     const sideS=Math.min(270/stay.run,210/Math.max(g.Hc,stay.topHeight));
     const x0=130, y0=284,XX=n=>x0+n*sideS,YY=n=>y0-n*sideS;
     const xa=XX(0),xt=XX(stay.run),yt=YY(stay.topHeight),yf=YY(stay.footHeight);
+    const harnessSide=harness?`<circle cx="${XX(harness.z)}" cy="${YY(harness.height)}" r="7" fill="#c4a0ff" stroke="#25143c" stroke-width="2"/><text x="${XX(harness.z)+10}" y="${YY(harness.height)-13}" font-size="12" fill="#dec8ff">Harness ${round(harness.height,0)} mm high</text>`:'';
     $('staySideSvg').innerHTML=`
       <line x1="${xa}" y1="${YY(g.Hc)}" x2="${xa}" y2="${YY(0)}" stroke="#89969e" stroke-width="10" stroke-linecap="round"/>
       <line x1="${xa}" y1="${yt}" x2="${xt}" y2="${yf}" stroke="#6fe5ab" stroke-width="5" stroke-linecap="round"/>
       <circle cx="${xa}" cy="${yt}" r="6" fill="#a7efc8" stroke="#111" stroke-width="2"/>
       <circle cx="${xt}" cy="${yf}" r="6" fill="#a7efc8" stroke="#111" stroke-width="2"/>
+      ${harnessSide}
       <line x1="${xa}" y1="315" x2="${xt}" y2="315" stroke="#ed9949" stroke-width="1.4"/>
       <path d="M${xa+7} 311 L${xa} 315 L${xa+7} 319 M${xt-7} 311 L${xt} 315 L${xt-7} 319" stroke="#ed9949" fill="none"/>
       <text x="${(xa+xt)/2}" y="333" text-anchor="middle" font-size="13" fill="#f8a95b">Rearward ${round(stay.run,0)} mm</text>
@@ -414,17 +416,54 @@
     const planS=Math.min(470/planSpan,180/stay.run);
     const cx=300,py=80,XP=n=>cx+(n-g.Wc/2)*planS,YP=n=>py+n*planS;
     const pyl=YP(stay.run);
+    const harnessPlan=harness?`<line x1="${XP(harness.left.x)}" y1="${YP(harness.z)}" x2="${XP(harness.right.x)}" y2="${YP(harness.z)}" stroke="#c4a0ff" stroke-width="6"/><circle cx="${XP(harness.left.x)}" cy="${YP(harness.z)}" r="5" fill="#dec8ff"/><circle cx="${XP(harness.right.x)}" cy="${YP(harness.z)}" r="5" fill="#dec8ff"/><text x="300" y="${YP(harness.z)-9}" font-size="13" fill="#dec8ff" text-anchor="middle">Harness ${round(harness.length,1)} mm</text>`:'';
     $('stayPlanSvg').innerHTML=`
       <line x1="${XP(0)}" y1="${py}" x2="${XP(g.Wc)}" y2="${py}" stroke="#8f9ca4" stroke-width="8" stroke-linecap="round"/>
       <line x1="${cx}" y1="${py-22}" x2="${cx}" y2="${pyl+31}" stroke="#68767e" stroke-width="1.2" stroke-dasharray="6 6"/>
       <line x1="${XP(stay.left.x)}" y1="${py}" x2="${XP(stay.leftFoot.x)}" y2="${pyl}" stroke="#6fe5ab" stroke-width="5"/>
       <line x1="${XP(stay.right.x)}" y1="${py}" x2="${XP(stay.rightFoot.x)}" y2="${pyl}" stroke="#6fe5ab" stroke-width="5"/>
+      ${harnessPlan}
       ${[[stay.left.x,py],[stay.right.x,py],[stay.leftFoot.x,pyl],[stay.rightFoot.x,pyl]].map(([x,y])=>`<circle cx="${XP(x)}" cy="${y}" r="5" fill="#a7efc8" stroke="#111" stroke-width="2"/>`).join('')}
       <text x="300" y="${py-25}" font-size="13" text-anchor="middle" fill="#d4dce0">Upper ${round(stay.upperWidth,1)} mm</text>
       <line x1="${XP(stay.leftFoot.x)}" y1="${pyl+26}" x2="${XP(stay.rightFoot.x)}" y2="${pyl+26}" stroke="#ed9949" stroke-width="1.4"/>
       <text x="300" y="${pyl+47}" text-anchor="middle" font-size="13" fill="#f8a95b">Rear mounts ${round(stay.lowerWidth,0)} mm</text>
       <text x="300" y="${Math.min(pyl+73,319)}" font-size="12" text-anchor="middle" fill="#a8b7b9">Lateral splay ${round(stay.lateral,1)} mm per side · ${round(stay.splayAngle,1)}° in plan</text>
       <text x="300" y="21" font-size="12" fill="#9ba7ae" text-anchor="middle">Looking down · main hoop at front / rear mounts below</text>`;
+  }
+
+  function renderDoorViews(g){
+    const door=g.addons.door;
+    if(!door){
+      const msg='<text x="300" y="165" text-anchor="middle" fill="#aab4bc" font-size="16">Enable side intrusion and enter valid dimensions</text>';
+      $('doorSideSvg').innerHTML=msg;$('doorPlanSvg').innerHTML=msg;return;
+    }
+    const v=g.v,sc=Math.min(300/door.run,215/Math.max(g.Hc,1)),X=n=>400-n*sc,Y=h=>282-h*sc;
+    const xr=X(0),xf=X(door.run),yr=Y(v.doorRearHeight),yf=Y(v.doorFrontHeight);
+    const chosen=door.members.map(m=>m.name).join(' + ');
+    $('doorSideSvg').innerHTML=`
+      <line x1="${xr}" y1="${Y(g.Hc)}" x2="${xr}" y2="${Y(0)}" stroke="#8f9ca4" stroke-width="10" stroke-linecap="round"/>
+      <line x1="${xf}" y1="${yf-28}" x2="${xf}" y2="${yf+28}" stroke="#627582" stroke-width="9" stroke-linecap="round"/>
+      <line x1="${xr}" y1="${yr}" x2="${xf}" y2="${yf}" stroke="#ffb76b" stroke-width="6"/>
+      <circle cx="${xr}" cy="${yr}" r="6" fill="#ffd39e" stroke="#14191c" stroke-width="2"/>
+      <circle cx="${xf}" cy="${yf}" r="6" fill="#ffd39e" stroke="#14191c" stroke-width="2"/>
+      <text x="300" y="23" text-anchor="middle" font-size="12" fill="#aab8c2">Front reference at left · main hoop at right · ${chosen}</text>
+      <text x="300" y="67" text-anchor="middle" font-size="13" fill="#ffc992">Side elevation ${round(door.sideAngle,1)}°</text>
+      <text x="300" y="91" text-anchor="middle" font-size="13" fill="#d8e0e6">True length ${round(door.members[0].length,1)} mm</text>
+      <line x1="${xf}" y1="306" x2="${xr}" y2="306" stroke="#ed9949" stroke-width="1.5"/>
+      <text x="300" y="329" text-anchor="middle" font-size="13" fill="#ffbb79">Forward ${round(door.run,0)} mm</text>
+      <text x="${xr+10}" y="${yr+24}" fill="#ddd" font-size="12">Rear ${round(v.doorRearHeight,0)} mm</text>
+      <text x="${xf+10}" y="${yf-13}" fill="#ddd" font-size="12">Front ${round(v.doorFrontHeight,0)} mm</text>`;
+    const ps=Math.min(480/Math.max(g.Wc,door.frontSpacing,300),180/door.run);
+    const PX=n=>300+(n-g.Wc/2)*ps,PY=z=>72-z*ps;
+    const lines=door.members.map(m=>`<line x1="${PX(m.rear.x)}" y1="${PY(0)}" x2="${PX(m.front.x)}" y2="${PY(-door.run)}" stroke="#ffb76b" stroke-width="5"/><circle cx="${PX(m.rear.x)}" cy="${PY(0)}" r="5" fill="#ffcc94"/><circle cx="${PX(m.front.x)}" cy="${PY(-door.run)}" r="5" fill="#ffcc94"/>`).join('');
+    $('doorPlanSvg').innerHTML=`
+      <line x1="${PX(0)}" y1="${PY(0)}" x2="${PX(g.Wc)}" y2="${PY(0)}" stroke="#8f9ca4" stroke-width="8" stroke-linecap="round"/>
+      <line x1="${PX(door.left.front.x)}" y1="${PY(-door.run)}" x2="${PX(door.right.front.x)}" y2="${PY(-door.run)}" stroke="#6f7b82" stroke-width="5"/>
+      ${lines}
+      <text x="300" y="22" text-anchor="middle" font-size="12" fill="#aab8c2">Plan · main hoop at top · front references below</text>
+      <text x="300" y="51" text-anchor="middle" font-size="12" fill="#d8e0e6">Rear joints ${round(door.rearSpacing,0)} mm apart</text>
+      <text x="300" y="${PY(-door.run)+26}" text-anchor="middle" font-size="13" fill="#ffbb79">Front joints ${round(door.frontSpacing,0)} mm apart</text>
+      <text x="300" y="${PY(-door.run)+46}" text-anchor="middle" font-size="12" fill="#d8e0e6">Side offset ${round(Math.abs(door.members[0].lateral),1)} mm per bar</text>`;
   }
   function templateSVG(g,notch,paper){
     const brace=g.addons.brace,ns=brace.notches;
@@ -502,6 +541,7 @@
     if(a.stays){rows.push([1,'Left rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);rows.push([1,'Right rear stay',a.stays.length,a.stays.blank,`${round(a.stays.angle,1)}° down`]);}
     $('addonsBody').innerHTML=rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${round(r[2],1)} mm</td><td><strong>${round(r[3],1)} mm</strong></td><td>${r[4]}</td></tr>`).join(''):'<tr><td colspan="5">Enable a component and enter valid dimensions to see the cut list.</td></tr>';
     renderStayViews(g);
+    renderDoorViews(g);
     renderNotches(g);
   }
   function renderDrawing(g){
