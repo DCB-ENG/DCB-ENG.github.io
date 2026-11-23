@@ -141,6 +141,37 @@
 <div class="field"><label for="frontTubeRearLean">Front tube rearward lean (degrees)</label><input type="number" id="frontTubeRearLean" value="0" min="-80" max="80" step=".5"><span class="hint">+ rearward at roof, − forward</span></div>
 <div class="field full"><label class="inline-toggle"><input type="checkbox" id="frontTubeConfirmed"> I measured the front parent tube OD and lean angles</label><span class="hint">Required before generating front-end fishmouth templates. The front hoop is not yet modelled, so these are local reference-cylinder measurements.</span></div>
 </div></div>
+
+  <div class="addon-group" id="frontStructure">
+    <h3>Front legs · A-pillar / roof</h3>
+    <label class="addon-heading"><input type="checkbox" id="useFrontLegs"> Add continuous front legs <span class="comp-pill">3D roof + windscreen + floor</span></label>
+    <div class="addon-fields off" id="frontLegFields">
+      <p class="addon-hint">Two separate continuous tubes, from the <strong>main hoop at roof level</strong> forwards to the A-pillar and down to the floor. Values are <strong>finished tube centreline positions</strong>, measured from the main hoop mounting plane and the main hoop's fore-aft plane (0 mm). Each leg has two calculated bends, with a separate start/centre/end mark schedule.</p>
+      <div class="fields">
+        <div class="field"><label for="frontTieHeight">Main-hoop attachment height (mm)</label><input type="number" id="frontTieHeight" value="1150" min="1" step="1"><span class="hint">Front leg starts on the existing hoop centreline</span></div>
+        <div class="field"><label for="frontRoofTopHeight">Front top / A-pillar height (mm)</label><input type="number" id="frontRoofTopHeight" value="1220" min="1" step="1"><span class="hint">Virtual roof-to-A-pillar corner, from hoop floor datum</span></div>
+        <div class="field"><label for="frontWindBaseHeight">Base-of-windscreen height (mm)</label><input type="number" id="frontWindBaseHeight" value="520" min="1" step="1"><span class="hint">Virtual A-pillar-to-lower-leg corner</span></div>
+        <div class="field"><label for="frontRoofRun">Forward to top of A-pillar (mm)</label><input type="number" id="frontRoofRun" value="820" min="1" step="1"><span class="hint">Distance forward from main hoop plane</span></div>
+        <div class="field"><label for="frontFootRun">Forward to front mounting feet (mm)</label><input type="number" id="frontFootRun" value="1080" min="1" step="1"><span class="hint">From main hoop plane (must exceed roof run)</span></div>
+        <div class="field"><label for="frontHeaderWidth">Top-of-windscreen tube spacing (mm)</label><input type="number" id="frontHeaderWidth" value="1040" min="1" step="1"><span class="hint">Centre-to-centre width at upper A-pillars</span></div>
+        <div class="field"><label for="frontBaseWidth">Base-of-windscreen spacing (mm)</label><input type="number" id="frontBaseWidth" value="1190" min="1" step="1"><span class="hint">Centre-to-centre width at lower A-pillars</span></div>
+        <div class="field"><label for="frontFootWidth">Front mounting feet spacing (mm)</label><input type="number" id="frontFootWidth" value="1190" min="1" step="1"><span class="hint">Centre-to-centre width on floor</span></div>
+        <div class="field"><label for="frontOD">Front legs CHS outside diameter (mm)</label><input type="number" id="frontOD" list="braceODPresets" value="44.45" min="1" step=".01"></div>
+        <div class="field"><label for="frontWall">Front legs wall thickness (mm)</label><input type="number" id="frontWall" value="2.6" min=".1" step=".1"></div>
+        <div class="field"><label for="frontCLR">Front leg bending die CLR (mm)</label><input type="number" id="frontCLR" value="140" min="1" step="1"></div>
+        <div class="field"><label for="frontTrim">Front leg trim at EACH end (mm)</label><input type="number" id="frontTrim" value="0" min="0" step="1"></div>
+      </div>
+    </div>
+    <label class="addon-heading"><input type="checkbox" id="useHeader" checked> Add windscreen header <span class="comp-pill">single straight cross-tube</span></label>
+    <div class="addon-fields" id="headerFields"><p class="addon-hint">One continuous straight transverse CHS tube joining the two front legs at the height selected. The join points automatically follow the true 3D A-pillar centreline, including local bend geometry.</p>
+      <div class="fields">
+        <div class="field"><label for="headerHeight">Windscreen header centre height (mm)</label><input type="number" id="headerHeight" value="1060" min="1" step="1"><span class="hint">Must fall on both A-pillar segments</span></div>
+        <div class="field"><label for="headerOD">Header CHS OD (mm)</label><input type="number" id="headerOD" list="braceODPresets" value="38.1" min="1" step=".01"></div>
+        <div class="field"><label for="headerWall">Header wall thickness (mm)</label><input type="number" id="headerWall" value="2.6" min=".1" step=".1"></div>
+      </div>
+    </div>
+    <div class="definition"><strong>Layout only:</strong> Front-leg geometry is a measured centreline fit, not a cage approval. Confirm the front leg follows the A-pillar, leaves occupant clearances and meets the permitted bend and mounting requirements. The AASA SC-1 illustration shows separate front legs and a windscreen header; it does not establish safe dimensions for a particular vehicle.</div>
+  </div>
   <h3>Tube preparation</h3>
   <div class="fields"><div class="field full"><label for="fitExtra">Extra material for coping, at each end (mm)</label><input type="number" id="fitExtra" value="20" min="0" step="1"><span class="hint">Added to each straight brace/stay span as a rough prep blank allowance. Trim/cope to fit.</span></div></div>
   <div class="definition"><strong>Important:</strong> Member lengths are measured between the <strong>intersection of member centrelines</strong>, not from the finished fishmouth tips. The prep length is a suggested oversized straight blank, <em>not</em> a calculated cope contour or an engineered cage joint.</div>
@@ -165,6 +196,27 @@
   <p class="notes" id="addonsNote">* Prep length = joint-centre span plus allowance at both ends. Actual cut length at a coped tube end depends on fishmouth geometry, joint orientation and weld gap. These new members are straight. Side views are projections and true lengths include any lateral offset in plan. Wrap-arounds are available for supported tube-to-tube ends, including the harness bar, rear stays and side intrusion. Confirm front tube geometry before printing side-bar FRONT ends.</p>
   <div class="row-actions"><button id="addonsSvgDownload">Save views SVG</button><button id="addonsCsvDownload">Save cut list CSV</button></div>
 </section>
+<section class="panel" id="frontPanel">
+  <div class="drawing-header"><h2 style="margin:0">Front legs &amp; windscreen header</h2><span class="unit">Side · plan · front views · finished centreline positions</span></div>
+  <div id="frontWarning" class="comp-warning" role="status"></div>
+  <div class="comp-metrics">
+    <div class="comp-metric"><small>Each front leg · developed centreline</small><b id="frontDeveloped">—</b><em id="frontBlank">Cut blank —</em></div>
+    <div class="comp-metric"><small>Two bends per leg</small><b id="frontAngles">—</b><em id="frontClock">Geometric bend-plane rotation —</em></div>
+    <div class="comp-metric"><small>Windscreen header · straight span</small><b id="headerLength">—</b><em id="headerDetail">Between front legs</em></div>
+  </div>
+  <div class="subviews">
+    <div class="subview"><h3>Front legs · side elevation</h3><svg id="frontSideSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front leg side elevation and two bends"></svg></div>
+    <div class="subview"><h3>Front legs · plan</h3><svg id="frontPlanSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front legs plan view showing width and forward offsets"></svg></div>
+    <div class="subview"><h3>Front legs · A-pillar / header front view</h3><svg id="frontFaceSvg" viewBox="0 0 600 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Front legs and windscreen header front view"></svg></div>
+  </div>
+  <h3>Front-leg bend marks</h3>
+  <p class="marking-info">All marks are measured from the <strong>main-hoop connection end</strong> of each unbent front leg. Bend centre means the <strong>midpoint of the developed bend arc</strong>. A left/right clocking sign is shown when the two bends lie in different planes; verify rotation on a test tube.</p>
+  <div class="table-scroll"><table><thead><tr><th>Leg</th><th>Bend</th><th>Turn</th><th>Start (mm)</th><th>Centre (mm)</th><th>End (mm)</th></tr></thead><tbody id="frontBendsBody"></tbody></table></div>
+  <h3>Front-leg straight sections</h3>
+  <div class="table-scroll"><table><thead><tr><th>Member</th><th>Section</th><th>Finished length (mm)</th></tr></thead><tbody id="frontSectionsBody"></tbody></table></div>
+  <p class="notes">Sections and bend marks are theoretical centreline dimensions; they are not bender clamp/feed reference marks or production-ready compensated machine instructions. The front-leg rear end joins the main hoop; floor mounting feet are not tube-to-tube joints.</p>
+  <div class="row-actions"><button id="frontSvgDownload">Save front-structure views SVG</button><button id="frontBendCsvDownload">Save front-leg bend CSV</button></div>
+</section>
 <section class="panel" id="notchPanel">
   <div class="drawing-header" style="padding:0 0 10px"><h2 style="margin:0">All tube-to-tube joints · printable wrap-arounds</h2><span class="unit">1:1 CHS developed OD · individual end labels</span></div>
   <p class="notch-explain">Each separate tube end is calculated against its actual <strong>3D parent tube axis</strong> or the finished main-hoop centreline, including bends where a single cope contour is valid. Upper and lower ends, left and right sides, and harness ends are individually labelled. Rear stay footplates are <strong>not</strong> tube-to-tube joints.</p>
@@ -187,7 +239,7 @@
 (()=>{
   'use strict';
   const $=id=>document.getElementById(id);
-  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean'];
+  const vals=['width','height','roofWidth','shoulderWidth','shoulder','sideGap','topGap','od','wall','radius','extra','braceTop','braceBottom','stayTop','rearRun','rearFootHeight','rearFootWidth','fitExtra','braceOD','braceWall','harnessHeight','harnessOD','harnessWall','doorRearHeight','doorFrontHeight','doorRun','doorFrontWidth','doorOD','doorWall','stayOD','stayWall','frontTubeOD','frontTubeSideLean','frontTubeRearLean','frontTieHeight','frontRoofTopHeight','frontWindBaseHeight','frontRoofRun','frontFootRun','frontHeaderWidth','frontBaseWidth','frontFootWidth','frontOD','frontWall','frontCLR','frontTrim','headerHeight','headerOD','headerWall'];
   let mode=2, latest=null;
   const round=(x,places=1)=>Number(x).toFixed(places);
   const dist=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
