@@ -1,0 +1,55 @@
+name: Browser Roll Cage STEP Proof of Concept
+on:
+  push:
+    paths:
+      - 'roll-cage/browser-step/**'
+      - 'tests/browser-step-poc.test.mjs'
+      - 'tests/fixtures/roll-cage-step-smoke.json'
+      - '.github/workflows/check-browser-step-poc.yml'
+  pull_request:
+    paths:
+      - 'roll-cage/browser-step/**'
+      - 'tests/browser-step-poc.test.mjs'
+      - 'tests/fixtures/roll-cage-step-smoke.json'
+      - '.github/workflows/check-browser-step-poc.yml'
+  workflow_dispatch:
+jobs:
+  wasm-step:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned browser CAD WASM dependencies
+        run: npm install --no-save --no-package-lock brepjs@20.28.3 occt-wasm@5.18.2
+      - name: Syntax validation
+        run: |
+          node --check roll-cage/browser-step/app.mjs
+          node --check roll-cage/browser-step/cad-engine.mjs
+          node --check tests/browser-step-poc.test.mjs
+      - name: Generate 3 real B-rep STEP solids in the JavaScript CAD kernel
+        run: node tests/browser-step-poc.test.mjs /tmp/browser-roll-cage-step
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install independent STEP validator
+        run: python -m pip install --quiet cadquery
+      - name: Reopen every STEP in OpenCascade and validate its solid topology
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import cadquery as cq
+          root=Path('/tmp/browser-roll-cage-step')
+          files=sorted(root.glob('*.step'))
+          assert len(files)==3, files
+          for filename in files:
+              model=cq.importers.importStep(str(filename))
+              solids=model.solids().vals()
+              assert len(solids)==1, f'{filename}: expected ONE solid'
+              s=solids[0]
+              assert s.isValid(), f'{filename}: invalid B-rep'
+              assert s.Volume()>10, f'{filename}: zero volume'
+              print(filename.name, 'valid 3D B-rep', round(s.Volume(),1),'mm^3')
+          PY
