@@ -1507,20 +1507,23 @@
 }
   $('frontBendCsvDownload').addEventListener('click',saveFrontMarks);
   $('frontSvgDownload').addEventListener('click',saveFrontViews);
-  $('addonsCsvDownload').addEventListener('click',()=>{
+  function downloadNumberedTubeCSV(){
+    if(!latest?.cutList?.rows.length)return;
+    const job=latest.cutList.job?latest.cutList.job+'-':'';
+    download(job+'roll-cage-numbered-cut-list.csv',cageCutCSV(latest.cutList),'text/csv;charset=utf-8');
+  }
+  $('saveCageCutCSV').addEventListener('click',downloadNumberedTubeCSV);
+  $('addonsCsvDownload').addEventListener('click',downloadNumberedTubeCSV);
+  $('printCageCutList').addEventListener('click',()=>{
+    if(!latest?.cutList?.rows.length)return;
+    const w=window.open('','_blank');
+    if(!w){alert('Your browser blocked the cutting list print sheet. Allow pop-ups and retry.');return;}
+    w.document.open();w.document.write(cageCutPrintHTML(latest.cutList));w.document.close();
+  });
+  for(const id of ['cageJobRef','cageMaterial'])$(id).addEventListener('input',()=>{
     if(!latest)return;
-    const a=latest.addons, v=latest.v;
-    const rows=[['Qty','Member','Centreline node span (mm)','Suggested prep blank (mm)','Notes']];
-    if(a.brace)rows.push([1,`Diagonal brace CHS ${round(v.braceOD,2)}x${round(v.braceWall,2)}`,round(a.brace.length,1),round(a.brace.blank,1),`${round(a.brace.angle,1)} deg to horizontal${a.brace.notches&&!a.brace.notches.errors.length?` | upper cope ${round(a.brace.notches.upper.angle,1)} deg | lower cope ${round(a.brace.notches.lower.angle,1)} deg`:''}`]);
-    if(a.stays){rows.push([1,'Left rear stay',round(a.stays.length,1),round(a.stays.blank,1),`${round(a.stays.angle,1)} deg below horizontal`]);rows.push([1,'Right rear stay',round(a.stays.length,1),round(a.stays.blank,1),`${round(a.stays.angle,1)} deg below horizontal`]);}
-    if(a.harness)rows.push([1,`Harness crossbar CHS ${round(a.harness.OD,2)}x${round(a.harness.wall,2)}`,round(a.harness.length,1),round(a.harness.blank,1),`Between rear stays | height ${round(a.harness.height,1)} mm | back from hoop ${round(a.harness.z,1)} mm`]);
-    if(a.door)for(const m of a.door.members)rows.push([1,`${m.name} side intrusion CHS ${round(a.door.OD,2)}x${round(a.door.wall,2)}`,round(m.length,1),round(m.blank,1),`True 3D length | forward ${round(a.door.run,1)} mm | lateral ${round(m.lateral,1)} mm | elevation ${round(m.angle,1)} deg`]);
-    if(a.front&&!a.front.errors.length){for(const side of ['left','right'])rows.push([1,`${side.toUpperCase()} continuous front leg CHS ${round(v.frontOD,2)}x${round(v.frontWall,2)}`,round(a.front[side].total,1),round(a.front[side].blank,1),`2 bends | CLR ${round(v.frontCLR,1)} mm | signed plane clock ${round(a.front[side].clock,1)} deg`]);if(a.front.header)rows.push([1,`Windscreen header CHS ${round(v.headerOD,2)}x${round(v.headerWall,2)}`,round(a.front.header.length,1),round(a.front.header.blank,1),`Straight single piece | height ${round(v.headerHeight,1)} mm`]);}
-    if(latest.tubeJoints?.length)for(const j of latest.tubeJoints)rows.push(['',`FISHMOUTH — ${j.title}`,'','',j.error?`Not ready: ${j.error}`:`1:1 ${j.paper.label}; axes ${round(j.angle,2)} deg; branch ${round(j.branchOD,2)}×${round(j.branchWall,2)} mm; parent OD ${round(j.parentOD,2)} mm; cope depth ${round(j.cutDepth,2)} mm`]);
-    rows.push(['','Notes','','',`Centreline spans only; cope to fit; extra stock ${round(v.fitExtra,1)} mm per end; 1:1 tube-to-tube wrap-arounds available in the templates section, subject to joint validation`]);
-    if(a.brace?.notches&&!a.brace.notches.errors.length)rows.push(['','Theoretical square tip-to-tip before coping',round(a.brace.notches.nominalSquare,1),'',`Verify with test fit; upper setback ${round(a.brace.notches.upper.minDepth,2)} lower ${round(a.brace.notches.lower.minDepth,2)}`]);
-    const csv=rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\r\n');
-    download('roll-cage-bracing-cut-list.csv','\ufeff'+csv,'text/csv;charset=utf-8');
+    renderMemberMarkouts(latest);
+    renderCageCutList(latest);
   });
   $('csvDownload').addEventListener('click',()=>{if(!latest)return;const v=latest.v;const lines=['Bend,Turn angle (deg),Start of bend from datum end (mm),Centre of bend from datum end (mm),End of bend from datum end (mm)',...latest.bends.map(b=>[b.name,round(b.angle,2),round(b.start+v.extra,1),round(b.mid+v.extra,1),round(b.end+v.extra,1)].join(','))];download('main-hoop-bend-schedule.csv','\ufeff'+lines.join('\r\n'),'text/csv;charset=utf-8');});
 
