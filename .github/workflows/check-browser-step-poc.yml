@@ -4,12 +4,14 @@ on:
     paths:
       - 'roll-cage/browser-step/**'
       - 'tests/browser-step-poc.test.mjs'
+      - 'tests/browser-step-ui.test.mjs'
       - 'tests/fixtures/roll-cage-step-smoke.json'
       - '.github/workflows/check-browser-step-poc.yml'
   pull_request:
     paths:
       - 'roll-cage/browser-step/**'
       - 'tests/browser-step-poc.test.mjs'
+      - 'tests/browser-step-ui.test.mjs'
       - 'tests/fixtures/roll-cage-step-smoke.json'
       - '.github/workflows/check-browser-step-poc.yml'
   workflow_dispatch:
