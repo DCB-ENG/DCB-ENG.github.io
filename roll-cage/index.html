@@ -534,9 +534,25 @@ The website is static; it does not generate STEP inside the browser. The convert
   return null;
 }
 
+  // Reuse unchanged expensive 3D cope profiles when only unrelated form inputs change.
+  const saddleCache=new Map();
   function generateTubeSaddle(spec){
+  const parentHoop=spec.parentHoop;
+  const parentPath=spec.parentPath;
+  const key=JSON.stringify([
+    spec.id,spec.branchOD,spec.branchWall,spec.parentOD,spec.outer,spec.other,
+    spec.parentAxis,spec.parentPoint,
+    parentHoop&&[parentHoop.v.radius,parentHoop.points,parentHoop.bends.map(b=>[b.entry,b.exit,b.angleRad,b.normal,b.incoming])],
+    parentPath&&[parentPath.radius,parentPath.points,parentPath.bends.map(b=>[b.entry,b.exit,b.angleRad,b.normal,b.incoming])]
+  ]);
+  if(saddleCache.has(key))return saddleCache.get(key);
   const j={...spec};
-  const fail=message=>({...j,error:message});
+  const fail=message=>{
+    const result={...j,error:message};
+    if(saddleCache.size>120)saddleCache.clear();
+    saddleCache.set(key,result);
+    return result;
+  };
   if(![j.branchOD,j.branchWall,j.parentOD].every(Number.isFinite)||j.branchOD<=0||j.parentOD<=0||j.branchWall<=0||j.branchWall>=j.branchOD/2)
     return fail("Enter a positive CHS OD and a wall thickness smaller than half the tube OD.");
   if(j.branchOD>j.parentOD+1e-6)
@@ -587,6 +603,8 @@ The website is static; it does not generate STEP inside the browser. The convert
     profile:profile.map(p=>({...p,cut:p.depth-low})),parentType:j.parentHoop?"formed hoop":"straight CHS"});
   j.paper=paperForNotch(j);
   if(!j.paper)return fail("This wrap-around exceeds A3 landscape at 1:1. Use a tiled template or larger-format printing.");
+  if(saddleCache.size>120)saddleCache.clear();
+  saddleCache.set(key,j);
   return j;
 }
 
