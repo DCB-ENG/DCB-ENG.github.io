@@ -834,9 +834,9 @@ The website is static; it does not generate STEP inside the browser. The convert
   const add=(id,title,od,wall,p,q,near,far)=>{
     if(!validTube(od,wall)){errors.push(title+': invalid CHS size/wall.');return null;}
     if(!p||!q||!near||!far){errors.push(title+': unable to locate a parent tube joint.');return null;}
-    const length=mag3(sub3(q,p));
+    const length=mag3(sub3(v3(q),v3(p)));
     if(!Number.isFinite(length)||length<=od){errors.push(title+': member is too short for this CHS.');return null;}
-    const m={id,title,od,wall,near:p,far:q,nearParent:near,farParent:far,length,blank:length+2*fit};
+    const m={id,title,od,wall,near:v3(p),far:v3(q),nearParent:near,farParent:far,length,blank:length+2*fit};
     extra.members.push(m);return m;
   };
   if(enabled('useHoopHarness')){
@@ -966,7 +966,7 @@ The website is static; it does not generate STEP inside the browser. The convert
     if(body==='aasa'&&['1','1a','2'].includes(cls)){
       push(correctSide?'pass':'warn','DRIVER-SIDE DIAGONAL TOP',correctSide?'Primary upper end is on the selected driver side.':'Upper diagonal must be behind the driver; swap upper attachment side.');
       if(a.stays){
-        const distance=mag3(sub3(a.brace.upper,a.stays[driver]));
+        const distance=mag3(sub3(v3(a.brace.upper),v3(a.stays[driver])));
         push(distance<=100?'pass':'warn','DIAGONAL TOP TO REAR-STAY JOINT',
           `${round(distance,1)} mm straight-line separation; AASA 2.4 requires attachment within 100 mm (confirm distance along tube and actual weld joint).`);
       }
