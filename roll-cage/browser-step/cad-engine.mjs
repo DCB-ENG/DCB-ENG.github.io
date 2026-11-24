@@ -145,10 +145,10 @@ export function developedBendSchedule(part,data){
     const geometricRadius=ab*bc*ac/(2*twiceArea);
     if(Math.abs(radius-geometricRadius)>Math.max(.1,radius*.002))
       throw Error(part.id+": B"+(i+1)+" centreline radius differs from geometry.");
-    const angle=Number(b.angleDeg??b.angle??(b.angleRad===undefined?NaN:deg(b.angleRad)));
+    const geometricAngle=deg(2*Math.asin(clip(ac/(2*geometricRadius))));
+    const angle=Number(b.angleDeg??b.angle??(b.angleRad===undefined?geometricAngle:deg(b.angleRad)));
     if(!Number.isFinite(angle)||angle<=0||angle>=179)
       throw Error(part.id+": invalid bend angle at B"+(i+1));
-    const geometricAngle=deg(2*Math.asin(clip(ac/(2*geometricRadius))));
     if(Math.abs(geometricAngle-angle)>.15)
       throw Error(part.id+": angle and arc disagree at B"+(i+1));
     const normal=normalOfBend(b),arc=radius*angle*Math.PI/180;
