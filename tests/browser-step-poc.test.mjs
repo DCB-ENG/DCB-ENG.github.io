@@ -26,7 +26,7 @@ function fillet(points,R){
  return corners;
 }
 const frontVertices=[
- [0,700,0],[0,700,-600],[0,500,-850],[0,0,-850]
+ [0,700,0],[40,700,-600],[120,500,-850],[120,0,-850]
 ];
 fixture.frontStructure={
  errors:[],OD:44.45,wall:2.6,CLR:90,
@@ -90,7 +90,7 @@ const fl=straightFront.schedule;
 assert.equal(schedule.bends.length,2);
 assert.equal(fl.bends.length,2);
 assert.equal(fl.bends[0].clockFromPreviousDeg,null);
-assert(Math.abs(fl.bends[1].clockFromPreviousDeg)!==0,"Nonplanar front leg must have plane rotation");
+assert(Math.abs(fl.bends[1].clockFromPreviousDeg)>0.01,"Nonplanar front leg must have plane rotation");
 assert(Math.abs(schedule.developedLength- (2971.238898 || 0))<2,"Developed hoop length is calculated from geometry");
 for(const rec of [straightHoop,straightFront,straightDiagonal])
  assert(rec.filename.endsWith("-STRAIGHT.step"));
