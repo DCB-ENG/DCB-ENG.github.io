@@ -40,7 +40,7 @@ ol{padding-left:22px}li{margin-bottom:10px}code{color:#ffc88a}
 <main class="container">
 <div class="muted">EXPERIMENTAL · THREE-PART CAD PROOF OF CONCEPT</div>
 <h1>Direct browser STEP export</h1>
-<p class="subtitle">Create genuine analytic hollow-tube STEP solids in your browser using an OpenCascade WebAssembly CAD kernel. No Python installation required. This experimental page is limited to the main hoop, one front leg, and the main-hoop diagonal.</p>
+<p class="subtitle">Create genuine analytic hollow-tube STEP solids in your browser using an OpenCascade WebAssembly CAD kernel. No Python installation required. This experimental page is limited to the main hoop, one front leg, and the main-hoop diagonal. Choose bent, straightened, or both STEP models; each straightened fishmouth is constructed in the original end-reference orientation.</p>
 <div class="grid">
 <section class="panel">
 <h2>1. Load your cage geometry</h2>
@@ -49,6 +49,9 @@ ol{padding-left:22px}li{margin-bottom:10px}code{color:#ffc88a}
 <input type="file" id="jsonFile" accept=".json,application/json">
 <label for="frontSide">Front leg to export</label>
 <select id="frontSide"><option value="left">Left front leg · RC-002</option><option value="right">Right front leg · RC-003</option></select>
+<label for="stepMode">STEP geometry output</label>
+<select id="stepMode"><option value="both">Both — finished bent + developed straight tubes</option><option value="bent">Bent — finished cage shape</option><option value="straight">Straightened — developed tube before bending</option></select>
+<p class="note"><strong>Developed straight:</strong> the STEP tube axis is +X, X=0 at the named datum and 0° radial reference is +Y. A separate bend-mark list supplies start/centre/end and signed plane-clock measurements; no marks are cut into the metal. The model uses theoretical developed centreline length, <strong>not</strong> the longer preparation blank.</p>
 <div class="actions"><button id="exportButton" type="button" disabled>Generate three STEP solids</button>
 <button id="resetButton" type="button" class="button-secondary">Clear results</button></div>
 <div role="status" aria-live="polite" class="status" id="exportStatus">Choose geometry with a valid main hoop, continuous front legs and diagonal brace.</div>
@@ -61,7 +64,7 @@ ol{padding-left:22px}li{margin-bottom:10px}code{color:#ffc88a}
 <div class="part"><strong>RC-002/003 · Front leg</strong><span class="muted">One bent, main-hoop-coped tube</span></div>
 <div class="part"><strong>RC-005 · Main-hoop diagonal</strong><span class="muted">Both ends coped to formed hoop</span></div>
 </div>
-<div class="actions"><button type="button" id="zipButton" disabled>Download three-part ZIP</button></div>
+<div class="actions"><button type="button" id="zipButton" disabled>Download STEP + mark-out ZIP</button><button type="button" id="marksCSVButton" class="button-secondary" disabled>Bend marks CSV</button><button type="button" id="marksSVGButton" class="button-secondary" disabled>Bend mark diagram SVG</button></div>
 <div class="warning"><strong>Not production-ready:</strong> These are prototype CAD solids, not a certified safety cage or laser program. Open each STEP in ProCAM or another true B-rep CAD viewer and verify length, CHS OD/wall, surface continuity, fishmouth depths, datum orientation and end fit before manufacturing.</div>
 </section>
 </div>
@@ -71,6 +74,7 @@ ol{padding-left:22px}li{margin-bottom:10px}code{color:#ffc88a}
 <li>Models actual circular bend arcs and round tube walls; no faceted STEP or renamed STL.</li>
 <li>Boolean-subtracts the full modelled main hoop from the front leg rear end and from the diagonal's two ends.</li>
 <li>Checks nonzero positive B-rep volume and STEP headers before downloads. It does <strong>not</strong> yet guarantee an independent STEP readback or ProCAM acceptance.</li>
+<li>Straightened STEP solids align their feed axis along +X (0 mm at the named end); they contain no engraved/etched bend marks. Use the accompanying numerical CSV/SVG to mark them in CAM, and independently verify 0° seam and signed plane-clock direction against the machine fixture.</li>
 <li>Does not handle all 20 cage tubes, crossing reinforcements, mounting feet, weld gaps, ovalisation or tube-laser machine-specific setup.</li>
 </ol>
 <p class="note">If the browser CAD kernel fails, the existing <a href="../../docs/roll-cage-step-export.md">Windows CadQuery/OpenCascade converter</a> remains available. For a production release, further CAD round-trip and physical cutting tests are required.</p>
