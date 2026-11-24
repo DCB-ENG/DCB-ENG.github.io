@@ -52,6 +52,13 @@
 <p class="lead">Nest cut lengths into mixed steel stock sizes, calculate kerf and clamp allowances, and visualise the cutting layout. Everything runs locally in your browser.</p>
 <div class="layout">
 <section class="panel input-panel"><h2>1. Set up the job</h2>
+<div class="import-panel" id="rollCageTransferPanel" hidden>
+  <h3>Roll Cage Generator · imported cut list</h3>
+  <div class="import-note" id="rollCageTransferSummary" role="status"></div>
+  <div class="field"><label for="rollCageTransferProfile">CHS size to nest</label><select id="rollCageTransferProfile" aria-label="Choose imported roll-cage tube size"></select></div>
+  <div class="warning">Lengths are <strong>prep blanks</strong>, including extra material for end fitting and bending. Check actual stock length, kerf and reserved clamp before optimising. Each different CHS diameter and wall nests separately.</div>
+  <a href="../roll-cage/#cageCutPanel">Return to Roll Cage Generator</a>
+</div>
 <div class="grid2 profile-grid">
   <div class="field"><div class="field-label"><label for="profileFamily">Profile family</label><details class="help"><summary aria-label="Help: Choose the type of steel section. This filter" title="Show help">?</summary><span class="tooltip" role="note">Choose the type of steel section. This filters the size options; it does not change cut lengths or stock automatically.</span></details></div>
     <select id="profileFamily">
@@ -599,4 +606,5 @@ async function importPdfMaterialFile(file){
 }
 
 </script>
+<script src="./roll-cage-transfer.js" defer></script>
 </body></html>
