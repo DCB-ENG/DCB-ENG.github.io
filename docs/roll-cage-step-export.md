@@ -1,11 +1,36 @@
+## Browser STEP lab v1.14 — bent and developed straight forms
+
+The three-part proof of concept now offers three output modes: **Bent**, **Straightened**, and **Both** (default).
+It still only covers **RC-001 main hoop**, **one of RC-002/RC-003 front legs**, and **RC-005 main-hoop diagonal**.
+
+The **STRAIGHT** model is a true hollow analytic cylindrical STEP solid, aligned to **+X**, with **X=0 at the listed part datum**. Its axis length is the theoretical *developed centreline length* calculated from straight segments plus CLR × bend angle (radians). Additional square-blank trimming allowances in the numbered cut list are **not** included in the STEP solid.
+
+**Preserving end copes:** The front leg's near-end fishmouth is recreated by rigidly rotating and translating the fully formed main-hoop parent surface into its straight datum frame, then cutting it from the analytic straight tube. This retains the exact *near-end* cut orientation relative to the initial tube feed and circumferential seam. The diagonal (already straight) also rotates to +X, and both fishmouths are Boolean-coped against the correspondingly transformed main hoop. The main hoop and front leg's floor ends remain square (no floor plates modeled).
+
+**Clock and reference convention:** +Y on the straight STEP cylinder represents **0° radial**, derived from vehicle **UP projected perpendicular to the first tube tangent**. When that vector is parallel to the first tangent, use the **vehicle FRONT** projection as a fallback. A signed B1→B2 rotation is measured **about the intermediate straight section** by the right-hand rule in the direction of tube feed (+X). Left and right legs can have opposite signs. Verify your ProCAM/RoboRail machine's rotation and loaded CHS seam zero using a physical sample.
+
+**Additional outputs:** The ZIP contains three STEP files for Bent/ Straightened, or six files for Both, plus a separate **bend-markouts.csv**, **bend-markouts.svg**, **STEP part manifest.json**, and workshop readme. Bend start/centre/end distances and bend-plane clock values are in millimetres/degrees. **No cut lines, engravings, or scribe geometry are placed onto the STEP solids.** Treat the CSV/SVG as references for manually assigning ProCAM/RoboRail marking operations and bender setup, rather than ready-to-run machine code. SVG diagrams are not 1:1.
+
+### Operation
+
+1. In the [Roll Cage Generator](https://dcb-eng.github.io/roll-cage/), enable the primary diagonal and continuous front legs.
+2. Click **Bent / Straight STEP lab · 3 tubes** in the fishmouth/STEP section. Your current measurements are passed locally to the lab.
+3. Choose the front-leg side, then **Both** (recommended), **Bent** or **Straightened**.
+4. Click **Generate STEP solids**, then **Download STEP + mark-out ZIP**. You can also download the individual STEP files, bend-mark CSV and SVG.
+5. Import the straight STEP and bent reference STEP into a true CAD viewer and ProCAM. Confirm orientation, cope profile at both ends, developed length, diameter, wall, bends and clocking, and how your machine interprets feed +X and circumferential zero. Physically test the result before production.
+
+The browser STEP files are independently reimported as valid single B-rep solids in the project's OpenCascade CI test, and a Chromium browser test verifies exports/ZIP packaging. Neither check validates ProCAM acceptance or actual tube-laser cutting, which must be tested on your machinery.
+
+---
+
 ## Experimental browser STEP lab (three tubes)
 
-The Roll Cage Generator now offers **Browser STEP lab · 3 tubes** as an experimental proof of concept. Enable the **main-hoop diagonal** and **continuous front legs**, set the measured dimensions, and use that button beside the 1:1 fishmouth exports. It opens a separate page using an OpenCascade WebAssembly CAD kernel from the [brepjs](https://github.com/andymai/brepjs) and [occt-wasm](https://github.com/andymai/occt-wasm) projects.
+The Roll Cage Generator now offers **Bent / Straight STEP lab · 3 tubes** as an experimental proof of concept. Enable the **main-hoop diagonal** and **continuous front legs**, set the measured dimensions, and use that button beside the 1:1 fishmouth exports. It opens a separate page using an OpenCascade WebAssembly CAD kernel from the [brepjs](https://github.com/andymai/brepjs) and [occt-wasm](https://github.com/andymai/occt-wasm) projects.
 
 1. Open [Roll Cage Generator](https://dcb-eng.github.io/roll-cage/), enable the diagonal and front legs, and enter the actual cage dimensions.
-2. Click **Browser STEP lab · 3 tubes**. Your geometry is passed locally to the lab tab; if browser privacy settings prevent this, download the JSON and use its file picker instead.
+2. Click **Bent / Straight STEP lab · 3 tubes**. Your geometry is passed locally to the lab tab; if browser privacy settings prevent this, download the JSON and use its file picker instead.
 3. Choose **left** (RC-002) or **right** (RC-003) front leg.
-4. Click **Generate three STEP solids**. On success, download the three individual STEP files or the single ZIP.
+4. Click **Generate STEP solids**. On success, download the selected individual STEP forms and the complete ZIP.
 5. Open each file in CAD or ProCAM and check tube diameter, wall thickness, bend and joint geometry. Do not manufacture from the prototype without independent inspection.
 
 The proof-of-concept includes only the **main hoop, one front leg and the main-hoop diagonal**. It creates actual analytical B-rep solids with circular bends, a hollow wall, and modelled cope Boolean cuts. The UI checks the STEP file structure and volume; the repository's independent OpenCascade test verifies that generated STEP files reopen as valid, single-solid models.
