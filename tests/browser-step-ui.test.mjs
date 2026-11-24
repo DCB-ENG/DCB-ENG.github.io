@@ -85,6 +85,16 @@ try{
       status?.textContent?.includes("Ready:");
   },{timeout:60000});
   console.log("Generator-to-lab hand-off passed; current measurements available without JSON upload.");
+  await popup.locator("#exportButton").click();
+  await popup.waitForFunction(()=>{
+    const box=document.getElementById("exportStatus");
+    return box?.classList.contains("success")||box?.classList.contains("error");
+  },{timeout:240000});
+  const handoffStatus=await popup.locator("#exportStatus").innerText();
+  assert((await popup.locator("#exportStatus").getAttribute("class")).includes("success"),
+    "Real generator front-leg STEP straightening failed: "+handoffStatus);
+  assert.equal(await popup.locator("#partList a").count(),6,
+    "Measured generator geometry must create six bent/straight STEP solids");
 
 }catch(error){
   console.error("Browser STEP test error",error);
