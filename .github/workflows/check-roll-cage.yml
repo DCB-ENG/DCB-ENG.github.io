@@ -3,12 +3,19 @@ on:
   push:
     paths:
       - 'roll-cage/index.html'
+      - 'steel-nesting/index.html'
+      - 'steel-nesting/roll-cage-transfer.js'
       - 'tests/roll-cage-smoke.cjs'
+      - 'tests/roll-cage-nesting-transfer.test.cjs'
       - '.github/workflows/check-roll-cage.yml'
   pull_request:
     paths:
       - 'roll-cage/index.html'
+      - 'steel-nesting/index.html'
+      - 'steel-nesting/roll-cage-transfer.js'
       - 'tests/roll-cage-smoke.cjs'
+      - 'tests/roll-cage-nesting-transfer.test.cjs'
+      - '.github/workflows/check-roll-cage.yml'
   workflow_dispatch:
 jobs:
   smoke:
@@ -20,3 +27,5 @@ jobs:
           node-version: '22'
       - name: Validate roll cage calculator script and geometry
         run: node tests/roll-cage-smoke.cjs
+      - name: Validate roll cage to steel nesting import
+        run: node tests/roll-cage-nesting-transfer.test.cjs
