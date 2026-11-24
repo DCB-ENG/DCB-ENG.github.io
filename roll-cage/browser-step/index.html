@@ -52,17 +52,17 @@ ol{padding-left:22px}li{margin-bottom:10px}code{color:#ffc88a}
 <label for="stepMode">STEP geometry output</label>
 <select id="stepMode"><option value="both">Both — finished bent + developed straight tubes</option><option value="bent">Bent — finished cage shape</option><option value="straight">Straightened — developed tube before bending</option></select>
 <p class="note"><strong>Developed straight:</strong> the STEP tube axis is +X, X=0 at the named datum and 0° radial reference is +Y. A separate bend-mark list supplies start/centre/end and signed plane-clock measurements; no marks are cut into the metal. The model uses theoretical developed centreline length, <strong>not</strong> the longer preparation blank.</p>
-<div class="actions"><button id="exportButton" type="button" disabled>Generate three STEP solids</button>
+<div class="actions"><button id="exportButton" type="button" disabled>Generate STEP solids</button>
 <button id="resetButton" type="button" class="button-secondary">Clear results</button></div>
 <div role="status" aria-live="polite" class="status" id="exportStatus">Choose geometry with a valid main hoop, continuous front legs and diagonal brace.</div>
-<p class="note">The CAD engine downloads once on first use and can take some memory. No cage geometry is uploaded to DCB ENG servers. Your browser processes it locally.</p>
+<p class="note">The CAD engine downloads once on first use and can take some memory. No cage geometry is intentionally uploaded to DCB ENG servers. Your browser processes it locally.</p>
 </section>
 <section class="panel">
 <h2>2. Check exported parts</h2>
 <div id="partList" class="parts">
 <div class="part"><strong>RC-001 · Main hoop</strong><span class="muted">Analytic circular-bend CHS</span></div>
 <div class="part"><strong>RC-002/003 · Front leg</strong><span class="muted">One bent, main-hoop-coped tube</span></div>
-<div class="part"><strong>RC-005 · Main-hoop diagonal</strong><span class="muted">Both ends coped to formed hoop</span></div>
+<div class="part"><strong>RC-005 · Main-hoop diagonal</strong><span class="muted">Both ends coped to main hoop</span></div>
 </div>
 <div class="actions"><button type="button" id="zipButton" disabled>Download STEP + mark-out ZIP</button><button type="button" id="marksCSVButton" class="button-secondary" disabled>Bend marks CSV</button><button type="button" id="marksSVGButton" class="button-secondary" disabled>Bend mark diagram SVG</button></div>
 <div class="warning"><strong>Not production-ready:</strong> These are prototype CAD solids, not a certified safety cage or laser program. Open each STEP in ProCAM or another true B-rep CAD viewer and verify length, CHS OD/wall, surface continuity, fishmouth depths, datum orientation and end fit before manufacturing.</div>
