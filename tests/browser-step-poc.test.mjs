@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import {mkdir} from "node:fs/promises";
 import * as brep from "brepjs/quick";
-import {checkInputs,generatePreview} from "../roll-cage/browser-step/cad-engine.mjs";
+import {checkInputs,generatePreview,developedBendSchedule,bendMarkCSV,bendMarkSVG} from "../roll-cage/browser-step/cad-engine.mjs";
 
 const fixture=JSON.parse(await fs.readFile(new URL("./fixtures/roll-cage-step-smoke.json",import.meta.url),"utf8"));
 const subtract=(a,b)=>a.map((n,i)=>n-b[i]);
@@ -29,7 +29,7 @@ const frontVertices=[
  [0,700,0],[0,700,-600],[0,500,-850],[0,0,-850]
 ];
 fixture.frontStructure={
- errors:[],OD:44.45,wall:2.6,
+ errors:[],OD:44.45,wall:2.6,CLR:90,
  left:{errors:[],points:frontVertices.map(toObj),bends:fillet(frontVertices,90)}
 };
 fixture.cutList={
@@ -63,3 +63,54 @@ assert(diagonal.removedVolume>1,"Both copes must remove finite solid material");
 const leg=records.find(x=>x.id==="front-leg-left");
 assert(leg.removedVolume>1,"Front-leg rear cope must remove finite solid material");
 console.log("Browser/Node B-rep STEP prototype created three true solids and passed volume/header checks.");
+
+const both=await generatePreview(brep,fixture,"left",console.log,"both");
+assert.equal(both.length,6,"Both mode contains three bent and three developed straight parts");
+const bentParts=both.filter(x=>x.variant==="bent");
+const straights=both.filter(x=>x.variant==="straight");
+assert.equal(bentParts.length,3);
+assert.equal(straights.length,3);
+const bothDir=outDir+"/both";
+await mkdir(bothDir,{recursive:true});
+for(const r of both){
+  assert.equal(r.filename.includes("_"),false,"ProCAM filename quantity parser safety");
+  assert(r.volume>1);
+  await fs.writeFile(bothDir+"/"+r.filename,Buffer.from(await r.blob.arrayBuffer()));
+}
+assert.equal(new Set(both.map(r=>r.filename)).size,6);
+const straightHoop=straights.find(r=>r.id==="main-hoop");
+const straightFront=straights.find(r=>r.id==="front-leg-left");
+const straightDiagonal=straights.find(r=>r.id==="diagonal-brace");
+assert(straightFront.removedVolume>1,"Front leg straightened cope is preserved");
+assert(straightDiagonal.removedVolume>1,"Diagonal ends are also preserved when aligned to X");
+assert(Math.abs(straightFront.removedVolume-leg.removedVolume)<1.0,"Rigidbody transformation preserves exact front cope volume");
+assert(Math.abs(straightDiagonal.removedVolume-diagonal.removedVolume)<1.0,"Rigidbody transformation preserves diagonal cope volume");
+const schedule=straightHoop.schedule;
+const fl=straightFront.schedule;
+assert.equal(schedule.bends.length,2);
+assert.equal(fl.bends.length,2);
+assert.equal(fl.bends[0].clockFromPreviousDeg,null);
+assert(Math.abs(fl.bends[1].clockFromPreviousDeg)!==0,"Nonplanar front leg must have plane rotation");
+assert(Math.abs(schedule.developedLength- (2971.238898 || 0))<2,"Developed hoop length is calculated from geometry");
+for(const rec of [straightHoop,straightFront,straightDiagonal])
+ assert(rec.filename.endsWith("-STRAIGHT.step"));
+for(const item of [schedule,fl]){
+  for(const b of item.bends){
+    assert(b.start>=0 && b.center>b.start && b.end>b.center && b.end<=item.developedLength);
+    assert(Math.abs((b.end-b.start)-b.clr*b.angleDeg*Math.PI/180)<.001);
+  }
+}
+const marksCSV=bendMarkCSV(straights.map(x=>x.schedule));
+assert.match(marksCSV,/Clock from previous \(deg\)/);
+assert.match(marksCSV,/NO BENDS/);
+assert.match(marksCSV,/B1/);
+assert.match(marksCSV,/FL5/);
+const marksSvg=bendMarkSVG(straights.map(x=>x.schedule));
+assert.match(marksSvg,/STRAIGHTENED STEP/);
+assert.match(marksSvg,/0°/);
+await fs.writeFile(bothDir+"/roll-cage-bend-markouts.csv",marksCSV,"utf8");
+await fs.writeFile(bothDir+"/roll-cage-bend-markouts.svg",marksSvg,"utf8");
+assert.equal((await generatePreview(brep,fixture,"left",()=>{},"straight")).length,3);
+await assert.rejects(generatePreview(brep,fixture,"left",()=>{},"unknown"),/Unknown STEP output mode/);
+console.log("Both modes: six analytic STEP solids, exact cope preservation, CSV/SVG station marks and clock references validated");
+
