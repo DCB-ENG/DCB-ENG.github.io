@@ -31,13 +31,13 @@ jobs:
           node --check roll-cage/browser-step/app.mjs
           node --check roll-cage/browser-step/cad-engine.mjs
           node --check tests/browser-step-poc.test.mjs
-      - name: Generate 3 real B-rep STEP solids in the JavaScript CAD kernel
+      - name: Generate bent and developed straight B-rep STEP solids in the JavaScript CAD kernel
         run: node tests/browser-step-poc.test.mjs /tmp/browser-roll-cage-step
       - name: Install headless browser for real website integration check
         run: |
           npm install --no-save --no-package-lock playwright@latest
           npx playwright install chromium
-      - name: Generate three STEP files from the browser page and download ZIP
+      - name: Generate bent and straight STEP files from browser and download ZIP
         run: node tests/browser-step-ui.test.mjs /tmp/browser-roll-cage-step/browser-fixture.json
       - uses: actions/setup-python@v5
         with:
@@ -51,8 +51,10 @@ jobs:
           import cadquery as cq
           root=Path('/tmp/browser-roll-cage-step')
           files=sorted(root.glob('*.step'))
+          both=sorted((root/'both').glob('*.step'))
           assert len(files)==3, files
-          for filename in files:
+          assert len(both)==6, both
+          for filename in files + both:
               model=cq.importers.importStep(str(filename))
               solids=model.solids().vals()
               assert len(solids)==1, f'{filename}: expected ONE solid'
@@ -60,4 +62,22 @@ jobs:
               assert s.isValid(), f'{filename}: invalid B-rep'
               assert s.Volume()>10, f'{filename}: zero volume'
               print(filename.name, 'valid 3D B-rep', round(s.Volume(),1),'mm^3')
+              if '-STRAIGHT.step' in filename.name:
+                  D=38.1 if '-rc-005-' in filename.name.lower() else 44.45
+                  box=s.BoundingBox()
+                  assert box.ylen<=D+0.5 and box.zlen<=D+0.5, f'{filename}: not aligned to straight +X tube axis'
+                  assert box.xlen>800, f'{filename}: developed centreline collapsed'
+          import zipfile, csv, io
+          pack=root/'browser-pack.zip'
+          assert pack.is_file(), 'Browser ZIP not written'
+          with zipfile.ZipFile(pack) as archive:
+              names=archive.namelist()
+              assert len([n for n in names if n.lower().endswith('.step')])==6, names
+              assert len([n for n in names if n.lower().endswith('.csv')])==1, names
+              assert len([n for n in names if n.lower().endswith('.svg')])==1, names
+              assert 'step-part-manifest.json' in names
+              rows=list(csv.reader(io.StringIO(archive.read(next(n for n in names if n.endswith('.csv'))).decode('utf-8-sig'))))
+              assert 'Clock from previous (deg)' in rows[0], rows[0]
+              assert 'NO BENDS' in str(rows), rows
+              print('Browser ZIP contains 6 valid STEP parts, developed bend marks CSV/SVG and manifest')
           PY
