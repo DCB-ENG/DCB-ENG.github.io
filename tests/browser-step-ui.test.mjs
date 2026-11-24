@@ -33,16 +33,39 @@ try{
   assert((await page.locator("#exportStatus").getAttribute("class")).includes("success"),
     "Browser export failed: "+message+" | "+messages.join(" | "));
   const links=await page.locator("#partList a").all();
-  assert.equal(links.length,3,"Browser must show three downloadable STEP parts");
+  assert.equal(links.length,6,"Both mode shows three bent and three straightened STEP parts");
   assert((await page.locator("#zipButton").isDisabled())===false,"ZIP packaging control enabled after valid files");
   const [download]=await Promise.all([page.waitForEvent("download",{timeout:45000}),page.locator("#zipButton").click()]);
-  assert.match(download.suggestedFilename(),/3-step-prototype\.zip$/);
+  assert.match(download.suggestedFilename(),/STEP-both-3-tube-prototype\.zip$/);
   const zipPath=await download.path();
   const buf=await fs.readFile(zipPath);
-  assert(buf.length>8000,"ZIP must not contain empty parts");
+  assert(buf.length>12000,"ZIP must contain six STEP solids and station markouts");
   assert.equal(buf[0],0x50,"ZIP local file PK header");
   assert.equal(buf[1],0x4b);
-  console.log("Chromium browser imported pinned WASM kernel, created 3 STEP solids and downloaded ZIP:",buf.length,"bytes");
+  await fs.writeFile("/tmp/browser-roll-cage-step/browser-pack.zip",buf);
+  console.log("Chromium browser created 6 STEP solids with the bend-mark CSV and SVG:",buf.length,"ZIP bytes");
+  await page.locator("#stepMode").selectOption("straight");
+  assert.equal(await page.locator("#exportButton").isDisabled(),false);
+  await page.locator("#exportButton").click();
+  await page.waitForFunction(()=>{
+    const t=document.getElementById("exportStatus");
+    return t.classList.contains("success")||t.classList.contains("error");
+  },{timeout:240000});
+  assert((await page.locator("#exportStatus").getAttribute("class")).includes("success"),
+    "Straight-only mode failed: "+await page.locator("#exportStatus").innerText());
+  assert.equal(await page.locator("#partList a").count(),3,"Straight mode exports three solids");
+  assert.equal(await page.locator("#marksCSVButton").isDisabled(),false);
+  assert.equal(await page.locator("#marksSVGButton").isDisabled(),false);
+  await page.locator("#stepMode").selectOption("bent");
+  await page.locator("#exportButton").click();
+  await page.waitForFunction(()=>{
+    const t=document.getElementById("exportStatus");
+    return t.classList.contains("success")||t.classList.contains("error");
+  },{timeout:240000});
+  assert((await page.locator("#exportStatus").getAttribute("class")).includes("success"),
+    "Bent-only mode failed: "+await page.locator("#exportStatus").innerText());
+  assert.equal(await page.locator("#partList a").count(),3,"Bent-only mode exports three solids");
+
 
   // Real generator -> lab hand-off: the user should not need to download/reload JSON.
   const editor=await context.newPage();
