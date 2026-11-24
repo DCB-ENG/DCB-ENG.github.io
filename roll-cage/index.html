@@ -355,9 +355,11 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
   <div class="row-actions">
     <button type="button" class="primary" id="printCageCutList">Print cut list · A4</button>
     <button type="button" id="saveCageCutCSV">Download numbered CSV</button>
+     <button type="button" class="primary" id="sendCageToNesting">Send to Steel Nesting</button>
     <span class="unit" id="cageCutCount">—</span>
   </div>
-  <div class="table-scroll cage-cut-table-scroll">
+  <p class="marking-info">Send the numbered prep blanks, including end allowances, to Steel Nesting. Each CHS size is nested separately.</p>
+   <div class="table-scroll cage-cut-table-scroll">
     <table class="cage-cut-table">
       <thead><tr><th>Part number</th><th>Qty</th><th>Tube / member</th><th>CHS OD × wall</th><th>Developed / centreline (mm)</th><th>Prep blank (mm)</th><th>Bends</th><th>End connections / datum</th></tr></thead>
       <tbody id="cageCutBody"></tbody>
@@ -1585,6 +1587,7 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
   $('cageCutCount').textContent=`${d.count} tube${d.count===1?'':'s'} · ${d.groups.length} CHS size${d.groups.length===1?'':'s'}`;
   $('printCageCutList').disabled=!d.rows.length;
   $('saveCageCutCSV').disabled=!d.rows.length;
+  $('sendCageToNesting').disabled=!d.rows.length;
   $('cageCutBody').innerHTML=d.rows.length?d.rows.map(r=>
     `<tr><td>${r.partNumber}</td><td>${r.qty}</td><td>${cageSafeHTML(r.member)}</td>
     <td>CHS ${round(r.od,2)} × ${round(r.wall,2)}</td>
@@ -1883,7 +1886,7 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){renderRuleReview(null);err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';for(const id of ['reinforcementPlanSvg','reinforcementFrontSvg','reinforcementSideSvg'])$(id).innerHTML='';$('reinforcementSummary').textContent='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('browserStepOpen').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
+    if(g.issues.length){renderRuleReview(null);err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';for(const id of ['reinforcementPlanSvg','reinforcementFrontSvg','reinforcementSideSvg'])$(id).innerHTML='';$('reinforcementSummary').textContent='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('browserStepOpen').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('sendCageToNesting').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
@@ -2007,6 +2010,40 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
     download(job+'roll-cage-numbered-cut-list.csv',cageCutCSV(latest.cutList),'text/csv;charset=utf-8');
   }
   $('saveCageCutCSV').addEventListener('click',downloadNumberedTubeCSV);
+
+  // Transfer preparation blanks, not chord lengths or separate bent sections.
+  function sendCageToNesting(){
+    const cutList=latest?.cutList;
+    if(!cutList?.rows.length)return;
+    const groups=new Map();
+    for(const row of cutList.rows){
+      if(!Number.isFinite(row.blank)||row.blank<=0||!Number.isInteger(row.qty)||row.qty<1){
+        alert('The cut list has an invalid prep blank. Correct the cage dimensions before nesting.');
+        return;
+      }
+      const profile='CHS'+Number(row.od)+'x'+Number(row.wall);
+      if(!groups.has(profile))groups.set(profile,{profile,parts:[]});
+      // Round UP to 0.1 mm so the suggested nested blank cannot be too short.
+      const length=Math.ceil(row.blank*10-1e-8)/10;
+      const mark=(row.partNumber+' '+row.member).replace(/[,;\r\n]+/g,' ').trim();
+      groups.get(profile).parts.push({mark,length,qty:row.qty});
+    }
+    const payload={
+      schema:'dcb-roll-cage-nesting-v1',
+      createdAt:Date.now(),
+      job:cutList.job,
+      grade:cutList.material==='Not specified'?'':cutList.material,
+      groups:[...groups.values()]
+    };
+    try{
+      sessionStorage.setItem('dcb-roll-cage-nesting-v1',JSON.stringify(payload));
+      window.location.assign(new URL('../steel-nesting/?from=roll-cage',window.location.href).href);
+    }catch(error){
+      alert('Your browser could not transfer the cut list. Allow same-site storage or use the numbered CSV export. '+(error.message||String(error)));
+    }
+  }
+  $('sendCageToNesting').addEventListener('click',sendCageToNesting);
+
   $('addonsCsvDownload').addEventListener('click',downloadNumberedTubeCSV);
   $('printCageCutList').addEventListener('click',()=>{
     if(!latest?.cutList?.rows.length)return;
