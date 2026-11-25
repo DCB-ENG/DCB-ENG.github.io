@@ -208,7 +208,8 @@
 
   let meshes=[],grid=null,scene=null,center=[0,600,0],fitRadius=900;
   let yaw=0.68,pitch=0.4,zoom=1,panX=0,panY=0;
-  let currentMode='2d',scheduled=false;
+  let currentMode='2d',scheduled=false,contextLost=false;
+  let pendingSnapshot=null,sceneScheduled=false;
   let visible=new Set(),previousGroups=new Set(),visibilityTouched=false;
   function setMode(mode){
     currentMode=mode;
@@ -250,6 +251,7 @@
   }
   function updateScene(snapshot){
     if(!snapshot||!Array.isArray(snapshot.tubes))return;
+    if(contextLost)return;
     scene=snapshot;
     for(const mesh of meshes)dispose(mesh);
     meshes=snapshot.tubes.map(meshForTube).filter(Boolean);
@@ -287,9 +289,16 @@
       label.append(checkbox,dot,title);
       groupsContainer.append(label);
     }
-    warnings.hidden=!snapshot.issues?.length;
-    warnings.textContent=snapshot.issues?.length?
-      'Some selected members could not be calculated: '+snapshot.issues.slice(0,3).join(' · '):'';
+    const collisions=snapshot.collisions||[];
+    const notes=[];
+    if(snapshot.issues?.length)notes.push('Some selected members could not be calculated: '+snapshot.issues.slice(0,3).join(' · '));
+    if(collisions.length){
+      const first=collisions.slice(0,4).map(hit=>hit.labels.join(' / ')+' ('+hit.clearance+' mm envelope clearance)');
+      notes.push('Possible midspan intersections — verify intended weld joints or clearance: '+first.join(' · ')+
+        (collisions.length>4?' · plus '+(collisions.length-4)+' more':''));
+    }
+    warnings.hidden=notes.length===0;
+    warnings.textContent=notes.join(' | ');
     overlay.hidden=meshes.length>0;
     if(!meshes.length)overlay.textContent=snapshot.issues?.join(' · ')||'Enable and dimension cage members to view the 3D model.';
     requestDraw();
@@ -312,7 +321,7 @@
   }
   function render(){
     scheduled=false;
-    if(currentMode!=='3d'||!resize())return;
+    if(contextLost||currentMode!=='3d'||!resize())return;
     const width=canvas.width,height=canvas.height,aspect=width/height;
     const halfY=(fitRadius*1.11/zoom)*Math.max(1,1/aspect);
     const halfX=halfY*aspect;
@@ -412,7 +421,33 @@
       setTimeout(()=>URL.revokeObjectURL(url),1000);
     },'image/png');
   });
-  window.addEventListener('dcb:cage-3d-update',event=>updateScene(event.detail));
-  updateScene(window.dcbCage3DSnapshot||{tubes:[],issues:['Calculate a valid main hoop to generate the 3D view.']});
+  // Rebuild at most once per animation frame; repeated key presses publish
+  // only the latest geometry, preventing unnecessary GPU buffer churn.
+  function queueScene(snapshot){
+    pendingSnapshot=snapshot;
+    if(sceneScheduled)return;
+    sceneScheduled=true;
+    requestAnimationFrame(()=>{
+      sceneScheduled=false;
+      const next=pendingSnapshot;pendingSnapshot=null;
+      if(!contextLost&&next)updateScene(next);
+    });
+  }
+  canvas.addEventListener('webglcontextlost',event=>{
+    event.preventDefault();
+    contextLost=true;
+    to3D.disabled=true;
+    setMode('2d');
+    document.getElementById('cagePreviewHint').textContent=
+      '3D graphics context lost. The original 2D drawings remain available; reload to restore 3D.';
+  });
+  canvas.addEventListener('webglcontextrestored',()=>{
+    // WebGL buffers and shaders are invalid after restoration; do not render
+    // against deleted handles. A page reload builds a fresh complete context.
+    contextLost=true;
+  });
+  window.addEventListener('dcb:cage-3d-update',event=>queueScene(event.detail));
+  queueScene(window.dcbCage3DSnapshot||{tubes:[],issues:['Calculate a valid main hoop to generate the 3D view.']});
   setMode('3d');
+  requestDraw();
 })();
