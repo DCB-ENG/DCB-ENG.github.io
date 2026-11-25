@@ -52,7 +52,27 @@ for(const id of memberIds){
 assert.match(ui,/pages\.design\.insertBefore\(picker,designGrid\)/,'Member selector should be visible in Design before the main layout');
 assert.match(ui,/source\.click\(\)/,'Design checkbox must activate original geometry event handlers');
 assert.match(ui,/source\.addEventListener\('change',syncQuickMembers\)/,'Members controls must sync back to Design');
-assert.match(ui,/activate\('members'\)/,'Edit should take the user to detailed member dimensions');
+// Edits must happen in the left Design column with the right live drawing
+// remaining mounted, without duplicating the original input IDs or handlers.
+assert.match(ui,/function openInlineMemberEditor\(definition,source\)/);
+assert.match(ui,/edit\.addEventListener\('click',\(\)=>openInlineMemberEditor\(definition,source\)\)/,
+  'Edit opens the inline Design editor, not the Members tab');
+assert.match(ui,/designSettings\.appendChild\(inlineEditor\)/,'Editor lives in Design left-side settings');
+assert.match(ui,/card\.before\(placeholder\)/,'Original card location is preserved before moving');
+assert.match(ui,/\$\('cageInlineMemberBody'\)\.appendChild\(card\)/,'Move original card, never clone member inputs');
+assert.match(ui,/placeholder\.replaceWith\(card\)/,'Restore original card to Members when closing or switching tabs');
+assert.match(ui,/controls\.hidden=true/,'Main hoop controls are hidden while editing a member');
+assert.match(ui,/controls\.hidden=false/,'Returning to main hoop restores its settings');
+assert.match(ui,/if\(ruleFold\)ruleFold\.hidden=true/);
+assert.match(ui,/if\(ruleFold\)ruleFold\.hidden=false/);
+assert.match(ui,/if\(name!=='design'\)closeInlineMemberEditor\(\)/,'Leaving Design restores the Members tab');
+assert.match(ui,/\$\('cageBackToHoop'\)\.addEventListener\('click'/,'Back action returns to main hoop');
+assert.match(ui,/\$\('cageDesignEditMainHoop'\)\.addEventListener\('click'/,'Main hoop picker row returns to setup');
+assert.match(ui,/showDrawing\(target\.direction,target\.id\)/,'Inline editing selects the relevant 2D drawing');
+assert.match(ui,/card\.classList\.toggle\('is-editing',activeEditor\?\.source===source\)/,'Picker highlights currently edited tube');
+assert.match(css,/\.cage-inline-member-editor/);
+assert.match(css,/\.cage-inline-member-editor \.cage-member-card>.addon-fields\.off\{display:block!important;opacity:1;pointer-events:auto\}/,
+  'Dimensions for unselected members remain editable without silently including tubes');
 assert.match(ui,/showDrawing\(requested\.direction,requested\.id\)/,'Selecting a member should switch to a relevant live drawing');
 assert.match(ui,/pending=Boolean\(source\.checked&&definition\.requires/,'Missing parent tubes should be clearly flagged');
 assert.match(css,/\.cage-member-picker-grid\{display:grid/);

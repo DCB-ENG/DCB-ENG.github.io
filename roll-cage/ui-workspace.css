@@ -211,3 +211,34 @@
   .cage-3d-group{min-width:0}
 }
 @media print{#cageWorkspace #cage3DMount,.cage-preview-modes{display:none!important}#cageWorkspace #cage2DInterface{display:block!important}}
+
+
+/* Inline Design-stage member editor: swap left controls, keep right live 3D. */
+.cage-inline-member-editor{margin:0;min-width:0;padding:17px;border-color:#916033}
+.cage-inline-editor-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 15px}
+.cage-inline-editor-nav button{padding:8px 11px;font-size:12px;background:#2e251f;color:#ffd2a3;border-color:#8a5934;border-radius:8px}
+.cage-inline-editor-nav span{font-size:10px;font-weight:800;letter-spacing:.11em;color:#ffaa50}
+.cage-inline-member-editor>h2{margin:0 0 7px;font-size:20px;color:#f1f5f7}
+.cage-inline-member-hint{font-size:12px;line-height:1.55;color:#c2cdd3;margin:0 0 14px}
+.cage-inline-member-editor .cage-member-card{margin:0;border-color:#6e5941}
+.cage-inline-member-editor .cage-member-card-head{min-height:46px;align-items:center}
+.cage-inline-member-editor .cage-member-card>.addon-fields{padding:14px 12px;background:#192025}
+.cage-inline-member-editor .cage-member-card>.addon-fields.off{display:block!important;opacity:1;pointer-events:auto}
+.cage-inline-member-editor .cage-member-card .cage-member-toggle{display:none}
+.cage-inline-member-editor .cage-member-card>.addon-fields .fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cage-inline-member-editor .cage-member-card>.addon-fields .field{min-width:0}
+.cage-member-quick-card.is-editing{border-color:#ff9a36;box-shadow:inset 0 0 0 1px #ff9a3660;background:#30271f}
+.cage-member-fixed button{margin-left:auto;padding:5px 11px;font-size:11px;font-weight:700;border-radius:6px;background:#273b32;color:#d7f0e0;border-color:#5f826f}
+.cage-inline-member-editor .addon-group{border:0}
+@media(max-width:1120px){
+  .cage-inline-member-editor .cage-member-card>.addon-fields .fields{grid-template-columns:1fr}
+}
+@media(max-width:840px){
+  .cage-inline-member-editor .cage-member-card>.addon-fields .fields{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:520px){
+  .cage-inline-member-editor{padding:13px}
+  .cage-inline-member-editor .cage-member-card>.addon-fields .fields{grid-template-columns:1fr}
+  .cage-member-fixed{flex-wrap:wrap}
+}
+@media print{.cage-inline-member-editor{display:none!important}}
