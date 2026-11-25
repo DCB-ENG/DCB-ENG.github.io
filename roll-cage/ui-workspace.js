@@ -86,6 +86,25 @@
     '<button type="button" data-direction="plan" aria-pressed="false">Plan</button></div></div>'+
     '<label class="cage-preview-picker" for="cageDrawingChoice">Drawing / component<select id="cageDrawingChoice"></select></label>'+
     '<div id="cagePreviewStage" class="cage-preview-stage"></div><p id="cagePreviewHint" class="cage-preview-hint"></p>';
+  // Keep the proven SVG drawings as a one-click alternative to the 3D view.
+  // The WebGL preview script progressively activates its own mode only after
+  // successful GPU initialisation; without it, the original 2D view remains.
+  const modeSwitch=document.createElement('div');
+  modeSwitch.className='cage-preview-modes';
+  modeSwitch.setAttribute('role','group');
+  modeSwitch.setAttribute('aria-label','Live preview mode');
+  modeSwitch.innerHTML='<button type="button" id="cageShow3D" aria-pressed="false">3D cage</button><button type="button" id="cageShow2D" aria-pressed="true">2D drawings</button>';
+  preview.querySelector('.cage-preview-head').appendChild(modeSwitch);
+  const twoD=document.createElement('div');
+  twoD.id='cage2DInterface';
+  for(const selector of ['.cage-view-tabs','.cage-preview-picker','#cagePreviewStage','#cagePreviewHint']){
+    const node=preview.querySelector(selector);
+    if(node)twoD.appendChild(node);
+  }
+  const threeD=document.createElement('div');
+  threeD.id='cage3DMount';
+  threeD.hidden=true;
+  preview.append(threeD,twoD);
   designPreview.appendChild(preview);
   const stage=$('cagePreviewStage'),views=[];
   const drawing=results.querySelector('section.drawing');

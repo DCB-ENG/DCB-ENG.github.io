@@ -166,3 +166,48 @@
   .cage-member-picker-head h3{font-size:17px}
 }
 @media print{.cage-design-member-selector{display:none!important}}
+
+
+/* Real WebGL tubular preview. Retains the established 2D drawing stage. */
+.cage-preview-modes{display:flex;align-items:center;gap:4px;padding:3px;background:#11171c;border:1px solid #40505b;border-radius:9px;margin-left:auto}
+.cage-preview-modes button{padding:8px 13px;font-size:12px;border:0;border-radius:6px;background:transparent;color:#b9c6ce;white-space:nowrap}
+.cage-preview-modes button[aria-pressed="true"]{background:#533821;color:#ffd4a1;box-shadow:inset 0 0 0 1px #a26931}
+#cage3DMount,#cage2DInterface{min-width:0}
+#cage3DMount[hidden],#cage2DInterface[hidden]{display:none!important}
+.cage-3d-bar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:9px;margin:0 0 9px}
+.cage-3d-presets,.cage-3d-tools{display:flex;gap:5px;flex-wrap:wrap}
+.cage-3d-bar button{font-size:12px;padding:8px 11px;border-radius:7px}
+.cage-3d-presets button[aria-pressed="true"]{border-color:#b4773c;color:#ffd2a3;background:#35271c}
+.cage-3d-canvas-wrap{width:100%;min-width:0;position:relative;border-radius:11px;overflow:hidden;border:1px solid #43515b;background:#0e1419}
+#cage3DCanvas{width:100%;height:clamp(350px,43vw,580px);display:block;touch-action:none;cursor:grab;outline:none}
+#cage3DCanvas:active{cursor:grabbing}
+.cage-3d-orientation{position:absolute;left:12px;bottom:12px;font-size:11px;color:#bbcbd6;background:#0d171bcf;padding:5px 9px;border:1px solid #33424b;border-radius:6px;pointer-events:none}
+.cage-3d-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:25px;text-align:center;color:#f4cda5;font-size:14px;background:#141a1ed9;pointer-events:none}
+.cage-3d-overlay[hidden]{display:none!important}
+.cage-3d-bottom{padding:10px 2px 0}
+.cage-3d-help{color:#bdc9d0;font-size:11px;margin:0 0 10px}
+.cage-3d-visibility{border:1px solid #39454e;border-radius:9px;padding:10px 11px;background:#161e23}
+.cage-3d-visibility>strong{font-size:12px;display:block;margin:0 0 8px;color:#e5ebef}
+.cage-3d-group-grid{display:flex;flex-wrap:wrap;gap:7px}
+.cage-3d-group{display:inline-flex;align-items:center;gap:6px;padding:5px 8px;cursor:pointer;font-size:11px;color:#c7d3da;border:1px solid #414d56;border-radius:7px;background:#20272c}
+.cage-3d-group input{width:15px;height:15px;margin:0;accent-color:#fc912c;cursor:pointer}
+.cage-3d-group-dot{display:inline-block;width:10px;height:10px;border-radius:50%;border:1px solid #c3ced033;flex:none}
+.cage-3d-warnings{font-size:11px;color:#ffcd9e;background:#30251c;border:1px solid #95623d;border-radius:7px;padding:9px 11px;line-height:1.5}
+.cage-3d-warnings[hidden]{display:none!important}
+.cage-3d-disclaimer{font-size:11px;color:#9eafb9;line-height:1.5;margin:9px 0 0}
+@media(max-width:840px){
+  .cage-preview-modes{margin-left:0}
+  .cage-3d-canvas-wrap #cage3DCanvas{height:clamp(320px,60vw,500px)}
+}
+@media(max-width:520px){
+  .cage-preview-modes{width:100%}
+  .cage-preview-modes button{flex:1}
+  .cage-3d-presets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));width:100%}
+  .cage-3d-presets button{padding:8px 5px}
+  .cage-3d-tools{width:100%}
+  .cage-3d-tools button{flex:1}
+  .cage-3d-canvas-wrap #cage3DCanvas{height:340px}
+  .cage-3d-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .cage-3d-group{min-width:0}
+}
+@media print{#cageWorkspace #cage3DMount,.cage-preview-modes{display:none!important}#cageWorkspace #cage2DInterface{display:block!important}}
