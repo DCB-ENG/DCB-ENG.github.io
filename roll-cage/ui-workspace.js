@@ -219,6 +219,7 @@
         if(views.some(v=>v.id===selectedDrawing))showDrawing(activeDirection,selectedDrawing);
       });
       updateCard();
+      window.addEventListener('dcb:cage-state-restored',updateCard);
     }
   }
 
@@ -386,6 +387,11 @@
     edit.addEventListener('click',()=>openInlineMemberEditor(definition,source));
   }
   syncQuickMembers();
+  window.addEventListener('dcb:cage-state-restored',()=>{
+    closeInlineMemberEditor();
+    syncQuickMembers();
+    showDrawing('front','drawingSvg');
+  });
 
   const addons=$('addonsPanel'),reinforcement=$('reinforcementPanel');
   if(addons)memberOutputs.appendChild(addons);
