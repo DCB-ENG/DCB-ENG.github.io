@@ -21,6 +21,21 @@ assert.notEqual(injected,scripts[0],'Test probe injection must match script tail
 vm.runInContext(injected,ctx,{timeout:12000,filename:'roll-cage/index.html'});
 function isSpan(id){assert.match(els.get(id).textContent,/^\d+[.]?\d* mm$/,'Missing computed span for '+id);}
 isSpan('developed');isSpan('braceSpan');isSpan('staySpan');isSpan('harnessSpan');isSpan('doorSpan');
+const initialScene=ctx.window.dcbCage3DSnapshot;
+assert(initialScene&&Array.isArray(initialScene.tubes),'3D snapshot is published after the first render');
+assert.equal(initialScene.tubes.length,7,'Default 3D cage is seven continuous physical tubes');
+const mainTube=initialScene.tubes.find(t=>t.id==='main-hoop');
+assert(mainTube&&mainTube.points.length>12,'Main hoop is a sampled curved 3D tube, not square-corner linework');
+assert.equal(mainTube.od,44.45,'3D tube OD follows the selected main hoop CHS');
+assert(mainTube.points.every(p=>p.length===3&&p.every(Number.isFinite)&&Math.abs(p[2])<1e-9),'Main hoop remains in the rear datum plane');
+assert(initialScene.tubes.filter(t=>t.group==='stays').length===2,'Both rear stays appear separately in 3D');
+assert(initialScene.tubes.some(t=>t.group==='harness'),'Rear-stay crossbar is included in 3D');
+assert(initialScene.tubes.some(t=>t.group==='door'),'Door bars are included in 3D');
+const initialStay=initialScene.tubes.find(t=>t.id==='stay-left');
+assert(initialStay.points.at(-1)[2]>0,'Rear stay footing extends rearward of the hoop');
+const initialDoor=initialScene.tubes.find(t=>t.group==='door');
+assert(initialDoor.points.at(-1)[2]<0,'Door bars extend toward the front of the vehicle');
+
 const initialMarkouts=ctx.window.__inspectRollCage().memberMarkouts;
 assert.equal(initialMarkouts.length,7,'Default enabled set: main hoop, diagonal, two rear stays, harness and two intrusion bars');
 
@@ -173,6 +188,8 @@ assert.equal(els.get('memberMarkoutCards').innerHTML,'','Invalid hoop also clear
 assert.equal(els.get('cageCutBody').innerHTML,'','Invalid hoop clears cut list');
 assert.equal(els.get('cageBendListBody').innerHTML,'','Invalid hoop also clears all bend mark-out rows');
 assert.equal(els.get('cageBendListCount').textContent,'—');
+assert.equal(ctx.window.dcbCage3DSnapshot.tubes.length,0,'Invalid main hoop clears the WebGL scene and never leaves stale tubes');
+assert(ctx.window.dcbCage3DSnapshot.issues.length>0,'3D scene reports why invalid geometry cannot be rendered');
 assert.equal(els.get('cageCutTotals').innerHTML,'','Invalid hoop clears material totals');
 
 
@@ -185,6 +202,13 @@ assert(g.addons.front,'Front leg model generated');
 assert.equal(g.addons.front.errors.length,0,'Default front geometry must be buildable');
 assert.equal(g.addons.front.left.bends.length,2,'Left front leg must have two circular bends');
 assert.equal(g.addons.front.right.bends.length,2,'Right front leg must have two circular bends');
+const frontScene=ctx.window.dcbCage3DSnapshot;
+const frontTubes=frontScene.tubes.filter(t=>t.group==='front');
+assert.equal(frontTubes.length,2,'Two independent continuous front-leg tubes appear in 3D');
+assert(frontTubes.every(t=>t.points.length>15),'3D front legs sample actual calculated two-arc profiles');
+assert(frontTubes.every(t=>t.points.some(p=>p[2]<-100)),'Both 3D front legs extend toward the windscreen');
+assert(frontScene.tubes.some(t=>t.id==='windscreen-header'),'Calculated windscreen header appears in 3D');
+assert(frontScene.tubes.some(t=>t.group==='brace'),'Existing diagonal remains in 3D after adding front structure');
 assert(Number.isFinite(g.addons.front.left.clock),'Left bend plane clock must be finite');
 assert(Math.abs(g.addons.front.left.clock+g.addons.front.right.clock)<.01,'Clocking is mirrored for symmetric front legs');
 assert(g.addons.front.left.total>0&&g.addons.front.left.blank>0,'Positive centreline and stock length');
