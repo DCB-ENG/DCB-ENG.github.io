@@ -4,6 +4,8 @@ on:
     paths:
       - 'roll-cage/index.html'
       - 'roll-cage/ui-workspace.js'
+      - 'roll-cage/preview-3d.js'
+      - 'tests/roll-cage-3d-preview.test.cjs'
       - 'roll-cage/ui-workspace.css'
       - 'tests/roll-cage-ui-workspace.test.cjs'
       - 'steel-nesting/index.html'
@@ -15,6 +17,8 @@ on:
     paths:
       - 'roll-cage/index.html'
       - 'roll-cage/ui-workspace.js'
+      - 'roll-cage/preview-3d.js'
+      - 'tests/roll-cage-3d-preview.test.cjs'
       - 'roll-cage/ui-workspace.css'
       - 'tests/roll-cage-ui-workspace.test.cjs'
       - 'steel-nesting/index.html'
@@ -37,3 +41,5 @@ jobs:
         run: node tests/roll-cage-nesting-transfer.test.cjs
       - name: Validate four-tab roll cage workspace
         run: node tests/roll-cage-ui-workspace.test.cjs
+      - name: Validate interactive WebGL 3D cage preview
+        run: node tests/roll-cage-3d-preview.test.cjs
