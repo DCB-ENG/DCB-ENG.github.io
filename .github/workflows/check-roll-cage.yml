@@ -55,7 +55,7 @@ jobs:
         run: node tests/roll-cage-preflight-project.test.cjs
   browser:
     needs: smoke
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
