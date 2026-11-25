@@ -1883,11 +1883,72 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
       return `<div class="mark-card"><div class="mark-card-head"><strong>${b.name}</strong><span>${round(b.angle,2)}° bend · ${round(b.arc,1)} mm arc</span></div><div class="mark-card-grid">${three.map(([label,cls,num])=>`<div class="${cls}"><small>${label}</small><b>${round(num+g.v.extra,1)} <span>mm</span></b></div>`).join('')}</div></div>`;
     }).join('');
   }
+  // Read-only 3D scene data derived from the SAME measured geometry used for
+  // cut lists and bend mark-outs. This is a visual model, never STEP/coping data.
+  function cagePreviewScene(g){
+    if(!g||g.issues?.length)return {tubes:[],issues:g?.issues||['Enter valid main-hoop dimensions.']};
+    const offset=g.Wc/2, tubes=[];
+    const point=p=>({x:p.x,y:p.y,z:p.z||0});
+    const push=(id,group,label,od,raw)=>{
+      if(!Number.isFinite(od)||od<=0||!Array.isArray(raw)||raw.length<2)return;
+      const points=raw.map(p=>[p.x-offset,p.y,p.z||0]);
+      if(!points.every(p=>p.every(Number.isFinite)))return;
+      tubes.push({id,group,label,od,points});
+    };
+    const curve=(vertices,bends,radius)=>{
+      const path=[point(vertices[0])];
+      for(const bend of bends){
+        path.push(point(bend.entry));
+        const n=Math.min(80,Math.max(6,Math.ceil(radius*bend.angleRad/17)));
+        for(let i=1;i<=n;i++){
+          const t=bend.angleRad*i/n,si=Math.sin(t),co=1-Math.cos(t);
+          path.push({
+            x:bend.entry.x+radius*(si*bend.incoming.x+co*bend.normal.x),
+            y:bend.entry.y+radius*(si*bend.incoming.y+co*bend.normal.y),
+            z:(bend.entry.z||0)+radius*(si*(bend.incoming.z||0)+co*(bend.normal.z||0))
+          });
+        }
+      }
+      path.push(point(vertices[vertices.length-1]));
+      return path;
+    };
+    push('main-hoop','main','Main hoop',g.v.od,curve(g.points,g.bends,g.v.radius));
+    const a=g.addons||{},v=g.v;
+    const line=(p,q)=>[point(p),point(q)];
+    if(a.brace)push('diagonal','brace','Main hoop diagonal',v.braceOD,line(a.brace.upper,a.brace.lower));
+    if(a.stays){
+      for(const side of ['left','right']){
+        const top=a.stays[side],foot=a.stays[side+'Foot'];
+        push('stay-'+side,'stays',side+' rear stay',v.stayOD,line(top,{x:foot.x,y:foot.y,z:a.stays.run}));
+      }
+    }
+    if(a.harness)push('stay-crossbar','harness','Rear-stay crossbar',v.harnessOD,line(a.harness.left,a.harness.right));
+    if(a.front&&!a.front.errors.length){
+      for(const side of ['left','right']){
+        const leg=a.front[side];
+        if(leg&&!leg.errors.length)push('front-'+side,'front',side+' continuous front leg',v.frontOD,curve(leg.points,leg.bends,leg.radius));
+      }
+      if(a.front.header)push('windscreen-header','header','Windscreen header',v.headerOD,line(a.front.header.left,a.front.header.right));
+    }
+    for(const m of a.door?.members||[])push('door-'+m.name.toLowerCase(),'door',m.name+' side-intrusion bar',v.doorOD,line(m.rear,m.front));
+    for(const m of a.extras?.members||[]){
+      const group=m.id==='main-cross'?'brace':m.id==='hoop-harness'?'harness':
+        m.id.startsWith('roof-')?'roof':m.id.startsWith('door2-')?'door':'reinforcement';
+      push(m.id,group,m.title,m.od,line(m.near,m.far));
+    }
+    return {tubes,issues:a.errors||[],units:'mm',kind:'centreline-tube-visualisation'};
+  }
+  function publishCagePreview(g){
+    const data=cagePreviewScene(g);
+    window.dcbCage3DSnapshot=data;
+    if(typeof CustomEvent==='function'&&typeof window.dispatchEvent==='function')
+      window.dispatchEvent(new CustomEvent('dcb:cage-3d-update',{detail:data}));
+  }
   function render(){
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){renderRuleReview(null);err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';for(const id of ['reinforcementPlanSvg','reinforcementFrontSvg','reinforcementSideSvg'])$(id).innerHTML='';$('reinforcementSummary').textContent='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('browserStepOpen').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('sendCageToNesting').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';return;}
+    if(g.issues.length){renderRuleReview(null);err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';for(const id of ['reinforcementPlanSvg','reinforcementFrontSvg','reinforcementSideSvg'])$(id).innerHTML='';$('reinforcementSummary').textContent='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('browserStepOpen').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('sendCageToNesting').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';publishCagePreview(g);return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
@@ -1904,6 +1965,7 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
     renderCageBendList(g);
     renderRuleReview(g);
     $('browserStepOpen').disabled=!(g.addons?.brace&&g.addons?.front&&!g.addons.front.errors.length);
+    publishCagePreview(g);
   }
   function setMode(n){mode=n;for(const m of [2,4]){$('mode'+m).classList.toggle('active',m===n);$('mode'+m).setAttribute('aria-pressed',String(m===n));}document.querySelectorAll('.tapered').forEach(x=>x.classList.toggle('field-hidden',n!==4));render();}
   function getSheet(){if(!latest)return '';const g=latest,v=g.v;const text=[`ROLL CAGE FABRICATION SHEET — ${g.mode}-bend hoop`, `Measured space: W ${round(v.width,1)} mm × H ${round(v.height,1)} mm`, `Tube OD ${round(v.od,2)} mm | wall ${round(v.wall,2)} mm | bender CLR ${round(v.radius,2)} mm`, `Side clearance ${round(v.sideGap,1)} mm | top clearance ${round(v.topGap,1)} mm`,...(g.mode===4?[`Roof available width ${round(v.roofWidth,1)} mm | shoulder available width ${round(v.shoulderWidth,1)} mm | shoulder corner height ${round(v.shoulder,1)} mm`]:[]),`Developed finished centreline length: ${round(g.total,1)} mm`,`Trim allowance: ${round(v.extra,1)} mm at each end`,`Suggested starting blank: ${round(g.blank,1)} mm`,`BEND MARKS (all measured from same starting blank end / zero datum):`,'Bend | Turn angle | Start of bend | Centre of bend | End of bend',...g.bends.map(b=>`${b.name} | ${round(b.angle,2)}° | ${round(b.start+v.extra,1)} mm | ${round(b.mid+v.extra,1)} mm | ${round(b.end+v.extra,1)} mm`),'STRAIGHT SECTIONS:',...g.sections.map(x=>`${x.label}: ${round(x.length,1)} mm`),'Important: Start and end = geometric tangency points; centre = half bend arc length. These are developed-centreline estimates, not calibrated machine feed marks. Validate bends, growth and springback on a test piece.'];
@@ -2125,4 +2187,5 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
 })();
 </script>
 <script src="./ui-workspace.js" defer></script>
+<script src="./preview-3d.js" defer></script>
 </body></html>
