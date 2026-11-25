@@ -377,6 +377,14 @@ assert(g.cutList.rows.some(p=>p.partNumber==='RC-018'));
 assert(g.cutList.rows.some(p=>p.partNumber==='RC-019'));
 assert(g.cutList.rows.some(p=>p.partNumber==='RC-020'));
 assert.equal(g.cutList.count,20,'All base and reinforcing tubes are individually listed');
+const full3D=ctx.window.dcbCage3DSnapshot;
+assert.equal(full3D.tubes.length,20,'3D preview contains every one of the twenty calculated tubes');
+for(const group of ['main','front','stays','brace','roof','door','harness','header','reinforcement']){
+  assert(full3D.tubes.some(t=>t.group===group),'3D preview includes selected '+group+' member group');
+}
+assert(full3D.tubes.every(t=>Number.isFinite(t.od)&&t.od>0&&t.points.every(p=>p.every(Number.isFinite))),
+  'All 3D members retain valid OD and spatial centreline positions');
+
 assert.equal(g.memberMarkouts.length,20,'All 20 tubes have distinct datum markouts');
 assert.equal(g.bendMarkList.tubeCount,20,'Bend schedule includes every reinforcement (NO BENDS)');
 assert.match(els.get('rulesMessages').innerHTML,/A-PILLAR UPPER JOINT OFFSET/);
