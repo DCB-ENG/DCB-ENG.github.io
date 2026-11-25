@@ -1982,7 +1982,7 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
       if(!Number.isFinite(v.fitExtra)||v.fitExtra<0)blockers.push('Joint preparation allowance cannot be negative.');
       for(const row of rows){
         if(!Number.isFinite(row.blank)||!Number.isFinite(row.span)||row.span<=0||
-          row.blank<row.span-1e-6||row.blank>1000000||row.qty!==1)
+          row.blank<row.span-1e-6||row.blank>1000000)
           blockers.push(row.partNumber+': invalid developed length or prep blank.');
         for(const bend of row.bends||[]){
           if(![bend.start,bend.mid,bend.end,bend.angle].every(Number.isFinite)||
