@@ -159,7 +159,7 @@
       const other=normalize(cross(t,basis)),ring=[],ringNormal=[];
       for(let j=0;j<sides;j++){
         const theta=2*Math.PI*j/sides;
-        const n=normalize(addScaled(basis,other,0).map((v,k)=>v*Math.cos(theta)+other[k]*Math.sin(theta)));
+        const n=normalize(basis.map((v,k)=>v*Math.cos(theta)+other[k]*Math.sin(theta)));
         ringNormal.push(n);
         ring.push(addScaled(points[i],n,radius));
       }
@@ -209,7 +209,7 @@
   let meshes=[],grid=null,scene=null,center=[0,600,0],fitRadius=900;
   let yaw=0.68,pitch=0.4,zoom=1,panX=0,panY=0;
   let currentMode='2d',scheduled=false;
-  let visible=new Set(),visibilityTouched=false;
+  let visible=new Set(),previousGroups=new Set(),visibilityTouched=false;
   function setMode(mode){
     currentMode=mode;
     mount.hidden=mode!=='3d';
@@ -265,9 +265,8 @@
     grid=gridBuffers(fitRadius*1.15);
     const groups=[...new Set(meshes.map(m=>m.group))];
     if(!visibilityTouched)visible=new Set(groups);
-    else for(const name of groups){
-      if(!groupMeta[name])visible.add(name);
-    }
+    else for(const name of groups)if(!previousGroups.has(name))visible.add(name);
+    previousGroups=new Set(groups);
     groupsContainer.replaceChildren();
     for(const name of groups){
       const meta=groupMeta[name]||{label:name,color:'#d6e1e7'};
