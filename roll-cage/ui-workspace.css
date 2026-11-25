@@ -210,4 +210,4 @@
   .cage-3d-group-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
   .cage-3d-group{min-width:0}
 }
-@media print{#cage3DMount,.cage-preview-modes{display:none!important}#cage2DInterface{display:block!important}}
+@media print{#cageWorkspace #cage3DMount,.cage-preview-modes{display:none!important}#cageWorkspace #cage2DInterface{display:block!important}}
