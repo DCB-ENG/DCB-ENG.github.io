@@ -3,6 +3,9 @@ on:
   push:
     paths:
       - 'roll-cage/index.html'
+      - 'roll-cage/ui-workspace.js'
+      - 'roll-cage/ui-workspace.css'
+      - 'tests/roll-cage-ui-workspace.test.cjs'
       - 'steel-nesting/index.html'
       - 'steel-nesting/roll-cage-transfer.js'
       - 'tests/roll-cage-smoke.cjs'
@@ -11,6 +14,9 @@ on:
   pull_request:
     paths:
       - 'roll-cage/index.html'
+      - 'roll-cage/ui-workspace.js'
+      - 'roll-cage/ui-workspace.css'
+      - 'tests/roll-cage-ui-workspace.test.cjs'
       - 'steel-nesting/index.html'
       - 'steel-nesting/roll-cage-transfer.js'
       - 'tests/roll-cage-smoke.cjs'
@@ -29,3 +35,5 @@ jobs:
         run: node tests/roll-cage-smoke.cjs
       - name: Validate roll cage to steel nesting import
         run: node tests/roll-cage-nesting-transfer.test.cjs
+      - name: Validate four-tab roll cage workspace
+        run: node tests/roll-cage-ui-workspace.test.cjs
