@@ -203,6 +203,103 @@
     }
   }
 
+
+  // Fast member selection belongs in Design, alongside the live drawing.
+  // Proxy checkboxes use the original inputs' native click behaviour so every
+  // established geometry/rules listener runs exactly as it does in Members.
+  const memberDefinitions=[
+    {id:'useFrontLegs',label:'Front legs',preview:'frontFaceSvg'},
+    {id:'useStays',label:'Rear stays',preview:'staySideSvg'},
+    {id:'useHeader',label:'Windscreen header',requires:'useFrontLegs',requiresLabel:'front legs',preview:'frontFaceSvg'},
+    {id:'useBrace',label:'Main hoop diagonal',preview:'drawingSvg'},
+    {id:'useMainCross',label:'Second hoop diagonal',preview:'reinforcementFrontSvg'},
+    {id:'useRoofX',label:'Roof cross',requires:'useFrontLegs',requiresLabel:'front legs',preview:'reinforcementPlanSvg'},
+    {id:'usePillarA',label:'A-pillar braces',requires:'useFrontLegs',requiresLabel:'front legs',preview:'reinforcementSideSvg'},
+    {id:'usePillarB',label:'B-pillar braces',requires:'useFrontLegs',requiresLabel:'front legs',preview:'reinforcementSideSvg'},
+    {id:'useHarness',label:'Rear-stay crossbar',requires:'useStays',requiresLabel:'rear stays',preview:'stayPlanSvg'},
+    {id:'useHoopHarness',label:'Main-hoop harness bar',preview:'reinforcementFrontSvg'},
+    {id:'useDoor',label:'Side intrusion bars',preview:'doorSideSvg'},
+    {id:'useDoor2',label:'Second door bars',preview:'reinforcementSideSvg'}
+  ];
+  const picker=document.createElement('section');
+  picker.className='panel cage-design-member-selector';
+  picker.id='designMemberPicker';
+  picker.innerHTML=
+    '<div class="cage-member-picker-head"><div><h3>Choose cage members</h3>'+
+    '<p>Tick the tubes you need; the live drawing and cut list recalculate automatically.</p></div>'+
+    '<span id="designMemberSummary" class="cage-member-picker-count" aria-live="polite"></span></div>'+
+    '<div class="cage-member-fixed">Main hoop <span>Always included</span></div>'+
+    '<div id="designMemberOptions" class="cage-member-picker-grid"></div>'+
+    '<p class="cage-member-picker-foot">Use <strong>Edit</strong> to open that member’s dimensions. A selected member that needs supporting tubes is shown as pending until those tubes are enabled.</p>';
+  pages.design.insertBefore(picker,designGrid);
+  const quickOptions=$('designMemberOptions');
+  const quickRows=[];
+  function syncQuickMembers(){
+    let selected=0;
+    for(const row of quickRows){
+      const {definition,source,proxy,card,status}=row;
+      proxy.checked=source.checked;
+      proxy.disabled=source.disabled;
+      card.classList.toggle('is-selected',source.checked);
+      if(source.checked)selected++;
+      const pending=Boolean(source.checked&&definition.requires&&!$(definition.requires)?.checked);
+      card.classList.toggle('is-pending',pending);
+      status.textContent=pending?'Needs '+definition.requiresLabel:'';
+      status.hidden=!pending;
+    }
+    $('designMemberSummary').textContent=selected+' of '+quickRows.length+' selected';
+  }
+  for(const definition of memberDefinitions){
+    const source=$(definition.id);
+    if(!source)continue;
+    const card=document.createElement('div');
+    card.className='cage-member-quick-card';
+    const top=document.createElement('div');
+    top.className='cage-member-quick-main';
+    const label=document.createElement('label');
+    label.className='cage-member-quick-label';
+    const proxy=document.createElement('input');
+    proxy.type='checkbox';
+    proxy.id='design-'+definition.id;
+    proxy.checked=source.checked;
+    const name=document.createElement('span');
+    name.textContent=definition.label;
+    label.append(proxy,name);
+    const edit=document.createElement('button');
+    edit.type='button';
+    edit.className='cage-member-quick-edit';
+    edit.textContent='Edit';
+    edit.setAttribute('aria-label','Edit '+definition.label+' dimensions');
+    top.append(label,edit);
+    const status=document.createElement('small');
+    status.className='cage-member-quick-status';
+    status.hidden=true;
+    card.append(top,status);
+    quickOptions.appendChild(card);
+    quickRows.push({definition,source,proxy,card,status});
+    proxy.addEventListener('change',()=>{
+      // source.click() triggers the original change handlers and calculations.
+      if(source.checked!==proxy.checked)source.click();
+      syncQuickMembers();
+      if(proxy.checked&&definition.preview){
+        const requested=views.find(view=>view.id===definition.preview);
+        if(requested)showDrawing(requested.direction,requested.id);
+      }else if(!proxy.checked){
+        showDrawing(activeDirection,selectedDrawing);
+      }
+    });
+    source.addEventListener('change',syncQuickMembers);
+    edit.addEventListener('click',()=>{
+      activate('members');
+      const memberCard=source.closest('.cage-member-card');
+      if(memberCard&&!memberCard.classList.contains('expanded')){
+        memberCard.querySelector('.cage-member-toggle')?.click();
+      }
+      memberCard?.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+  }
+  syncQuickMembers();
+
   const addons=$('addonsPanel'),reinforcement=$('reinforcementPanel');
   if(addons)memberOutputs.appendChild(addons);
   if(reinforcement)memberOutputs.appendChild(fold(reinforcement,'Reinforcement geometry summary'));
