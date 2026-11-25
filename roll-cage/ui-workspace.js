@@ -240,6 +240,75 @@
     {id:'useDoor',label:'Side intrusion bars',preview:'doorSideSvg'},
     {id:'useDoor2',label:'Second door bars',preview:'reinforcementSideSvg'}
   ];
+  // The Design editor temporarily moves ONE original member card alongside
+  // the live preview. IDs and input listeners are never cloned or replaced.
+  const inlineEditor=document.createElement('section');
+  inlineEditor.className='panel cage-inline-member-editor';
+  inlineEditor.id='cageInlineMemberEditor';
+  inlineEditor.hidden=true;
+  inlineEditor.innerHTML=
+    '<div class="cage-inline-editor-nav">'+
+      '<button type="button" id="cageBackToHoop">← Main hoop setup</button>'+
+      '<span>MEMBER SETTINGS</span>'+
+    '</div>'+
+    '<h2 id="cageInlineMemberTitle" tabindex="-1">Member settings</h2>'+
+    '<p id="cageInlineMemberHint" class="cage-inline-member-hint"></p>'+
+    '<div id="cageInlineMemberBody"></div>';
+  designSettings.appendChild(inlineEditor);
+  let activeEditor=null;
+
+  function updateInlineEditorHint(){
+    if(!activeEditor)return;
+    const {definition,source}=activeEditor;
+    const dependency=definition.requires&&!$(definition.requires)?.checked;
+    const message=!source.checked
+      ?'This member is not included yet. Adjust its dimensions below, then tick its checkbox to add it to the cage.'
+      :dependency
+        ?'This member needs '+definition.requiresLabel+' enabled before its geometry can be calculated.'
+        :'Changes here update the live drawing, tube cut list and bend schedules.';
+    $('cageInlineMemberHint').textContent=message;
+  }
+  function closeInlineMemberEditor(){
+    if(!activeEditor)return;
+    // Restore to the exact original location, including nested front-leg
+    // groups, before displaying the Members tab or another member editor.
+    const {card,placeholder}=activeEditor;
+    if(placeholder.parentNode)placeholder.replaceWith(card);
+    activeEditor=null;
+    inlineEditor.hidden=true;
+    controls.hidden=false;
+    if(ruleFold)ruleFold.hidden=false;
+    if(typeof syncQuickMembers==='function')syncQuickMembers();
+  }
+  function openInlineMemberEditor(definition,source){
+    const card=source.closest('.cage-member-card');
+    if(!card)return;
+    if(activeEditor?.card!==card)closeInlineMemberEditor();
+    if(!activeEditor){
+      const placeholder=document.createComment('member card original position');
+      card.before(placeholder);
+      $('cageInlineMemberBody').appendChild(card);
+      activeEditor={definition,source,card,placeholder};
+    }
+    controls.hidden=true;
+    if(ruleFold)ruleFold.hidden=true;
+    inlineEditor.hidden=false;
+    $('cageInlineMemberTitle').textContent=definition.label;
+    // Ensure the real settings fields are expanded while editing. A disabled
+    // member can still have its measurements prepared before being enabled.
+    if(!card.classList.contains('expanded'))
+      card.querySelector('.cage-member-toggle')?.click();
+    updateInlineEditorHint();
+    const target=views.find(view=>view.id===definition.preview);
+    if(target)showDrawing(target.direction,target.id);
+    syncQuickMembers();
+    designGrid.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+  $('cageBackToHoop').addEventListener('click',()=>{
+    closeInlineMemberEditor();
+    designGrid.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
   const picker=document.createElement('section');
   picker.className='panel cage-design-member-selector';
   picker.id='designMemberPicker';
@@ -247,10 +316,14 @@
     '<div class="cage-member-picker-head"><div><h3>Choose cage members</h3>'+
     '<p>Tick the tubes you need; the live drawing and cut list recalculate automatically.</p></div>'+
     '<span id="designMemberSummary" class="cage-member-picker-count" aria-live="polite"></span></div>'+
-    '<div class="cage-member-fixed">Main hoop <span>Always included</span></div>'+
+    '<div class="cage-member-fixed">Main hoop <span>Always included</span><button type="button" id="cageDesignEditMainHoop">Edit</button></div>'+
     '<div id="designMemberOptions" class="cage-member-picker-grid"></div>'+
-    '<p class="cage-member-picker-foot">Use <strong>Edit</strong> to open that member’s dimensions. A selected member that needs supporting tubes is shown as pending until those tubes are enabled.</p>';
+    '<p class="cage-member-picker-foot">Use <strong>Edit</strong> to change a member’s dimensions beside the live preview. The orange selection boxes control which tubes are included.</p>';
   pages.design.insertBefore(picker,designGrid);
+  $('cageDesignEditMainHoop').addEventListener('click',()=>{
+    closeInlineMemberEditor();
+    designGrid.scrollIntoView({behavior:'smooth',block:'start'});
+  });
   const quickOptions=$('designMemberOptions');
   const quickRows=[];
   function syncQuickMembers(){
@@ -260,6 +333,7 @@
       proxy.checked=source.checked;
       proxy.disabled=source.disabled;
       card.classList.toggle('is-selected',source.checked);
+      card.classList.toggle('is-editing',activeEditor?.source===source);
       if(source.checked)selected++;
       const pending=Boolean(source.checked&&definition.requires&&!$(definition.requires)?.checked);
       card.classList.toggle('is-pending',pending);
@@ -267,6 +341,7 @@
       status.hidden=!pending;
     }
     $('designMemberSummary').textContent=selected+' of '+quickRows.length+' selected';
+    updateInlineEditorHint();
   }
   for(const definition of memberDefinitions){
     const source=$(definition.id);
@@ -308,14 +383,7 @@
       }
     });
     source.addEventListener('change',syncQuickMembers);
-    edit.addEventListener('click',()=>{
-      activate('members');
-      const memberCard=source.closest('.cage-member-card');
-      if(memberCard&&!memberCard.classList.contains('expanded')){
-        memberCard.querySelector('.cage-member-toggle')?.click();
-      }
-      memberCard?.scrollIntoView({behavior:'smooth',block:'center'});
-    });
+    edit.addEventListener('click',()=>openInlineMemberEditor(definition,source));
   }
   syncQuickMembers();
 
@@ -356,6 +424,7 @@
   const buttons=Object.fromEntries(names.map(n=>[n,$('cage-tab-'+n)]));
   function activate(name,scroll=false){
     if(!pages[name])return;
+    if(name!=='design')closeInlineMemberEditor();
     for(const key of names){
       pages[key].hidden=key!==name;
       buttons[key].setAttribute('aria-selected',String(key===name));
