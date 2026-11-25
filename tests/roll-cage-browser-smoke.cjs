@@ -22,7 +22,7 @@ const URL='http://127.0.0.1:8765/roll-cage/';
       const errors=[];
       page.on('pageerror',error=>errors.push(error.message));
       await page.goto(URL,{waitUntil:'load'});
-      await page.waitForSelector('#cageInlineMemberEditor');
+      await page.waitForSelector('#cageInlineMemberEditor',{state:'attached'});
       assert.equal(await page.locator('#cage-tab-design').getAttribute('aria-selected'),'true');
       assert.equal(await page.locator('#cagePreflightPanel').count(),1);
       assert.match(await page.locator('#cagePreflightSummary').textContent(),/preflight passed/i);
