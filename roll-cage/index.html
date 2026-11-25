@@ -348,6 +348,7 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
     <h2 style="margin:0">Numbered tube cutting list</h2>
     <span class="unit">Stable part IDs · all enabled cage members · millimetres</span>
   </div>
+  <div id="cagePreflightPanel" class="cage-preflight-panel" role="status" aria-live="polite"><strong id="cagePreflightSummary">Checking cage geometry…</strong><div id="cagePreflightDetails"></div></div>
   <div class="fields cage-cut-fields">
     <div class="field"><label for="cageJobRef">Job / cage reference (optional)</label><input type="text" id="cageJobRef" maxlength="22" placeholder="e.g. 45186"><span class="hint">If entered, adds a prefix: 45186-RC-001</span></div>
     <div class="field"><label for="cageMaterial">Material / grade (optional)</label><input type="text" id="cageMaterial" maxlength="50" placeholder="Specify your approved tube grade"><span class="hint">Recorded only; not a material-compliance check</span></div>
@@ -1938,6 +1939,103 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
     }
     return {tubes,issues:a.errors||[],units:'mm',kind:'centreline-tube-visualisation'};
   }
+  // Fabrication preflight must examine SELECTED parts, not only the parts
+  // successfully emitted by geometry. Otherwise incomplete cages can nest.
+  function cageFabricationPreflight(g){
+    const blockers=[],warnings=[];
+    const get=id=>$(id).checked;
+    if(g.issues?.length)blockers.push(...g.issues);
+    if(!g.issues?.length){
+      const a=g.addons||{},v=g.v,rows=g.memberMarkouts||[];
+      if(a.errors?.length)blockers.push(...a.errors);
+      const sides=$('doorSides').value==='both'?2:1;
+      let expected=1;
+      const selections=[
+        ['useBrace',1],['useStays',2],['useHarness',1],
+        ['useDoor',sides],['useFrontLegs',2],
+        ['useHoopHarness',1],['useMainCross',1],['useRoofX',2],
+        ['usePillarA',2],['usePillarB',2],['useDoor2',sides]
+      ];
+      for(const [id,count] of selections)if(get(id))expected+=count;
+      if(get('useFrontLegs')&&get('useHeader'))expected++;
+      if(rows.length!==expected)
+        blockers.push('Selected member count does not match the generated cut list: '+expected+' expected, '+rows.length+' calculated.');
+      const tubes=[
+        [true,'Main hoop',v.od,v.wall],
+        [get('useBrace'),'Main hoop diagonal',v.braceOD,v.braceWall],
+        [get('useStays'),'Rear stays',v.stayOD,v.stayWall],
+        [get('useHarness'),'Rear-stay crossbar',v.harnessOD,v.harnessWall],
+        [get('useDoor'),'Side intrusion',v.doorOD,v.doorWall],
+        [get('useFrontLegs'),'Front legs',v.frontOD,v.frontWall],
+        [get('useFrontLegs')&&get('useHeader'),'Windscreen header',v.headerOD,v.headerWall],
+        [get('useHoopHarness'),'Main-hoop harness',v.hoopHarnessOD,v.hoopHarnessWall],
+        [get('useMainCross'),'Second diagonal',v.braceOD,v.braceWall],
+        [get('useRoofX'),'Roof braces',v.roofOD,v.roofWall],
+        [get('usePillarA'),'A-pillar braces',v.frontOD,v.frontWall],
+        [get('usePillarB'),'B-pillar braces',v.frontOD,v.frontWall],
+        [get('useDoor2'),'Second door bars',v.door2OD,v.door2Wall]
+      ];
+      for(const [on,label,od,wall] of tubes){
+        if(on&&(!Number.isFinite(od)||od<=0||!Number.isFinite(wall)||wall<=0||wall>=od/2))
+          blockers.push(label+': invalid outside diameter or wall thickness.');
+      }
+      if(!Number.isFinite(v.fitExtra)||v.fitExtra<0)blockers.push('Joint preparation allowance cannot be negative.');
+      for(const row of rows){
+        if(!Number.isFinite(row.blank)||!Number.isFinite(row.span)||row.span<=0||
+          row.blank<row.span-1e-6||row.blank>1000000||row.qty!==1)
+          blockers.push(row.partNumber+': invalid developed length or prep blank.');
+        for(const bend of row.bends||[]){
+          if(![bend.start,bend.mid,bend.end,bend.angle].every(Number.isFinite)||
+            bend.start<0||bend.start>bend.mid||bend.mid>bend.end||bend.end>row.blank+1e-5)
+            blockers.push(row.partNumber+': bend mark extends outside its preparation blank.');
+        }
+      }
+      if(get('useMainCross')&&!get('useBrace'))blockers.push('Second diagonal requires the primary diagonal.');
+      if(get('useRoofX')&&!get('useHeader'))blockers.push('Roof cross requires a windscreen header.');
+      if(get('useDoor2')&&!get('useDoor'))blockers.push('Second door bars require the primary side-intrusion bars.');
+      if(get('useHeader')&&!get('useFrontLegs'))
+        warnings.push('Windscreen header is selected but inactive until front legs are enabled.');
+      const unresolved=(g.tubeJoints||[]).filter(j=>j.error);
+      if(unresolved.length)warnings.push(unresolved.length+' joint template(s) are unresolved; verify their parent geometry before tube laser cutting.');
+      if(!String($('cageMaterial').value||'').trim())warnings.push('Material grade and traceability are not recorded.');
+      warnings.push('Bend springback, wall ovalisation, clamp clearances, structural rules and mounting feet require physical verification.');
+      // A contact detected by the viewer is intentionally advisory: many
+      // designed welded tube joints contact one another.
+    }
+    return {ready:blockers.length===0,blockers:[...new Set(blockers)],warnings:[...new Set(warnings)]};
+  }
+  const productionIds=[
+    'sendCageToNesting','saveCageCutCSV','printCageCutList','addonsCsvDownload',
+    'saveCageBendCSV','printCageBendList','printMemberMarkouts',
+    'saveMemberMarkoutsSVG','frontBendCsvDownload','frontSvgDownload',
+    'csvDownload','markSvgDownload','addonsSvgDownload','svgDownload',
+    'printNotches','modelJSON'
+  ];
+  function updateFabricationPreflight(g){
+    const report=cageFabricationPreflight(g);
+    g.preflight=report;
+    window.dcbCagePreflight=report;
+    $('cagePreflightPanel').classList.toggle('is-blocked',!report.ready);
+    $('cagePreflightSummary').textContent=report.ready
+      ?'Geometry preflight passed — verify fabrication warnings before cutting.'
+      :'Fabrication blocked — '+report.blockers.length+' geometry problem(s) require attention.';
+    const entries=report.blockers.map(message=>'<li class="blocker">'+cageSafeHTML(message)+'</li>')
+      .concat(report.warnings.map(message=>'<li>'+cageSafeHTML(message)+'</li>'));
+    $('cagePreflightDetails').innerHTML='<ul>'+entries.join('')+'</ul>';
+    for(const id of productionIds)$(id).disabled=!report.ready||$(id).disabled;
+    // Export buttons are normally enabled by their existing render functions;
+    // this step runs afterwards and is the final safety gate.
+    if(!report.ready)$('browserStepOpen').disabled=true;
+  }
+  document.addEventListener('click',event=>{
+    const button=event.target.closest('button');
+    if(!button||!productionIds.includes(button.id)&&button.id!=='browserStepOpen')return;
+    if(!window.dcbCagePreflight?.ready){
+      event.preventDefault();event.stopImmediatePropagation();
+      alert('Fabrication blocked: correct the geometry problems shown in Fabrication → Preflight before exporting.');
+    }
+  },true);
+
   function publishCagePreview(g){
     const data=cagePreviewScene(g);
     window.dcbCage3DSnapshot=data;
@@ -1948,7 +2046,7 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
     const v=Object.fromEntries(vals.map(id=>[id,Number($(id).value)]));
     const g=geometry(v);if(!g.issues.length)g.addons=addonsGeometry(g);latest=g.issues.length?null:g;
     const err=$('validation');
-    if(g.issues.length){renderRuleReview(null);err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';for(const id of ['reinforcementPlanSvg','reinforcementFrontSvg','reinforcementSideSvg'])$(id).innerHTML='';$('reinforcementSummary').textContent='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('browserStepOpen').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('sendCageToNesting').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';publishCagePreview(g);return;}
+    if(g.issues.length){renderRuleReview(null);err.style.display='block';err.innerHTML=g.issues.map(x=>`<div>• ${x}</div>`).join('');$('developed').textContent='—';$('blank').textContent='—';$('bendCount').textContent='—';$('radiusRatio').textContent='Adjust measurements';$('bendsBody').innerHTML='';$('segmentsBody').innerHTML='';$('drawingSvg').innerHTML='<text x="380" y="285" text-anchor="middle">Adjust dimensions to generate a valid hoop</text>';$('summaryNote').textContent='';$('markingSvg').innerHTML='<text x="480" y="90" text-anchor="middle">Adjust dimensions to show marks</text>';$('markCards').innerHTML='';$('braceSpan').textContent='—';$('staySpan').textContent='—';$('stayUpperWidth').textContent='—';$('harnessSpan').textContent='—';$('doorSpan').textContent='—';$('harnessOffset').textContent='—';$('doorAngle').textContent='—';$('addonsBody').innerHTML='';$('addonsDetail').textContent='';$('staySideSvg').innerHTML='';$('stayPlanSvg').innerHTML='';$('doorSideSvg').innerHTML='';$('doorPlanSvg').innerHTML='';for(const id of ['reinforcementPlanSvg','reinforcementFrontSvg','reinforcementSideSvg'])$(id).innerHTML='';$('reinforcementSummary').textContent='';$('notchStatus').textContent='Adjust hoop dimensions to generate wrap-arounds.';$('jointNotchCards').innerHTML='';$('notchCount').textContent='—';$('printNotches').disabled=true;$('browserStepOpen').disabled=true;$('frontWarning').textContent='';$('frontBendsBody').innerHTML='';$('frontSectionsBody').innerHTML='';$('frontStationsBody').innerHTML='';for(const id of ['frontSideSvg','frontPlanSvg','frontFaceSvg'])$(id).innerHTML='';$('frontDeveloped').textContent='—';$('memberMarkoutCards').innerHTML='';$('memberMarkoutCount').textContent='—';$('cageCutBody').innerHTML='';$('cageCutTotals').innerHTML='';$('cageCutCount').textContent='—';$('cageCutSummary').textContent='';$('cageBendListBody').innerHTML='';$('cageBendListCount').textContent='—';$('printCageBendList').disabled=true;$('saveCageBendCSV').disabled=true;$('printCageCutList').disabled=true;$('saveCageCutCSV').disabled=true;$('sendCageToNesting').disabled=true;$('printMemberMarkouts').disabled=true;$('saveMemberMarkoutsSVG').disabled=true;$('frontBlank').textContent='—';$('frontAngles').textContent='—';$('frontClock').textContent='—';$('headerLength').textContent='—';$('headerDetail').textContent='—';updateFabricationPreflight(g);publishCagePreview(g);return;}
     err.style.display='none';
     $('developed').textContent=`${round(g.total,1)} mm`;
     $('blank').textContent=`${round(g.blank,1)} mm`;
@@ -1965,6 +2063,7 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
     renderCageBendList(g);
     renderRuleReview(g);
     $('browserStepOpen').disabled=!(g.addons?.brace&&g.addons?.front&&!g.addons.front.errors.length);
+    updateFabricationPreflight(g);
     publishCagePreview(g);
   }
   function setMode(n){mode=n;for(const m of [2,4]){$('mode'+m).classList.toggle('active',m===n);$('mode'+m).setAttribute('aria-pressed',String(m===n));}document.querySelectorAll('.tapered').forEach(x=>x.classList.toggle('field-hidden',n!==4));render();}
@@ -2183,9 +2282,47 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
       alert('Open the Browser STEP lab link manually and load the downloaded JSON. Your browser prevented direct transfer: '+error.message);
     }
   });
+  window.dcbCageCore={
+    mode:()=>mode,
+    restoreState(snapshot){
+      if(!snapshot||!snapshot.fields||typeof snapshot.fields!=='object')throw new Error('Invalid saved project.');
+      if(![2,4].includes(snapshot.mode))throw new Error('Unsupported cage hoop mode.');
+      mode=snapshot.mode;
+      for(const n of [2,4]){
+        $('mode'+n).classList.toggle('active',n===mode);
+        $('mode'+n).setAttribute('aria-pressed',String(n===mode));
+      }
+      document.querySelectorAll('.tapered').forEach(x=>x.classList.toggle('field-hidden',mode!==4));
+      for(const [id,entry] of Object.entries(snapshot.fields)){
+        const field=$(id);
+        if(!field||!['INPUT','SELECT','TEXTAREA'].includes(field.tagName))continue;
+        if(field.id.startsWith('design-')||field.id==='cageDrawingChoice')continue;
+        if(field.type==='checkbox'){
+          if(typeof entry.checked==='boolean')field.checked=entry.checked;
+        }else if(typeof entry.value==='string'){
+          // Disallow unknown select values while retaining number/text inputs.
+          if(field.tagName==='SELECT'&&![...field.options].some(o=>o.value===entry.value))continue;
+          field.value=entry.value;
+        }
+      }
+      updateRulesClass();
+      const requested=snapshot.fields.rulesClass?.value;
+      if(requested&&[...$('rulesClass').options].some(o=>o.value===requested))$('rulesClass').value=requested;
+      updateFrontControls();
+      for(const [toggle,fields] of [
+        ['useBrace','braceFields'],['useStays','stayFields'],['useHarness','harnessFields'],
+        ['useDoor','doorFields'],['useHoopHarness','hoopHarnessFields'],['useMainCross','mainCrossFields'],
+        ['useRoofX','roofXFields'],['usePillarA','pillarAFields'],['usePillarB','pillarBFields'],
+        ['useDoor2','door2Fields']
+      ])$(fields).classList.toggle('off',!$(toggle).checked);
+      render();
+      window.dispatchEvent(new Event('dcb:cage-state-restored'));
+    }
+  };
   updateRulesClass();updateFrontControls();render();
 })();
 </script>
 <script src="./ui-workspace.js" defer></script>
 <script src="./preview-3d.js" defer></script>
+<script src="./project-state.js" defer></script>
 </body></html>
