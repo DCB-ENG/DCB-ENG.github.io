@@ -121,7 +121,7 @@
 }
 @media print{
   .cage-tabs,.cage-overview,.cage-page-title,.cage-view-tabs,.cage-preview-picker,.cage-preview-hint,.cage-section-hint,.cage-member-toggle{display:none!important}
-  .cage-tab-page[hidden],.cage-preview-figure[hidden]{display:block!important}
+  #cageWorkspace .cage-tab-page[hidden],#cageWorkspace .cage-preview-figure[hidden]{display:block!important}
   .cage-design-grid,.cage-members-grid{display:block}
   .cage-design-settings{display:none!important}
   .cage-member-settings{display:none!important}
