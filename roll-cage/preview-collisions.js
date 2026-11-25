@@ -5,6 +5,7 @@
   const check=factory();
   if(typeof module!=='undefined'&&module.exports)module.exports=check;
   if(root)root.dcbCageCollisionCheck=check;
+  if(root&&typeof root.dispatchEvent==='function'&&typeof Event==='function')root.dispatchEvent(new Event('dcb:cage-collision-module-ready'));
 })(typeof window!=='undefined'?window:null,function(){
   'use strict';
   const subtract=(a,b)=>[a[0]-b[0],a[1]-b[1],a[2]-b[2]];
