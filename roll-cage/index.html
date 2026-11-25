@@ -1998,9 +1998,11 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
       const unresolved=(g.tubeJoints||[]).filter(j=>j.error);
       if(unresolved.length)warnings.push(unresolved.length+' joint template(s) are unresolved; verify their parent geometry before tube laser cutting.');
       if(!String($('cageMaterial').value||'').trim())warnings.push('Material grade and traceability are not recorded.');
+      const contacts=typeof window.dcbCageCollisionCheck==='function'
+        ?window.dcbCageCollisionCheck(cagePreviewScene(g).tubes):[];
+      if(contacts.length)warnings.push(contacts.length+' possible midspan tube overlap(s) in 3D. Check the highlighted member pairs for junction preparation or clashes.');
       warnings.push('Bend springback, wall ovalisation, clamp clearances, structural rules and mounting feet require physical verification.');
-      // A contact detected by the viewer is intentionally advisory: many
-      // designed welded tube joints contact one another.
+      g._cage3DContacts=contacts;
     }
     return {ready:blockers.length===0,blockers:[...new Set(blockers)],warnings:[...new Set(warnings)]};
   }
@@ -2046,6 +2048,7 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
 
   function publishCagePreview(g){
     const data=cagePreviewScene(g);
+    data.collisions=g._cage3DContacts||[];
     window.dcbCage3DSnapshot=data;
     if(typeof CustomEvent==='function'&&typeof window.dispatchEvent==='function')
       window.dispatchEvent(new CustomEvent('dcb:cage-3d-update',{detail:data}));
@@ -2327,10 +2330,12 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
       window.dispatchEvent(new Event('dcb:cage-state-restored'));
     }
   };
+  if(typeof window.addEventListener==='function')window.addEventListener('dcb:cage-collision-module-ready',render);
   updateRulesClass();updateFrontControls();render();
 })();
 </script>
 <script src="./ui-workspace.js" defer></script>
+<script src="./preview-collisions.js" defer></script>
 <script src="./preview-3d.js" defer></script>
 <script src="./project-state.js" defer></script>
 </body></html>
