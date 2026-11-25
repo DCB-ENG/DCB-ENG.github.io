@@ -244,7 +244,8 @@
     for(let k=-size;k<=size;k+=250){
       values.push(-size,-9,k,size,-9,k,k,-9,-size,k,-9,size);
     }
-    const normals=new Array(values.length).fill(0);
+    const normals=[];
+    for(let i=0;i<values.length;i+=3)normals.push(0,1,0);
     return {positions:buffer(values),normals:buffer(normals),count:values.length/3};
   }
   function updateScene(snapshot){
