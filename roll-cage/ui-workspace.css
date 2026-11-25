@@ -242,3 +242,19 @@
   .cage-member-fixed{flex-wrap:wrap}
 }
 @media print{.cage-inline-member-editor{display:none!important}}
+
+
+/* Fabrication preflight and versioned local project controls */
+#cageProjectStatus{font-size:11px;color:#c1cdd3;max-width:185px;line-height:1.4}
+.top-actions .cage-load-button{display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;white-space:nowrap}
+#cageResetProject{font-size:12px}
+.cage-preflight-panel{background:#1b2926;border:1px solid #53836b;border-radius:10px;padding:14px 15px;margin:0 0 15px;color:#d5eee2}
+.cage-preflight-panel.is-blocked{background:#31241e;border-color:#b46e40;color:#ffceb1}
+.cage-preflight-panel>strong{display:block;font-size:14px;line-height:1.35}
+.cage-preflight-panel ul{list-style:disc;padding-left:20px;margin:9px 0 0}
+.cage-preflight-panel li{font-size:12px;line-height:1.5;color:#bdc9ce;margin:3px 0}
+.cage-preflight-panel li.blocker{font-weight:700;color:#ffd2af}
+.cage-preflight-panel:not(.is-blocked) li{color:#c1d3c9}
+#cageWorkspace button:disabled{opacity:.45;cursor:not-allowed}
+@media(max-width:700px){#cageProjectStatus{max-width:100%;flex-basis:100%}.cage-preflight-panel{padding:12px}}
+@media print{.cage-preflight-panel{background:white!important;color:#111!important;border:1px solid #777!important}.cage-preflight-panel li{color:#222!important}#cageProjectStatus,#cageSaveProject,#cageResetProject,.cage-load-button{display:none!important}}

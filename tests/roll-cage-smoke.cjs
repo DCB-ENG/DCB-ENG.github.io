@@ -36,6 +36,20 @@ assert(initialStay.points.at(-1)[2]>0,'Rear stay footing extends rearward of the
 const initialDoor=initialScene.tubes.find(t=>t.group==='door');
 assert(initialDoor.points.at(-1)[2]<0,'Door bars extend toward the front of the vehicle');
 
+const initialPreflight=ctx.window.dcbCagePreflight;
+assert(initialPreflight&&initialPreflight.ready,'Default cage must pass essential fabrication checks');
+assert.equal(initialPreflight.blockers.length,0);
+assert(!els.get('sendCageToNesting').disabled,'Valid default cage may be sent to the existing nesting page');
+els.get('braceWall').value='30';els.get('braceWall').events.input();
+assert(!ctx.window.dcbCagePreflight.ready,'Selected diagonal with impossible wall thickness blocks fabrication');
+assert(ctx.window.dcbCagePreflight.blockers.some(x=>x.includes('diagonal')),
+  'Invalid diagonal must be specifically identified by the preflight');
+assert.equal(els.get('sendCageToNesting').disabled,true,'Nesting must be disabled on incomplete cage geometry');
+assert.equal(els.get('saveCageCutCSV').disabled,true,'Incomplete cage must not silently export a partial cut list');
+assert.equal(els.get('printCageBendList').disabled,true,'Incomplete cage must block bend mark exports');
+els.get('braceWall').value='2.6';els.get('braceWall').events.input();
+assert(ctx.window.dcbCagePreflight.ready,'Correcting the tube size clears blocking errors');
+assert.equal(els.get('sendCageToNesting').disabled,false,'Nesting re-enables after geometry is corrected');
 const initialMarkouts=ctx.window.__inspectRollCage().memberMarkouts;
 assert.equal(initialMarkouts.length,7,'Default enabled set: main hoop, diagonal, two rear stays, harness and two intrusion bars');
 
@@ -377,6 +391,7 @@ assert(g.cutList.rows.some(p=>p.partNumber==='RC-018'));
 assert(g.cutList.rows.some(p=>p.partNumber==='RC-019'));
 assert(g.cutList.rows.some(p=>p.partNumber==='RC-020'));
 assert.equal(g.cutList.count,20,'All base and reinforcing tubes are individually listed');
+assert(ctx.window.dcbCagePreflight.ready,'Twenty-piece reinforced cage passes selected-member completeness check');
 const full3D=ctx.window.dcbCage3DSnapshot;
 assert.equal(full3D.tubes.length,20,'3D preview contains every one of the twenty calculated tubes');
 for(const group of ['main','front','stays','brace','roof','door','harness','header','reinforcement']){
