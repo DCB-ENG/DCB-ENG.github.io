@@ -2022,12 +2022,20 @@ The Windows converter builds hollow B-rep tube solids, copes ends against modell
     const entries=report.blockers.map(message=>'<li class="blocker">'+cageSafeHTML(message)+'</li>')
       .concat(report.warnings.map(message=>'<li>'+cageSafeHTML(message)+'</li>'));
     $('cagePreflightDetails').innerHTML='<ul>'+entries.join('')+'</ul>';
-    for(const id of productionIds)$(id).disabled=!report.ready||$(id).disabled;
+    for(const id of productionIds){
+      if(!report.ready){$(id).disabled=true;continue;}
+      if(['printNotches'].includes(id))$(id).disabled=!(g.tubeJoints||[]).some(j=>!j.error&&j.paper&&j.profile);
+      else if(['frontBendCsvDownload','frontSvgDownload'].includes(id))$(id).disabled=!g.addons?.front||g.addons.front.errors.length>0;
+      else if(['sendCageToNesting','saveCageCutCSV','printCageCutList','addonsCsvDownload',
+        'saveCageBendCSV','printCageBendList','printMemberMarkouts','saveMemberMarkoutsSVG'].includes(id))
+        $(id).disabled=!(g.cutList?.rows?.length);
+      else $(id).disabled=false;
+    }
     // Export buttons are normally enabled by their existing render functions;
     // this step runs afterwards and is the final safety gate.
     if(!report.ready)$('browserStepOpen').disabled=true;
   }
-  document.addEventListener('click',event=>{
+  if(typeof document.addEventListener==='function')document.addEventListener('click',event=>{
     const button=event.target.closest('button');
     if(!button||!productionIds.includes(button.id)&&button.id!=='browserStepOpen')return;
     if(!window.dcbCagePreflight?.ready){
