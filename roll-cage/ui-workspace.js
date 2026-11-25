@@ -280,6 +280,27 @@
   if(!openTarget(hash,false))activate(names.includes(remembered)?remembered:'design');
   window.addEventListener('hashchange',()=>openTarget(decodeURIComponent(location.hash.slice(1))));
 
+  // The original Print layout action still prints the complete fabrication
+  // sheet, including panels collapsed for normal on-screen navigation.
+  let printState=null;
+  window.addEventListener('beforeprint',()=>{
+    printState={
+      active:names.find(n=>!pages[n].hidden)||'design',
+      details:[...shell.querySelectorAll('details')].map(node=>[node,node.open])
+    };
+    for(const node of shell.querySelectorAll('details'))node.open=true;
+    for(const name of names)pages[name].hidden=false;
+    for(const view of views)view.node.hidden=false;
+  });
+  window.addEventListener('afterprint',()=>{
+    if(!printState)return;
+    for(const [node,open] of printState.details)node.open=open;
+    for(const view of views)view.node.hidden=view.id!==selectedDrawing;
+    activate(printState.active);
+    printState=null;
+  });
+
+
   function updateOverview(){
     const rows=[...document.querySelectorAll('#cageCutTotals tr')];
     let pieces=0,blank=0;
