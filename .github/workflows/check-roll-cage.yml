@@ -5,6 +5,9 @@ on:
       - 'roll-cage/index.html'
       - 'roll-cage/ui-workspace.js'
       - 'roll-cage/preview-3d.js'
+      - 'roll-cage/preview-collisions.js'
+      - 'roll-cage/project-state.js'
+      - 'tests/roll-cage-preflight-project.test.cjs'
       - 'tests/roll-cage-3d-preview.test.cjs'
       - 'roll-cage/ui-workspace.css'
       - 'tests/roll-cage-ui-workspace.test.cjs'
@@ -18,6 +21,9 @@ on:
       - 'roll-cage/index.html'
       - 'roll-cage/ui-workspace.js'
       - 'roll-cage/preview-3d.js'
+      - 'roll-cage/preview-collisions.js'
+      - 'roll-cage/project-state.js'
+      - 'tests/roll-cage-preflight-project.test.cjs'
       - 'tests/roll-cage-3d-preview.test.cjs'
       - 'roll-cage/ui-workspace.css'
       - 'tests/roll-cage-ui-workspace.test.cjs'
@@ -43,3 +49,5 @@ jobs:
         run: node tests/roll-cage-ui-workspace.test.cjs
       - name: Validate interactive WebGL 3D cage preview
         run: node tests/roll-cage-3d-preview.test.cjs
+      - name: Validate fabrication preflight, project files and collisions
+        run: node tests/roll-cage-preflight-project.test.cjs
